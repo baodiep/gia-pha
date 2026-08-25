@@ -1,7 +1,7 @@
 {
   "project": "gia-pha-vercel",
   "schema_version": 1,
-  "current_task": "T007",
+  "current_task": "T008",
   "statuses": [
     "BACKLOG",
     "READY",
@@ -66,7 +66,7 @@
       "id": "T007",
       "title": "RLS security policies",
       "file": "tasks/T007-rls.md",
-      "status": "READY",
+      "status": "DONE",
       "depends_on": [
         "T006"
       ]
@@ -141,7 +141,7 @@
       "id": "T015",
       "title": "Avatar & basic storage",
       "file": "tasks/T015-storage.md",
-      "status": "BACKLOG",
+      "status": "READY",
       "depends_on": [
         "T004",
         "T007"
