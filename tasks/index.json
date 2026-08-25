@@ -1,7 +1,7 @@
 {
   "project": "gia-pha-vercel",
   "schema_version": 1,
-  "current_task": "T017",
+  "current_task": "T018",
   "statuses": [
     "BACKLOG",
     "READY",
@@ -164,7 +164,7 @@
       "id": "T017",
       "title": "E2E critical journeys",
       "file": "tasks/T017-e2e.md",
-      "status": "READY",
+      "status": "DONE",
       "depends_on": [
         "T007",
         "T009",
@@ -178,7 +178,7 @@
       "id": "T018",
       "title": "Vercel deployment & production checklist",
       "file": "tasks/T018-deploy.md",
-      "status": "BACKLOG",
+      "status": "READY",
       "depends_on": [
         "T017"
       ]
