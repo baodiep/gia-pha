@@ -1,11 +1,20 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { FamilyTreeView } from "@/components/family-tree/FamilyTreeView";
-import { Network, Calendar, BookOpen, Shield } from "lucide-react";
+import { AuthModal } from "@/components/auth/AuthModal";
+import { logoutAction } from "@/features/auth/actions";
+import { Network, Calendar, BookOpen, Shield, LogIn, LogOut } from "lucide-react";
 
 export function HomePageClient() {
+  const [showAuthModal, setShowAuthModal] = useState(false);
+
+  const handleLogout = async () => {
+    await logoutAction();
+    window.location.reload();
+  };
+
   return (
     <div className="flex h-screen w-full flex-col bg-slate-50 dark:bg-slate-950 overflow-hidden">
       {/* Top Navbar */}
@@ -54,6 +63,13 @@ export function HomePageClient() {
             <Shield className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400" />
             <span>Quản trị</span>
           </Link>
+          <button
+            onClick={() => setShowAuthModal(true)}
+            className="flex items-center gap-1 rounded-lg bg-indigo-600 px-3 py-1.5 text-white hover:bg-indigo-700 ml-1 shadow-sm"
+          >
+            <LogIn className="h-3.5 w-3.5" />
+            <span>Tài khoản</span>
+          </button>
         </nav>
       </header>
 
@@ -61,6 +77,16 @@ export function HomePageClient() {
       <div className="relative flex-1 w-full h-full overflow-hidden">
         <FamilyTreeView />
       </div>
+
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        onSuccess={() => {
+          setShowAuthModal(false);
+          window.location.reload();
+        }}
+      />
     </div>
   );
 }
+

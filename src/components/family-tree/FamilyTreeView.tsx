@@ -17,7 +17,9 @@ import "@xyflow/react/dist/style.css";
 
 import { PersonNode } from "./PersonNode";
 import { TreeSearchOverlay } from "./TreeSearchOverlay";
+import { AuthModal } from "@/components/auth/AuthModal";
 import { computeTreeLayout, TreePersonNodeData } from "@/lib/tree/elk-layout";
+
 import { getTreeGraphData } from "@/features/tree/actions";
 import { getAncestorPath } from "@/features/tree/search-actions";
 import { Users, Filter } from "lucide-react";
@@ -37,7 +39,9 @@ function FamilyTreeContent({ initialRootId, onSelectPerson }: FamilyTreeViewProp
   const [isLoading, setIsLoading] = useState(true);
   const [myBranchOnly, setMyBranchOnly] = useState(false);
   const [managedRoots, setManagedRoots] = useState<string[]>([]);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const { setCenter, getNode } = useReactFlow();
+
 
   const loadTree = useCallback(async () => {
     setIsLoading(true);
@@ -80,12 +84,19 @@ function FamilyTreeContent({ initialRootId, onSelectPerson }: FamilyTreeViewProp
           setNodes(layouted.nodes as unknown as Node[]);
           setEdges(layouted.edges as Edge[]);
         }
-      } catch (err) {
-        if (!ignore) console.error("Failed to load tree:", err);
+      } catch (err: any) {
+        if (!ignore) {
+          console.error("Failed to load tree:", err);
+          if (err?.message === "UNAUTHORIZED" || err?.message?.includes("UNAUTHORIZED")) {
+            // Need auth login
+            setShowAuthModal(true);
+          }
+        }
       } finally {
         if (!ignore) setIsLoading(false);
       }
     }
+
 
     fetchTree();
 
@@ -186,6 +197,18 @@ function FamilyTreeContent({ initialRootId, onSelectPerson }: FamilyTreeViewProp
         <div className="flex h-full items-center justify-center">
           <div className="text-sm font-medium text-slate-500">Đang tải sơ đồ cây gia phả...</div>
         </div>
+      ) : nodes.length === 0 ? (
+        <div className="flex h-full flex-col items-center justify-center gap-3 text-center p-4">
+          <div className="text-sm font-medium text-slate-600 dark:text-slate-300">
+            Bạn cần đăng nhập tài khoản để xem dữ liệu cây gia phả dòng họ.
+          </div>
+          <button
+            onClick={() => setShowAuthModal(true)}
+            className="rounded-lg bg-indigo-600 px-4 py-2 text-xs font-medium text-white shadow-sm hover:bg-indigo-700"
+          >
+            Đăng nhập / Đăng ký
+          </button>
+        </div>
       ) : (
         <ReactFlow
           nodes={nodes}
@@ -202,9 +225,20 @@ function FamilyTreeContent({ initialRootId, onSelectPerson }: FamilyTreeViewProp
           <Controls />
         </ReactFlow>
       )}
+
+      {/* Auth Modal when unauthorized */}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        onSuccess={() => {
+          setShowAuthModal(false);
+          loadTree();
+        }}
+      />
     </div>
   );
 }
+
 
 export function FamilyTreeView(props: FamilyTreeViewProps) {
   return (
