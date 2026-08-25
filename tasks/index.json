@@ -1,7 +1,7 @@
 {
   "project": "gia-pha-vercel",
   "schema_version": 1,
-  "current_task": "T012",
+  "current_task": "T013",
   "statuses": [
     "BACKLOG",
     "READY",
@@ -112,7 +112,7 @@
       "id": "T012",
       "title": "Admin account management",
       "file": "tasks/T012-admin-accounts.md",
-      "status": "READY",
+      "status": "DONE",
       "depends_on": [
         "T003"
       ]
