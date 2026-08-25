@@ -1,7 +1,7 @@
 {
   "project": "gia-pha-vercel",
   "schema_version": 1,
-  "current_task": "T015",
+  "current_task": "T016",
   "statuses": [
     "BACKLOG",
     "READY",
@@ -141,7 +141,7 @@
       "id": "T015",
       "title": "Avatar & basic storage",
       "file": "tasks/T015-storage.md",
-      "status": "READY",
+      "status": "DONE",
       "depends_on": [
         "T004",
         "T007"
