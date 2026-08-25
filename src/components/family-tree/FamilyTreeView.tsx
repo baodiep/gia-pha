@@ -17,6 +17,7 @@ import "@xyflow/react/dist/style.css";
 
 import { PersonNode } from "./PersonNode";
 import { TreeSearchOverlay } from "./TreeSearchOverlay";
+import { PersonDetailModal } from "./PersonDetailModal";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { computeTreeLayout, TreePersonNodeData } from "@/lib/tree/elk-layout";
 
@@ -44,6 +45,8 @@ function FamilyTreeContent({ initialRootId, onSelectPerson }: FamilyTreeViewProp
   const [managedRoots, setManagedRoots] = useState<string[]>([]);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [currentUser, setCurrentUser] = useState<Profile | null>(null);
+  const [selectedPersonId, setSelectedPersonId] = useState<string | null>(null);
+  const [selectedIsEditable, setSelectedIsEditable] = useState(false);
   const { setCenter, getNode } = useReactFlow();
 
   useEffect(() => {
@@ -117,6 +120,10 @@ function FamilyTreeContent({ initialRootId, onSelectPerson }: FamilyTreeViewProp
 
   const onNodeClick = useCallback(
     (_: React.MouseEvent, node: Node) => {
+      const isEditable = (node.data as any)?.isEditable ?? false;
+      setSelectedPersonId(node.id);
+      setSelectedIsEditable(isEditable);
+
       if (onSelectPerson) {
         onSelectPerson(node.id);
       }
@@ -266,6 +273,16 @@ function FamilyTreeContent({ initialRootId, onSelectPerson }: FamilyTreeViewProp
         onClose={() => setShowAuthModal(false)}
         onSuccess={() => {
           setShowAuthModal(false);
+          loadTree();
+        }}
+      />
+
+      {/* Person Detail & Edit Modal when clicking on any tree node */}
+      <PersonDetailModal
+        personId={selectedPersonId}
+        isEditable={selectedIsEditable}
+        onClose={() => setSelectedPersonId(null)}
+        onSuccess={() => {
           loadTree();
         }}
       />

@@ -293,3 +293,56 @@ export async function adminLinkPersonToAccount(
     };
   }
 }
+
+/**
+ * Đổi vai trò tài khoản (Admin <-> Thành viên)
+ */
+export async function adminToggleAdminRole(
+  targetUserId: string,
+  isAdmin: boolean
+): Promise<AdminAccountActionResult> {
+  try {
+    const { profile: adminProfile, userId: adminId } = await requireActiveUser();
+    if (!adminProfile.is_admin) {
+      return { success: false, error: "Chỉ Admin mới có quyền phân quyền quản trị" };
+    }
+
+    if (targetUserId === adminId && !isAdmin) {
+      return { success: false, error: "Bạn không thể tự hạ quyền Admin của chính mình" };
+    }
+
+    const admin = createAdminClient();
+
+    const { error } = await admin
+      .from("profiles")
+      .update({
+        is_admin: isAdmin,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", targetUserId);
+
+    if (error) {
+      return { success: false, error: error.message };
+    }
+
+    // Audit log
+    await admin.from("audit_logs").insert({
+      actor_user_id: adminId,
+      action: isAdmin ? "GRANT_ADMIN_ROLE" : "REVOKE_ADMIN_ROLE",
+      entity_type: "PROFILES",
+      entity_id: targetUserId,
+      new_value: { is_admin: isAdmin },
+    });
+
+    return {
+      success: true,
+      message: isAdmin ? "Đã cấp quyền Quản trị viên (Admin)" : "Đã chuyển về Thành viên thường",
+    };
+  } catch (err: unknown) {
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : "Đã xảy ra lỗi khi đổi vai trò",
+    };
+  }
+}
+

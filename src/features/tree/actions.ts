@@ -69,15 +69,34 @@ export async function getTreeGraphData(options?: {
     }
   }
 
-  const [{ data: persons }, { data: relations }, { data: unions }] = await Promise.all([
+  const [{ data: persons }, { data: relations }, { data: unions }, { data: branchGrants }] = await Promise.all([
     personsQuery,
     supabase.from("parent_child").select("*").eq("is_lineage_relation", true),
     supabase.from("unions").select("*, partner1:partner1_id(id, full_name, life_status), partner2:partner2_id(id, full_name, life_status)"),
+    supabase.from("branch_grants").select("root_person_id, user_id, user_profile:user_id(id, login_name, phone_normalized, person:person_id(full_name))").is("revoked_at", null),
   ]);
 
   const personsList = persons || [];
   const relationsList = relations || [];
   const unionsList = unions || [];
+  const branchGrantsList = branchGrants || [];
+
+  // Map managers by root_person_id
+  const managerMap = new Map<string, Array<{ userId: string; loginName: string; phone: string; fullName?: string }>>();
+  for (const bg of branchGrantsList) {
+    if (bg.root_person_id && bg.user_profile) {
+      const up = bg.user_profile as any;
+      if (!managerMap.has(bg.root_person_id)) {
+        managerMap.set(bg.root_person_id, []);
+      }
+      managerMap.get(bg.root_person_id)!.push({
+        userId: up.id,
+        loginName: up.login_name,
+        phone: up.phone_normalized,
+        fullName: up.person?.full_name || undefined,
+      });
+    }
+  }
 
   // Map unions by partner ID
   const spouseMap = new Map<string, Array<{ id: string; fullName: string; lifeStatus: "LIVING" | "DECEASED" | "UNKNOWN"; status: string }>>();
@@ -123,6 +142,7 @@ export async function getTreeGraphData(options?: {
         isEditable,
         hasChildren: parentWithChildrenSet.has(p.id),
         isExpanded: true,
+        managers: managerMap.get(p.id) || [],
         spouses: spouseMap.get(p.id) || [],
       },
     };

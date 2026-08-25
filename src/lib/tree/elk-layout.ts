@@ -14,6 +14,12 @@ export type TreePersonNodeData = {
   isEditable: boolean;
   hasChildren: boolean;
   isExpanded: boolean;
+  managers?: Array<{
+    userId: string;
+    loginName: string;
+    phone: string;
+    fullName?: string;
+  }>;
   spouses?: Array<{
     id: string;
     fullName: string;

@@ -7,12 +7,14 @@ import {
   BranchGrantDetail,
 } from "@/features/admin/permission-actions";
 import { BackButton } from "@/components/ui/BackButton";
-import { Shield, ShieldAlert, ShieldCheck, Search, Trash2, CheckCircle2, XCircle } from "lucide-react";
+import { GrantBranchModal } from "@/components/admin/GrantBranchModal";
+import { Shield, ShieldAlert, ShieldCheck, Search, Trash2, CheckCircle2, XCircle, UserPlus, Sparkles, HelpCircle } from "lucide-react";
 
 export function AdminPermissionManagementView() {
   const [grants, setGrants] = useState<BranchGrantDetail[]>([]);
   const [activeOnly, setActiveOnly] = useState(true);
   const [search, setSearch] = useState("");
+  const [showGrantModal, setShowGrantModal] = useState(false);
   const [isPending, startTransition] = useTransition();
 
   const loadGrants = () => {
@@ -70,7 +72,38 @@ export function AdminPermissionManagementView() {
               </h1>
             </div>
             <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-              Danh sách quyền quản lý theo nhánh dòng họ (Branch Grants)
+              Giao quyền chỉnh sửa cây phả hệ theo từng chi nhánh cho người phụ trách
+            </p>
+          </div>
+        </div>
+
+        <button
+          onClick={() => setShowGrantModal(true)}
+          className="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-xs sm:text-sm font-bold text-white shadow-md hover:bg-indigo-700 active:scale-95 transition-all min-h-[44px]"
+        >
+          <UserPlus className="h-4 w-4 sm:h-5 sm:w-5" />
+          <span>Cấp quyền nhánh mới</span>
+        </button>
+      </div>
+
+      {/* Cơ chế hoạt động giải thích to rõ */}
+      <div className="mb-6 rounded-2xl border border-indigo-100 bg-indigo-50/70 p-4 sm:p-5 dark:border-indigo-900/40 dark:bg-indigo-950/20">
+        <div className="flex items-start gap-3">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-600 text-white shrink-0 shadow-sm mt-0.5">
+            <HelpCircle className="h-5 w-5" />
+          </div>
+          <div className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 space-y-1">
+            <div className="font-bold text-slate-900 dark:text-white text-sm sm:text-base">
+              Cơ chế Phân Quyền Nhánh Trực Hệ (Branch Grants) hoạt động như thế nào?
+            </div>
+            <p className="leading-relaxed">
+              1. <strong>Admin</strong> chỉ cần chọn <strong>1 tài khoản thành viên</strong> và <strong>1 vị tiền nhân đứng đầu nhánh</strong> (Nút gốc, ví dụ: <em>Cụ Nguyễn Văn B - Đời 2, Chi 2</em>).
+            </p>
+            <p className="leading-relaxed">
+              2. Hệ thống tự động tính toán hình cây: Người được cấp quyền sẽ có quyền <strong>chỉnh sửa, thêm con cháu, thêm dâu/rể</strong> cho toàn bộ con cháu đời 3, đời 4, đời 5... sinh ra từ nhánh đó.
+            </p>
+            <p className="leading-relaxed">
+              3. Người này <strong>không thể sửa</strong> dữ liệu của các Chi khác hoặc các Cụ đời trên, đảm bảo tính toàn vẹn và bảo mật dữ liệu gia tộc.
             </p>
           </div>
         </div>
@@ -205,6 +238,16 @@ export function AdminPermissionManagementView() {
           </table>
         </div>
       )}
+
+      {/* Modal Cấp quyền nhánh mới */}
+      <GrantBranchModal
+        isOpen={showGrantModal}
+        onClose={() => setShowGrantModal(false)}
+        onSuccess={() => {
+          loadGrants();
+        }}
+      />
     </div>
   );
 }
+

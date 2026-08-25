@@ -1,10 +1,12 @@
 "use client";
 
 import React, { useState, useEffect, useTransition } from "react";
+import Link from "next/link";
 import {
   getAdminAccounts,
   adminSetAccountStatus,
   adminCreateAccount,
+  adminToggleAdminRole,
   AccountWithPerson,
 } from "@/features/admin/account-actions";
 import { AccountStatus } from "@/types/domain";
@@ -16,10 +18,13 @@ import {
   UserX,
   UserPlus,
   Shield,
+  ShieldAlert,
+  ShieldCheck,
   Clock,
   CheckCircle,
   AlertCircle,
   KeyRound,
+  GitBranch,
 } from "lucide-react";
 
 export function AdminAccountManagementView() {
@@ -112,13 +117,23 @@ export function AdminAccountManagementView() {
           </div>
         </div>
 
-        <button
-          onClick={() => setShowCreateModal(true)}
-          className="flex items-center justify-center gap-1.5 rounded-xl bg-slate-900 px-4 py-2.5 text-xs sm:text-sm font-semibold text-white hover:bg-slate-800 dark:bg-white dark:text-slate-900 shadow-sm"
-        >
-          <UserPlus className="h-4 w-4" />
-          <span>Tạo tài khoản mới</span>
-        </button>
+        <div className="flex items-center gap-2 flex-wrap">
+          <Link
+            href="/admin/permissions"
+            className="flex items-center justify-center gap-1.5 rounded-xl border border-indigo-200 bg-indigo-50 px-3.5 py-2.5 text-xs sm:text-sm font-bold text-indigo-700 hover:bg-indigo-100 dark:border-indigo-900 dark:bg-indigo-950 dark:text-indigo-300 shadow-sm"
+          >
+            <GitBranch className="h-4 w-4" />
+            <span>Phân quyền nhánh</span>
+          </Link>
+
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="flex items-center justify-center gap-1.5 rounded-xl bg-slate-900 px-4 py-2.5 text-xs sm:text-sm font-semibold text-white hover:bg-slate-800 dark:bg-white dark:text-slate-900 shadow-sm"
+          >
+            <UserPlus className="h-4 w-4" />
+            <span>Tạo tài khoản mới</span>
+          </button>
+        </div>
       </div>
 
       {/* Filter Toolbar */}
@@ -200,13 +215,37 @@ export function AdminAccountManagementView() {
                   </td>
                   <td className="py-3 px-4">
                     {acc.is_admin ? (
-                      <span className="inline-flex items-center gap-1 rounded bg-rose-50 px-2 py-0.5 text-[10px] font-semibold text-rose-700 dark:bg-rose-950 dark:text-rose-300">
-                        <Shield className="h-3 w-3" /> Admin
-                      </span>
+                      <button
+                        onClick={() => {
+                          if (confirm(`Bạn có chắc muốn chuyển tài khoản ${acc.login_name} về làm Thành viên thường?`)) {
+                            startTransition(async () => {
+                              const res = await adminToggleAdminRole(acc.id, false);
+                              if (res.success) loadAccounts();
+                              else alert(res.error);
+                            });
+                          }
+                        }}
+                        title="Bấm để chuyển về thành viên thường"
+                        className="inline-flex items-center gap-1 rounded-lg bg-rose-50 border border-rose-200 px-2 py-0.5 text-[10px] font-bold text-rose-700 hover:bg-rose-100 dark:bg-rose-950 dark:border-rose-900 dark:text-rose-300"
+                      >
+                        <Shield className="h-3 w-3" /> Admin (Bấm để gỡ)
+                      </button>
                     ) : (
-                      <span className="rounded bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-400">
-                        Thành viên
-                      </span>
+                      <button
+                        onClick={() => {
+                          if (confirm(`Bạn có chắc muốn thăng cấp tài khoản ${acc.login_name} lên làm Quản trị viên (Admin)?`)) {
+                            startTransition(async () => {
+                              const res = await adminToggleAdminRole(acc.id, true);
+                              if (res.success) loadAccounts();
+                              else alert(res.error);
+                            });
+                          }
+                        }}
+                        title="Bấm để thăng cấp lên Admin"
+                        className="inline-flex items-center gap-1 rounded-lg bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 border border-slate-200 px-2 py-0.5 text-[10px] font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-400"
+                      >
+                        Thành viên (Bấm để đặt Admin)
+                      </button>
                     )}
                   </td>
                   <td className="py-3 px-4">
