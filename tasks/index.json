@@ -1,7 +1,7 @@
 {
   "project": "gia-pha-vercel",
   "schema_version": 1,
-  "current_task": "T003",
+  "current_task": "T004",
   "statuses": [
     "BACKLOG",
     "READY",
@@ -30,7 +30,7 @@
       "id": "T003",
       "title": "Account registration, activation & login",
       "file": "tasks/T003-auth.md",
-      "status": "READY",
+      "status": "DONE",
       "depends_on": [
         "T002"
       ]
@@ -39,7 +39,7 @@
       "id": "T004",
       "title": "Person CRUD + deceased fields",
       "file": "tasks/T004-persons.md",
-      "status": "BACKLOG",
+      "status": "READY",
       "depends_on": [
         "T003"
       ]
@@ -112,7 +112,7 @@
       "id": "T012",
       "title": "Admin account management",
       "file": "tasks/T012-admin-accounts.md",
-      "status": "BACKLOG",
+      "status": "READY",
       "depends_on": [
         "T003"
       ]
