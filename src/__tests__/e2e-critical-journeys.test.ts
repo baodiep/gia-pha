@@ -15,7 +15,7 @@ describe("T017 — E2E Critical User Journeys Simulation", () => {
       expect(normalized).toBe("0912345678");
 
       const loginName = toLoginName(normalized);
-      expect(loginName).toBe("0912345678@");
+      expect(loginName).toBe("0912345678");
 
       const email = toInternalEmail(normalized);
       expect(email).toBe("0912345678@auth.giapha.local");

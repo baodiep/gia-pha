@@ -22,7 +22,7 @@ export function normalizePhone(input: string): string {
   // Remove common format chars
   let cleaned = input.trim().replace(/[\s.\-()]/g, "");
 
-  // If user inputs with @ suffix (e.g. from login_name format)
+  // If user inputs with @ suffix (backward-compat tolerance)
   if (cleaned.endsWith("@")) {
     cleaned = cleaned.slice(0, -1);
   }
@@ -43,11 +43,10 @@ export function normalizePhone(input: string): string {
 }
 
 /**
- * Converts phone number to visible login name (e.g. 0912345678@)
+ * Converts phone number to visible login name (e.g. 0912345678, no @ suffix)
  */
 export function toLoginName(phoneInput: string): string {
-  const normalized = normalizePhone(phoneInput);
-  return `${normalized}@`;
+  return normalizePhone(phoneInput);
 }
 
 /**
@@ -63,5 +62,6 @@ export function toInternalEmail(input: string, domain = getAuthDomain()): string
  */
 export function fromInternalEmail(email: string): string {
   const [user] = email.split("@");
-  return `${user}@`;
+  return user;
 }
+

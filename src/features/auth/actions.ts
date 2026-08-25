@@ -97,7 +97,7 @@ export async function registerAction(formData: FormData): Promise<ActionResult> 
 
     return {
       success: true,
-      message: `Đăng ký thành công tài khoản ${loginName}. Vui lòng chờ Ban Quản Trị kích hoạt trước khi đăng nhập.`,
+      message: `Đăng ký thành công cho ${validated.fullName} (${loginName}). Vui lòng chờ Ban Quản Trị kích hoạt trước khi đăng nhập.`,
     };
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Đã xảy ra lỗi khi đăng ký";
@@ -189,9 +189,12 @@ export async function logoutAction(): Promise<ActionResult> {
 }
 
 /**
- * Get current active user profile safely without throwing
+ * Get current active user profile safely along with display name
  */
-export async function getCurrentUser(): Promise<Profile | null> {
+export async function getCurrentUserWithPerson(): Promise<{
+  profile: Profile;
+  displayName: string;
+} | null> {
   try {
     const supabase = await createClient();
     const {
@@ -204,7 +207,7 @@ export async function getCurrentUser(): Promise<Profile | null> {
 
     const { data: profile } = await supabase
       .from("profiles")
-      .select("*")
+      .select("*, person:persons(full_name)")
       .eq("id", session.user.id)
       .maybeSingle();
 
@@ -212,11 +215,27 @@ export async function getCurrentUser(): Promise<Profile | null> {
       return null;
     }
 
-    return profile as Profile;
+    const userProfile = profile as Profile & { person?: { full_name: string } | null };
+    const rawFullName = session.user.user_metadata?.full_name;
+    const displayName = userProfile.person?.full_name || rawFullName || userProfile.login_name;
+
+    return {
+      profile: userProfile,
+      displayName,
+    };
   } catch {
     return null;
   }
 }
+
+/**
+ * Get current active user profile safely without throwing
+ */
+export async function getCurrentUser(): Promise<Profile | null> {
+  const result = await getCurrentUserWithPerson();
+  return result?.profile || null;
+}
+
 
 /**
  * Server helper to get current session and require ACTIVE status
@@ -274,26 +293,80 @@ export async function adminActivateAccount(userId: string): Promise<ActionResult
 }
 
 /**
- * Admin action to suspend an account
+ * Update user profile details (full name and/or password)
  */
-export async function adminSuspendAccount(userId: string): Promise<ActionResult> {
-  const { profile: adminProfile } = await requireActiveUser();
-  if (!adminProfile.is_admin) {
-    return { success: false, error: "Chỉ Admin mới có quyền khóa tài khoản" };
+export async function updateProfileDetailsAction(formData: FormData): Promise<ActionResult> {
+  try {
+    const { profile, userId } = await requireActiveUser();
+    const fullName = (formData.get("fullName") as string)?.trim();
+    const currentPassword = (formData.get("currentPassword") as string)?.trim();
+    const newPassword = (formData.get("newPassword") as string)?.trim();
+
+    const supabase = await createClient();
+    const admin = createAdminClient();
+
+    // 1. Update Full Name if provided
+    if (fullName && fullName.length >= 2) {
+      // If profile is linked to a person in `persons` table, update person's full_name as well
+      if (profile.person_id) {
+        await admin
+          .from("persons")
+          .update({ full_name: fullName, updated_at: new Date().toISOString() })
+          .eq("id", profile.person_id);
+      }
+
+      // Update auth user metadata
+      await admin.auth.admin.updateUserById(userId, {
+        user_metadata: { full_name: fullName },
+      });
+    }
+
+    // 2. Change password if requested
+    if (newPassword) {
+      if (newPassword.length < 6) {
+        return { success: false, error: "Mật khẩu mới phải có tối thiểu 6 ký tự" };
+      }
+
+      if (!currentPassword) {
+        return { success: false, error: "Vui lòng nhập mật khẩu hiện tại để xác nhận đổi mật khẩu" };
+      }
+
+      // Verify current password by signing in
+      const internalEmail = toInternalEmail(profile.phone_normalized);
+      const { error: verifyError } = await supabase.auth.signInWithPassword({
+        email: internalEmail,
+        password: currentPassword,
+      });
+
+      if (verifyError) {
+        return { success: false, error: "Mật khẩu hiện tại không chính xác" };
+      }
+
+      // Update to new password
+      const { error: updatePwdError } = await admin.auth.admin.updateUserById(userId, {
+        password: newPassword,
+      });
+
+      if (updatePwdError) {
+        return { success: false, error: "Không thể cập nhật mật khẩu mới: " + updatePwdError.message };
+      }
+
+      // If user had must_change_password flag, reset it
+      if (profile.must_change_password) {
+        await admin
+          .from("profiles")
+          .update({ must_change_password: false, updated_at: new Date().toISOString() })
+          .eq("id", userId);
+      }
+    }
+
+    return {
+      success: true,
+      message: "Cập nhật thông tin tài khoản thành công!",
+    };
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Đã xảy ra lỗi khi cập nhật thông tin";
+    return { success: false, error: message };
   }
-
-  const admin = createAdminClient();
-  const { error } = await admin
-    .from("profiles")
-    .update({
-      status: "SUSPENDED",
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", userId);
-
-  if (error) {
-    return { success: false, error: "Không thể khóa tài khoản" };
-  }
-
-  return { success: true, message: "Khóa tài khoản thành công" };
 }
+

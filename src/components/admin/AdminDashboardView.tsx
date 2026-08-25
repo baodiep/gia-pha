@@ -78,6 +78,14 @@ export function AdminDashboardView() {
       bg: "bg-purple-50 dark:bg-purple-950/40",
     },
     {
+      title: "Cài đặt Logo & Tên dòng họ",
+      desc: "Tùy chỉnh thương hiệu, đổi logo huy hiệu và tên hiển thị dòng họ ở góc trên bên trái",
+      href: "/admin/settings",
+      icon: Sparkles,
+      color: "text-indigo-600 dark:text-indigo-400",
+      bg: "bg-indigo-50 dark:bg-indigo-950/40",
+    },
+    {
       title: "Nhật ký hệ thống (Audit)",
       desc: "Truy vết chi tiết mọi thay đổi, xem snapshot dữ liệu trước/sau",
       href: "/admin/audit",
@@ -113,6 +121,23 @@ export function AdminDashboardView() {
             </p>
           </div>
         </div>
+
+        <button
+          onClick={() => {
+            startTransition(async () => {
+              try {
+                const data = await getAdminDashboardStats(true);
+                setStats(data);
+              } catch (err) {
+                console.error("Refresh error:", err);
+              }
+            });
+          }}
+          disabled={isPending}
+          className="inline-flex items-center gap-1.5 rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-xs sm:text-sm font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 shadow-sm"
+        >
+          <span>{isPending ? "Đang cập nhật..." : "Làm mới số liệu"}</span>
+        </button>
       </div>
 
       {/* KPI Stats Cards */}

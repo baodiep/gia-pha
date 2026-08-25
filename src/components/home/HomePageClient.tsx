@@ -4,27 +4,44 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { FamilyTreeView } from "@/components/family-tree/FamilyTreeView";
 import { AuthModal } from "@/components/auth/AuthModal";
-import { logoutAction, getCurrentUser } from "@/features/auth/actions";
+import { UserProfileModal } from "@/components/auth/UserProfileModal";
+import { logoutAction, getCurrentUserWithPerson } from "@/features/auth/actions";
+import { getSystemSettings, SystemSettings } from "@/features/admin/settings-actions";
 import { Profile } from "@/types/domain";
-import { Network, Calendar, BookOpen, Shield, LogIn, LogOut, User } from "lucide-react";
+import { Network, Calendar, BookOpen, Shield, LogIn, LogOut, User, Globe } from "lucide-react";
 
 export function HomePageClient() {
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showProfileModal, setShowProfileModal] = useState(false);
   const [currentUser, setCurrentUser] = useState<Profile | null>(null);
+  const [displayName, setDisplayName] = useState<string>("");
+  const [brandSettings, setBrandSettings] = useState<SystemSettings | null>(null);
   const [loadingUser, setLoadingUser] = useState(true);
 
   useEffect(() => {
-    async function loadUser() {
+    async function loadData() {
       try {
-        const user = await getCurrentUser();
-        setCurrentUser(user);
+        const [userRes, settingsRes] = await Promise.all([
+          getCurrentUserWithPerson(),
+          getSystemSettings(),
+        ]);
+
+        if (userRes) {
+          setCurrentUser(userRes.profile);
+          setDisplayName(userRes.displayName);
+        } else {
+          setCurrentUser(null);
+          setDisplayName("");
+        }
+
+        setBrandSettings(settingsRes);
       } catch (err) {
-        console.error("Load user error:", err);
+        console.error("Load home data error:", err);
       } finally {
         setLoadingUser(false);
       }
     }
-    loadUser();
+    loadData();
   }, []);
 
   const handleLogout = async () => {
@@ -34,17 +51,28 @@ export function HomePageClient() {
 
   return (
     <div className="flex h-screen w-full flex-col bg-slate-50 dark:bg-slate-950 overflow-hidden">
-      {/* Top Navbar - Tối ưu chữ to, nút to rõ ràng cho người cao tuổi */}
+      {/* Top Navbar - Tên và Logo dòng họ động từ SystemSettings */}
       <header className="z-20 flex min-h-[56px] sm:min-h-[64px] shrink-0 items-center justify-between border-b border-slate-200 bg-white/95 px-3 sm:px-4 backdrop-blur dark:border-slate-800 dark:bg-slate-900/95">
         <div className="flex items-center gap-2 sm:gap-3">
-          <div className="rounded-xl bg-indigo-600 p-2 text-white shadow-sm shrink-0">
-            <Network className="h-5 w-5 sm:h-6 sm:w-6" />
+          <div className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-indigo-600 text-white shadow-sm overflow-hidden shrink-0">
+            {brandSettings?.logo_url ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={brandSettings.logo_url}
+                alt="Logo dòng họ"
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <Network className="h-5 w-5 sm:h-6 sm:w-6" />
+            )}
           </div>
           <div>
             <h1 className="text-sm sm:text-base md:text-lg font-bold tracking-tight text-slate-900 dark:text-white leading-tight">
-              Gia Phả Dòng Họ
+              {brandSettings?.app_title || "Gia Phả Dòng Họ"}
             </h1>
-            <p className="hidden xs:block text-[10px] sm:text-xs text-slate-500 font-medium">Sơ đồ cây phả hệ</p>
+            <p className="hidden xs:block text-[10px] sm:text-xs text-slate-500 font-medium">
+              {brandSettings?.app_subtitle || "Sơ đồ cây phả hệ"}
+            </p>
           </div>
         </div>
 
@@ -74,29 +102,49 @@ export function HomePageClient() {
             <BookOpen className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600 dark:text-purple-400" />
             <span className="hidden md:inline">Tưởng niệm</span>
           </Link>
-          <Link
-            href="/admin"
-            aria-label="Quản trị"
-            className="flex items-center gap-1.5 rounded-xl border border-slate-300 px-2.5 sm:px-3 py-2 text-xs sm:text-sm text-slate-800 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
-          >
-            <Shield className="h-4 w-4 sm:h-5 sm:w-5 text-indigo-600 dark:text-indigo-400" />
-            <span className="hidden md:inline">Quản trị</span>
-          </Link>
+
+          {/* Chỉ hiển thị Menu Quản trị khi đã đăng nhập và là Admin */}
+          {!loadingUser && currentUser?.is_admin && (
+            <Link
+              href="/admin"
+              aria-label="Quản trị"
+              className="flex items-center gap-1.5 rounded-xl border border-slate-300 px-2.5 sm:px-3 py-2 text-xs sm:text-sm text-slate-800 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
+            >
+              <Shield className="h-4 w-4 sm:h-5 sm:w-5 text-indigo-600 dark:text-indigo-400" />
+              <span className="hidden md:inline">Quản trị</span>
+            </Link>
+          )}
 
           {!loadingUser && (
             currentUser ? (
               <div className="flex items-center gap-1.5 ml-1">
-                <div className="flex items-center gap-1.5 rounded-xl bg-slate-100 border border-slate-200 px-2.5 py-1.5 text-slate-800 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-200 text-xs sm:text-sm">
-                  <User className="h-4 w-4 text-slate-600 shrink-0" />
-                  <span className="font-bold max-w-[80px] sm:max-w-[140px] truncate">
-                    {currentUser.login_name}
-                  </span>
-                  {currentUser.is_admin && (
-                    <span className="rounded bg-indigo-100 px-1.5 py-0.5 text-[10px] font-bold text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 shrink-0">
-                      Admin
+                {/* Cụm User Profile: Hiển thị 2 dòng (Tên trên, Tài khoản dưới), bấm vào để sửa hồ sơ / đổi mật khẩu */}
+                <button
+                  type="button"
+                  onClick={() => setShowProfileModal(true)}
+                  title="Bấm để xem và sửa thông tin cá nhân, đổi mật khẩu"
+                  className="flex items-center gap-2 rounded-xl bg-slate-100 hover:bg-slate-200/80 border border-slate-300 px-3 py-1.5 text-left text-slate-800 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100 transition-all shadow-sm active:scale-95"
+                >
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 shrink-0 font-bold">
+                    <User className="h-4 w-4" />
+                  </div>
+                  <div className="flex flex-col leading-tight max-w-[100px] sm:max-w-[160px]">
+                    <div className="flex items-center gap-1">
+                      <span className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate">
+                        {displayName || currentUser.login_name}
+                      </span>
+                      {currentUser.is_admin && (
+                        <span className="rounded bg-indigo-600 px-1 py-0.2 text-[9px] font-bold text-white shrink-0">
+                          Admin
+                        </span>
+                      )}
+                    </div>
+                    <span className="text-[10px] sm:text-[11px] font-mono text-slate-500 dark:text-slate-400 truncate">
+                      {currentUser.login_name}
                     </span>
-                  )}
-                </div>
+                  </div>
+                </button>
+
                 <button
                   onClick={handleLogout}
                   title="Đăng xuất"
@@ -132,6 +180,18 @@ export function HomePageClient() {
           window.location.reload();
         }}
       />
+
+      {currentUser && (
+        <UserProfileModal
+          isOpen={showProfileModal}
+          currentUser={currentUser}
+          displayName={displayName}
+          onClose={() => setShowProfileModal(false)}
+          onSuccess={() => {
+            setShowProfileModal(false);
+          }}
+        />
+      )}
     </div>
   );
 }

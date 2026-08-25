@@ -20,14 +20,14 @@ describe("Phone normalization & identity mapper", () => {
     expect(() => normalizePhone("091234567890")).toThrow(); // > 10 digits
   });
 
-  it("converts to visible login name with trailing @", () => {
-    expect(toLoginName("0912 345 678")).toBe("0912345678@");
-    expect(toLoginName("+84987654321")).toBe("0987654321@");
+  it("converts to visible login name without trailing @", () => {
+    expect(toLoginName("0912 345 678")).toBe("0912345678");
+    expect(toLoginName("+84987654321")).toBe("0987654321");
   });
 
   it("maps to internal email correctly", () => {
     expect(toInternalEmail("0912 345 678", "auth.giapha.local")).toBe("0912345678@auth.giapha.local");
-    expect(fromInternalEmail("0912345678@auth.giapha.local")).toBe("0912345678@");
+    expect(fromInternalEmail("0912345678@auth.giapha.local")).toBe("0912345678");
   });
 });
 
@@ -35,7 +35,7 @@ describe("Account status guards", () => {
   const baseProfile: Profile = {
     id: "user-123",
     phone_normalized: "0912345678",
-    login_name: "0912345678@",
+    login_name: "0912345678",
     person_id: null,
     status: "ACTIVE",
     is_admin: false,
