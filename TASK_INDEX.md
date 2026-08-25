@@ -4,8 +4,8 @@
 
 ## CURRENT TASK
 
-**T002 — Apply database schema & seed**  
-File: `tasks/T002-database.md`  
+**T003 — Account registration, activation & login**  
+File: `tasks/T003-auth.md`  
 Status: **READY**
 
 ## Quy tắc chọn task tiếp theo
@@ -20,8 +20,8 @@ Status: **READY**
 | ID | Status | Task | Depends on | File |
 |---|---|---|---|---|
 | T001 | DONE | Bootstrap project & quality gates | - | `tasks/T001-bootstrap.md` |
-| T002 | READY | Apply database schema & seed | T001 | `tasks/T002-database.md` |
-| T003 | BACKLOG | Account registration, activation & login | T002 | `tasks/T003-auth.md` |
+| T002 | DONE | Apply database schema & seed | T001 | `tasks/T002-database.md` |
+| T003 | READY | Account registration, activation & login | T002 | `tasks/T003-auth.md` |
 | T004 | BACKLOG | Person CRUD + deceased fields | T003 | `tasks/T004-persons.md` |
 | T005 | BACKLOG | Parent-child & spouse relationships | T004 | `tasks/T005-relationships.md` |
 | T006 | BACKLOG | Permission service + branch grants | T005 | `tasks/T006-permissions.md` |
