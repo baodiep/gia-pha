@@ -1,7 +1,7 @@
 {
   "project": "gia-pha-vercel",
   "schema_version": 1,
-  "current_task": "T005",
+  "current_task": "T006",
   "statuses": [
     "BACKLOG",
     "READY",
@@ -48,7 +48,7 @@
       "id": "T005",
       "title": "Parent-child & spouse relationships",
       "file": "tasks/T005-relationships.md",
-      "status": "READY",
+      "status": "DONE",
       "depends_on": [
         "T004"
       ]
@@ -57,7 +57,7 @@
       "id": "T006",
       "title": "Permission service + branch grants",
       "file": "tasks/T006-permissions.md",
-      "status": "BACKLOG",
+      "status": "READY",
       "depends_on": [
         "T005"
       ]

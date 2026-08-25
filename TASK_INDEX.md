@@ -4,8 +4,8 @@
 
 ## CURRENT TASK
 
-**T005 — Parent-child & spouse relationships**  
-File: `tasks/T005-relationships.md`  
+**T006 — Permission service + branch grants**  
+File: `tasks/T006-permissions.md`  
 Status: **READY**
 
 ## Quy tắc chọn task tiếp theo
@@ -23,8 +23,8 @@ Status: **READY**
 | T002 | DONE | Apply database schema & seed | T001 | `tasks/T002-database.md` |
 | T003 | DONE | Account registration, activation & login | T002 | `tasks/T003-auth.md` |
 | T004 | DONE | Person CRUD + deceased fields | T003 | `tasks/T004-persons.md` |
-| T005 | READY | Parent-child & spouse relationships | T004 | `tasks/T005-relationships.md` |
-| T006 | BACKLOG | Permission service + branch grants | T005 | `tasks/T006-permissions.md` |
+| T005 | DONE | Parent-child & spouse relationships | T004 | `tasks/T005-relationships.md` |
+| T006 | READY | Permission service + branch grants | T005 | `tasks/T006-permissions.md` |
 | T007 | BACKLOG | RLS security policies | T006 | `tasks/T007-rls.md` |
 | T008 | BACKLOG | Family tree visualization | T005, T006 | `tasks/T008-tree-ui.md` |
 | T009 | BACKLOG | Search & tree focus | T008 | `tasks/T009-search.md` |
