@@ -4,8 +4,8 @@
 
 ## CURRENT TASK
 
-**T004 — Person CRUD + deceased fields**  
-File: `tasks/T004-persons.md`  
+**T005 — Parent-child & spouse relationships**  
+File: `tasks/T005-relationships.md`  
 Status: **READY**
 
 ## Quy tắc chọn task tiếp theo
@@ -22,13 +22,13 @@ Status: **READY**
 | T001 | DONE | Bootstrap project & quality gates | - | `tasks/T001-bootstrap.md` |
 | T002 | DONE | Apply database schema & seed | T001 | `tasks/T002-database.md` |
 | T003 | DONE | Account registration, activation & login | T002 | `tasks/T003-auth.md` |
-| T004 | READY | Person CRUD + deceased fields | T003 | `tasks/T004-persons.md` |
-| T005 | BACKLOG | Parent-child & spouse relationships | T004 | `tasks/T005-relationships.md` |
+| T004 | DONE | Person CRUD + deceased fields | T003 | `tasks/T004-persons.md` |
+| T005 | READY | Parent-child & spouse relationships | T004 | `tasks/T005-relationships.md` |
 | T006 | BACKLOG | Permission service + branch grants | T005 | `tasks/T006-permissions.md` |
 | T007 | BACKLOG | RLS security policies | T006 | `tasks/T007-rls.md` |
 | T008 | BACKLOG | Family tree visualization | T005, T006 | `tasks/T008-tree-ui.md` |
 | T009 | BACKLOG | Search & tree focus | T008 | `tasks/T009-search.md` |
-| T010 | BACKLOG | Memorials & deceased members | T004 | `tasks/T010-memorials.md` |
+| T010 | READY | Memorials & deceased members | T004 | `tasks/T010-memorials.md` |
 | T011 | BACKLOG | Family events | T006 | `tasks/T011-events.md` |
 | T012 | READY | Admin account management | T003 | `tasks/T012-admin-accounts.md` |
 | T013 | BACKLOG | Admin permission management | T006, T008 | `tasks/T013-admin-permissions.md` |

@@ -1,7 +1,7 @@
 {
   "project": "gia-pha-vercel",
   "schema_version": 1,
-  "current_task": "T004",
+  "current_task": "T005",
   "statuses": [
     "BACKLOG",
     "READY",
@@ -39,7 +39,7 @@
       "id": "T004",
       "title": "Person CRUD + deceased fields",
       "file": "tasks/T004-persons.md",
-      "status": "READY",
+      "status": "DONE",
       "depends_on": [
         "T003"
       ]
@@ -48,7 +48,7 @@
       "id": "T005",
       "title": "Parent-child & spouse relationships",
       "file": "tasks/T005-relationships.md",
-      "status": "BACKLOG",
+      "status": "READY",
       "depends_on": [
         "T004"
       ]
@@ -94,7 +94,7 @@
       "id": "T010",
       "title": "Memorials & deceased members",
       "file": "tasks/T010-memorials.md",
-      "status": "BACKLOG",
+      "status": "READY",
       "depends_on": [
         "T004"
       ]
