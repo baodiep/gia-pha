@@ -4,8 +4,8 @@
 
 ## CURRENT TASK
 
-**T001 — Bootstrap project & quality gates**  
-File: `tasks/T001-bootstrap.md`  
+**T002 — Apply database schema & seed**  
+File: `tasks/T002-database.md`  
 Status: **READY**
 
 ## Quy tắc chọn task tiếp theo
@@ -19,8 +19,8 @@ Status: **READY**
 
 | ID | Status | Task | Depends on | File |
 |---|---|---|---|---|
-| T001 | READY | Bootstrap project & quality gates | - | `tasks/T001-bootstrap.md` |
-| T002 | BACKLOG | Apply database schema & seed | T001 | `tasks/T002-database.md` |
+| T001 | DONE | Bootstrap project & quality gates | - | `tasks/T001-bootstrap.md` |
+| T002 | READY | Apply database schema & seed | T001 | `tasks/T002-database.md` |
 | T003 | BACKLOG | Account registration, activation & login | T002 | `tasks/T003-auth.md` |
 | T004 | BACKLOG | Person CRUD + deceased fields | T003 | `tasks/T004-persons.md` |
 | T005 | BACKLOG | Parent-child & spouse relationships | T004 | `tasks/T005-relationships.md` |

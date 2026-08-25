@@ -1,7 +1,7 @@
 {
   "project": "gia-pha-vercel",
   "schema_version": 1,
-  "current_task": "T001",
+  "current_task": "T002",
   "statuses": [
     "BACKLOG",
     "READY",
@@ -14,14 +14,14 @@
       "id": "T001",
       "title": "Bootstrap project & quality gates",
       "file": "tasks/T001-bootstrap.md",
-      "status": "READY",
+      "status": "DONE",
       "depends_on": []
     },
     {
       "id": "T002",
       "title": "Apply database schema & seed",
       "file": "tasks/T002-database.md",
-      "status": "BACKLOG",
+      "status": "READY",
       "depends_on": [
         "T001"
       ]
