@@ -4,8 +4,8 @@
 
 ## CURRENT TASK
 
-**T010 — Memorials & deceased members**  
-File: `tasks/T010-memorials.md`  
+**T011 — Family events**  
+File: `tasks/T011-events.md`  
 Status: **READY**
 
 ## Quy tắc chọn task tiếp theo
@@ -28,7 +28,7 @@ Status: **READY**
 | T007 | DONE | RLS security policies | T006 | `tasks/T007-rls.md` |
 | T008 | DONE | Family tree visualization | T005, T006 | `tasks/T008-tree-ui.md` |
 | T009 | DONE | Search & tree focus | T008 | `tasks/T009-search.md` |
-| T010 | READY | Memorials & deceased members | T004 | `tasks/T010-memorials.md` |
+| T010 | DONE | Memorials & deceased members | T004 | `tasks/T010-memorials.md` |
 | T011 | READY | Family events | T006 | `tasks/T011-events.md` |
 | T012 | READY | Admin account management | T003 | `tasks/T012-admin-accounts.md` |
 | T013 | READY | Admin permission management | T006, T008 | `tasks/T013-admin-permissions.md` |
