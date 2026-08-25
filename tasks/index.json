@@ -1,7 +1,7 @@
 {
   "project": "gia-pha-vercel",
   "schema_version": 1,
-  "current_task": "T009",
+  "current_task": "T010",
   "statuses": [
     "BACKLOG",
     "READY",
@@ -85,7 +85,7 @@
       "id": "T009",
       "title": "Search & tree focus",
       "file": "tasks/T009-search.md",
-      "status": "READY",
+      "status": "DONE",
       "depends_on": [
         "T008"
       ]

@@ -7,6 +7,8 @@ import {
   Background,
   useNodesState,
   useEdgesState,
+  useReactFlow,
+  ReactFlowProvider,
   BackgroundVariant,
   Node,
   Edge,
@@ -14,8 +16,10 @@ import {
 import "@xyflow/react/dist/style.css";
 
 import { PersonNode } from "./PersonNode";
+import { TreeSearchOverlay } from "./TreeSearchOverlay";
 import { computeTreeLayout, TreePersonNodeData } from "@/lib/tree/elk-layout";
 import { getTreeGraphData } from "@/features/tree/actions";
+import { getAncestorPath } from "@/features/tree/search-actions";
 import { Users, Filter } from "lucide-react";
 
 const nodeTypes = {
@@ -27,12 +31,13 @@ interface FamilyTreeViewProps {
   onSelectPerson?: (personId: string) => void;
 }
 
-export function FamilyTreeView({ initialRootId, onSelectPerson }: FamilyTreeViewProps) {
+function FamilyTreeContent({ initialRootId, onSelectPerson }: FamilyTreeViewProps) {
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [myBranchOnly, setMyBranchOnly] = useState(false);
   const [managedRoots, setManagedRoots] = useState<string[]>([]);
+  const { setCenter, getNode } = useReactFlow();
 
   const loadTree = useCallback(async () => {
     setIsLoading(true);
@@ -44,12 +49,11 @@ export function FamilyTreeView({ initialRootId, onSelectPerson }: FamilyTreeView
 
       setManagedRoots(data.userManagedRootIds);
 
-      // Compute ELK layout
       const layouted = await computeTreeLayout(data.nodes, data.edges, {
         direction: "DOWN",
       });
 
-      setNodes(layouted.nodes as unknown as Node<TreePersonNodeData>[]);
+      setNodes(layouted.nodes as unknown as Node[]);
       setEdges(layouted.edges as Edge[]);
     } catch (err) {
       console.error("Failed to load tree:", err);
@@ -99,6 +103,42 @@ export function FamilyTreeView({ initialRootId, onSelectPerson }: FamilyTreeView
     [onSelectPerson]
   );
 
+  const handleFocusPerson = useCallback(
+    async (personId: string) => {
+      try {
+        const targetNode = getNode(personId);
+        if (targetNode) {
+          setCenter(targetNode.position.x + 110, targetNode.position.y + 55, {
+            zoom: 1.1,
+            duration: 800,
+          });
+        } else {
+          // If node not in current loaded view, fetch ancestor path and reload tree with focused branch
+          const path = await getAncestorPath(personId);
+          if (path.ancestorIds.length > 0) {
+            const rootId = path.ancestorIds[path.ancestorIds.length - 1];
+            const data = await getTreeGraphData({ rootPersonId: rootId });
+            const layouted = await computeTreeLayout(data.nodes, data.edges, { direction: "DOWN" });
+            setNodes(layouted.nodes as unknown as Node[]);
+            setEdges(layouted.edges as Edge[]);
+            setTimeout(() => {
+              const loadedNode = layouted.nodes.find((n) => n.id === personId);
+              if (loadedNode) {
+                setCenter(loadedNode.position.x + 110, loadedNode.position.y + 55, {
+                  zoom: 1.1,
+                  duration: 800,
+                });
+              }
+            }, 100);
+          }
+        }
+      } catch (err) {
+        console.error("Focus error:", err);
+      }
+    },
+    [getNode, setCenter, setNodes, setEdges]
+  );
+
   const hasManagedBranches = useMemo(() => managedRoots.length > 0, [managedRoots]);
 
   return (
@@ -137,9 +177,14 @@ export function FamilyTreeView({ initialRootId, onSelectPerson }: FamilyTreeView
         </button>
       </div>
 
+      {/* Top Right Search Bar */}
+      <div className="absolute top-4 right-4 z-10">
+        <TreeSearchOverlay onFocusPerson={handleFocusPerson} />
+      </div>
+
       {isLoading ? (
         <div className="flex h-full items-center justify-center">
-          <div className="text-sm font-medium text-slate-500">Đang tạo sơ đồ cây gia phả...</div>
+          <div className="text-sm font-medium text-slate-500">Đang tải sơ đồ cây gia phả...</div>
         </div>
       ) : (
         <ReactFlow
@@ -158,5 +203,13 @@ export function FamilyTreeView({ initialRootId, onSelectPerson }: FamilyTreeView
         </ReactFlow>
       )}
     </div>
+  );
+}
+
+export function FamilyTreeView(props: FamilyTreeViewProps) {
+  return (
+    <ReactFlowProvider>
+      <FamilyTreeContent {...props} />
+    </ReactFlowProvider>
   );
 }

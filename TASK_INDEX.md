@@ -4,8 +4,8 @@
 
 ## CURRENT TASK
 
-**T009 — Search & tree focus**  
-File: `tasks/T009-search.md`  
+**T010 — Memorials & deceased members**  
+File: `tasks/T010-memorials.md`  
 Status: **READY**
 
 ## Quy tắc chọn task tiếp theo
@@ -27,7 +27,7 @@ Status: **READY**
 | T006 | DONE | Permission service + branch grants | T005 | `tasks/T006-permissions.md` |
 | T007 | DONE | RLS security policies | T006 | `tasks/T007-rls.md` |
 | T008 | DONE | Family tree visualization | T005, T006 | `tasks/T008-tree-ui.md` |
-| T009 | READY | Search & tree focus | T008 | `tasks/T009-search.md` |
+| T009 | DONE | Search & tree focus | T008 | `tasks/T009-search.md` |
 | T010 | READY | Memorials & deceased members | T004 | `tasks/T010-memorials.md` |
 | T011 | READY | Family events | T006 | `tasks/T011-events.md` |
 | T012 | READY | Admin account management | T003 | `tasks/T012-admin-accounts.md` |
