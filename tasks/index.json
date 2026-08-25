@@ -1,7 +1,7 @@
 {
   "project": "gia-pha-vercel",
   "schema_version": 1,
-  "current_task": "T008",
+  "current_task": "T009",
   "statuses": [
     "BACKLOG",
     "READY",
@@ -75,7 +75,7 @@
       "id": "T008",
       "title": "Family tree visualization",
       "file": "tasks/T008-tree-ui.md",
-      "status": "READY",
+      "status": "DONE",
       "depends_on": [
         "T005",
         "T006"
@@ -85,7 +85,7 @@
       "id": "T009",
       "title": "Search & tree focus",
       "file": "tasks/T009-search.md",
-      "status": "BACKLOG",
+      "status": "READY",
       "depends_on": [
         "T008"
       ]
@@ -121,7 +121,7 @@
       "id": "T013",
       "title": "Admin permission management",
       "file": "tasks/T013-admin-permissions.md",
-      "status": "BACKLOG",
+      "status": "READY",
       "depends_on": [
         "T006",
         "T008"
