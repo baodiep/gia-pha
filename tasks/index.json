@@ -1,0 +1,196 @@
+{
+  "project": "gia-pha-vercel",
+  "schema_version": 1,
+  "current_task": "T001",
+  "statuses": [
+    "BACKLOG",
+    "READY",
+    "IN_PROGRESS",
+    "BLOCKED",
+    "DONE"
+  ],
+  "tasks": [
+    {
+      "id": "T001",
+      "title": "Bootstrap project & quality gates",
+      "file": "tasks/T001-bootstrap.md",
+      "status": "READY",
+      "depends_on": []
+    },
+    {
+      "id": "T002",
+      "title": "Apply database schema & seed",
+      "file": "tasks/T002-database.md",
+      "status": "BACKLOG",
+      "depends_on": [
+        "T001"
+      ]
+    },
+    {
+      "id": "T003",
+      "title": "Account registration, activation & login",
+      "file": "tasks/T003-auth.md",
+      "status": "BACKLOG",
+      "depends_on": [
+        "T002"
+      ]
+    },
+    {
+      "id": "T004",
+      "title": "Person CRUD + deceased fields",
+      "file": "tasks/T004-persons.md",
+      "status": "BACKLOG",
+      "depends_on": [
+        "T003"
+      ]
+    },
+    {
+      "id": "T005",
+      "title": "Parent-child & spouse relationships",
+      "file": "tasks/T005-relationships.md",
+      "status": "BACKLOG",
+      "depends_on": [
+        "T004"
+      ]
+    },
+    {
+      "id": "T006",
+      "title": "Permission service + branch grants",
+      "file": "tasks/T006-permissions.md",
+      "status": "BACKLOG",
+      "depends_on": [
+        "T005"
+      ]
+    },
+    {
+      "id": "T007",
+      "title": "RLS security policies",
+      "file": "tasks/T007-rls.md",
+      "status": "BACKLOG",
+      "depends_on": [
+        "T006"
+      ]
+    },
+    {
+      "id": "T008",
+      "title": "Family tree visualization",
+      "file": "tasks/T008-tree-ui.md",
+      "status": "BACKLOG",
+      "depends_on": [
+        "T005",
+        "T006"
+      ]
+    },
+    {
+      "id": "T009",
+      "title": "Search & tree focus",
+      "file": "tasks/T009-search.md",
+      "status": "BACKLOG",
+      "depends_on": [
+        "T008"
+      ]
+    },
+    {
+      "id": "T010",
+      "title": "Memorials & deceased members",
+      "file": "tasks/T010-memorials.md",
+      "status": "BACKLOG",
+      "depends_on": [
+        "T004"
+      ]
+    },
+    {
+      "id": "T011",
+      "title": "Family events",
+      "file": "tasks/T011-events.md",
+      "status": "BACKLOG",
+      "depends_on": [
+        "T006"
+      ]
+    },
+    {
+      "id": "T012",
+      "title": "Admin account management",
+      "file": "tasks/T012-admin-accounts.md",
+      "status": "BACKLOG",
+      "depends_on": [
+        "T003"
+      ]
+    },
+    {
+      "id": "T013",
+      "title": "Admin permission management",
+      "file": "tasks/T013-admin-permissions.md",
+      "status": "BACKLOG",
+      "depends_on": [
+        "T006",
+        "T008"
+      ]
+    },
+    {
+      "id": "T014",
+      "title": "Audit log & recycle bin",
+      "file": "tasks/T014-audit-trash.md",
+      "status": "BACKLOG",
+      "depends_on": [
+        "T004",
+        "T006"
+      ]
+    },
+    {
+      "id": "T015",
+      "title": "Avatar & basic storage",
+      "file": "tasks/T015-storage.md",
+      "status": "BACKLOG",
+      "depends_on": [
+        "T004",
+        "T007"
+      ]
+    },
+    {
+      "id": "T016",
+      "title": "Admin dashboard & navigation",
+      "file": "tasks/T016-admin-dashboard.md",
+      "status": "BACKLOG",
+      "depends_on": [
+        "T010",
+        "T011",
+        "T012",
+        "T013",
+        "T014"
+      ]
+    },
+    {
+      "id": "T017",
+      "title": "E2E critical journeys",
+      "file": "tasks/T017-e2e.md",
+      "status": "BACKLOG",
+      "depends_on": [
+        "T007",
+        "T009",
+        "T010",
+        "T011",
+        "T013",
+        "T014"
+      ]
+    },
+    {
+      "id": "T018",
+      "title": "Vercel deployment & production checklist",
+      "file": "tasks/T018-deploy.md",
+      "status": "BACKLOG",
+      "depends_on": [
+        "T017"
+      ]
+    },
+    {
+      "id": "T019",
+      "title": "MVP hardening & release",
+      "file": "tasks/T019-release.md",
+      "status": "BACKLOG",
+      "depends_on": [
+        "T018"
+      ]
+    }
+  ]
+}
