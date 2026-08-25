@@ -8,6 +8,7 @@ import {
   AccountWithPerson,
 } from "@/features/admin/account-actions";
 import { AccountStatus } from "@/types/domain";
+import { BackButton } from "@/components/ui/BackButton";
 import {
   Users,
   Search,
@@ -93,24 +94,27 @@ export function AdminAccountManagementView() {
   };
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8">
-      {/* Header */}
-      <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <div className="flex items-center gap-2">
-            <Users className="h-6 w-6 text-slate-800 dark:text-slate-200" />
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-              Quản lý tài khoản người dùng
-            </h1>
+    <div className="mx-auto max-w-6xl px-4 py-6 sm:py-8">
+      {/* Header & Back Button */}
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-slate-200 pb-4 dark:border-slate-800">
+        <div className="flex items-center gap-3">
+          <BackButton fallbackHref="/admin" label="Quay lại Quản trị" />
+          <div>
+            <div className="flex items-center gap-2">
+              <Users className="h-6 w-6 text-slate-800 dark:text-slate-200" />
+              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+                Quản lý tài khoản người dùng
+              </h1>
+            </div>
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+              Kích hoạt tài khoản đăng ký mới, cấp mật khẩu tạm và phân quyền
+            </p>
           </div>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-            Kích hoạt tài khoản đăng ký mới, cấp mật khẩu tạm và phân quyền quản trị
-          </p>
         </div>
 
         <button
           onClick={() => setShowCreateModal(true)}
-          className="flex items-center gap-1.5 rounded-lg bg-slate-900 px-4 py-2 text-xs font-medium text-white hover:bg-slate-800 dark:bg-white dark:text-slate-900"
+          className="flex items-center justify-center gap-1.5 rounded-xl bg-slate-900 px-4 py-2.5 text-xs sm:text-sm font-semibold text-white hover:bg-slate-800 dark:bg-white dark:text-slate-900 shadow-sm"
         >
           <UserPlus className="h-4 w-4" />
           <span>Tạo tài khoản mới</span>

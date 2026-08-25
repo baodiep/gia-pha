@@ -189,6 +189,36 @@ export async function logoutAction(): Promise<ActionResult> {
 }
 
 /**
+ * Get current active user profile safely without throwing
+ */
+export async function getCurrentUser(): Promise<Profile | null> {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (!session?.user) {
+      return null;
+    }
+
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", session.user.id)
+      .maybeSingle();
+
+    if (!profile || profile.status !== "ACTIVE") {
+      return null;
+    }
+
+    return profile as Profile;
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Server helper to get current session and require ACTIVE status
  */
 export async function requireActiveUser(): Promise<{ profile: Profile; userId: string }> {

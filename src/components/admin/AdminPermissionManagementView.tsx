@@ -6,6 +6,7 @@ import {
   revokeBranchPermission,
   BranchGrantDetail,
 } from "@/features/admin/permission-actions";
+import { BackButton } from "@/components/ui/BackButton";
 import { Shield, ShieldAlert, ShieldCheck, Search, Trash2, CheckCircle2, XCircle } from "lucide-react";
 
 export function AdminPermissionManagementView() {
@@ -56,19 +57,22 @@ export function AdminPermissionManagementView() {
   });
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8">
-      {/* Header */}
-      <div className="mb-8 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <div className="flex items-center gap-2">
-            <Shield className="h-6 w-6 text-slate-800 dark:text-slate-200" />
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-              Quản lý phân quyền nhánh gia phả
-            </h1>
+    <div className="mx-auto max-w-6xl px-4 py-6 sm:py-8">
+      {/* Header & Back Button */}
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-slate-200 pb-4 dark:border-slate-800">
+        <div className="flex items-center gap-3">
+          <BackButton fallbackHref="/admin" label="Quay lại Quản trị" />
+          <div>
+            <div className="flex items-center gap-2">
+              <Shield className="h-6 w-6 text-slate-800 dark:text-slate-200" />
+              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+                Quản lý phân quyền nhánh gia phả
+              </h1>
+            </div>
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+              Danh sách quyền quản lý theo nhánh dòng họ (Branch Grants)
+            </p>
           </div>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-            Danh sách quyền quản lý theo nhánh dòng họ (Branch Grants). Quyền được tính động theo cây trực hệ.
-          </p>
         </div>
       </div>
 

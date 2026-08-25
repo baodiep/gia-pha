@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useTransition } from "react";
 import Link from "next/link";
 import { getAdminDashboardStats, AdminDashboardStats } from "@/features/admin/dashboard-actions";
+import { BackButton } from "@/components/ui/BackButton";
 import {
   Users,
   UserCheck,
@@ -95,18 +96,23 @@ export function AdminDashboardView() {
   ];
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8">
-      {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center gap-2">
-          <Sparkles className="h-6 w-6 text-slate-800 dark:text-slate-200" />
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-            Trung tâm quản trị dòng họ
-          </h1>
+    <div className="mx-auto max-w-6xl px-4 py-6 sm:py-8">
+      {/* Header & Back Button */}
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-slate-200 pb-4 dark:border-slate-800">
+        <div className="flex items-center gap-3">
+          <BackButton fallbackHref="/" label="Về Cây gia phả" />
+          <div>
+            <div className="flex items-center gap-2">
+              <Sparkles className="h-6 w-6 text-slate-800 dark:text-slate-200" />
+              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+                Trung tâm quản trị dòng họ
+              </h1>
+            </div>
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+              Tổng quan chỉ số phả hệ, tài khoản, phân quyền nhánh và các lối tắt quản trị
+            </p>
+          </div>
         </div>
-        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-          Tổng quan chỉ số phả hệ, tài khoản, phân quyền nhánh và các lối tắt quản trị nhanh
-        </p>
       </div>
 
       {/* KPI Stats Cards */}

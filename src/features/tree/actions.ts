@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { requireActiveUser } from "@/features/auth/actions";
 import { getEditablePersonIds, getManagedBranches } from "@/features/permissions/actions";
 import { TreePersonNodeData } from "@/lib/tree/elk-layout";
+import { Profile } from "@/types/domain";
 
 export interface TreeDataResponse {
   nodes: Array<{ id: string; data: TreePersonNodeData }>;
@@ -19,14 +20,34 @@ export async function getTreeGraphData(options?: {
   rootPersonId?: string;
   myBranchOnly?: boolean;
 }): Promise<TreeDataResponse> {
-  const { profile, userId } = await requireActiveUser();
   const supabase = await createClient();
 
-  const managedBranches = await getManagedBranches(userId);
-  const editableSet = await getEditablePersonIds(userId, profile.is_admin);
+  // Try fetching current session without throwing 500 when unauthenticated or uninitialized
+  let profile: Profile | null = null;
+  let userId: string | null = null;
+
+  try {
+    const userAuth = await requireActiveUser();
+    profile = userAuth.profile;
+    userId = userAuth.userId;
+  } catch {
+    // Unauthenticated guest user: return empty tree
+    return {
+      nodes: [],
+      edges: [],
+      userManagedRootIds: [],
+    };
+  }
+
+  const managedBranches = userId ? await getManagedBranches(userId) : [];
+  const editableSet = userId ? await getEditablePersonIds(userId, profile?.is_admin || false) : new Set<string>();
 
   // Determine starting root persons
   let targetRootId = options?.rootPersonId;
+  if (targetRootId === "$undefined" || targetRootId === "undefined" || !targetRootId) {
+    targetRootId = undefined;
+  }
+
   if (options?.myBranchOnly && managedBranches.length > 0) {
     targetRootId = managedBranches[0];
   }

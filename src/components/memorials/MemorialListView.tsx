@@ -4,6 +4,7 @@ import React, { useState, useTransition, useEffect } from "react";
 import { getDeceasedMembers, MemorialPerson } from "@/features/memorials/actions";
 import { formatAnniversaryDisplay } from "@/features/memorials/formatter";
 import { Search, Flower2, Calendar, MapPin, User } from "lucide-react";
+import { BackButton } from "@/components/ui/BackButton";
 
 export function MemorialListView() {
   const [members, setMembers] = useState<MemorialPerson[]>([]);
@@ -38,19 +39,22 @@ export function MemorialListView() {
   };
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8">
-      {/* Header */}
-      <div className="mb-8 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <div className="flex items-center gap-2">
-            <Flower2 className="h-6 w-6 text-amber-600 dark:text-amber-400" />
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-              Tưởng niệm & Ngày giỗ
-            </h1>
+    <div className="mx-auto max-w-5xl px-4 py-6 sm:py-8">
+      {/* Header & Back Button */}
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-slate-200 pb-4 dark:border-slate-800">
+        <div className="flex items-center gap-3">
+          <BackButton fallbackHref="/" label="Quay lại Cây gia phả" />
+          <div>
+            <div className="flex items-center gap-2">
+              <Flower2 className="h-6 w-6 text-amber-600 dark:text-amber-400" />
+              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+                Tưởng niệm & Ngày giỗ
+              </h1>
+            </div>
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+              Danh sách tiền nhân đã khuất và các ngày kỵ nhật trong dòng họ
+            </p>
           </div>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-            Danh sách thành viên tiền nhân đã khuất và các ngày kỵ nhật trong dòng họ
-          </p>
         </div>
       </div>
 
