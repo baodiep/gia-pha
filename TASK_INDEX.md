@@ -4,8 +4,8 @@
 
 ## CURRENT TASK
 
-**T013 — Admin permission management**  
-File: `tasks/T013-admin-permissions.md`  
+**T014 — Audit log & recycle bin**  
+File: `tasks/T014-audit-trash.md`  
 Status: **READY**
 
 ## Quy tắc chọn task tiếp theo
@@ -31,7 +31,7 @@ Status: **READY**
 | T010 | DONE | Memorials & deceased members | T004 | `tasks/T010-memorials.md` |
 | T011 | DONE | Family events | T006 | `tasks/T011-events.md` |
 | T012 | DONE | Admin account management | T003 | `tasks/T012-admin-accounts.md` |
-| T013 | READY | Admin permission management | T006, T008 | `tasks/T013-admin-permissions.md` |
+| T013 | DONE | Admin permission management | T006, T008 | `tasks/T013-admin-permissions.md` |
 | T014 | READY | Audit log & recycle bin | T004, T006 | `tasks/T014-audit-trash.md` |
 | T015 | READY | Avatar & basic storage | T004, T007 | `tasks/T015-storage.md` |
 | T016 | BACKLOG | Admin dashboard & navigation | T010, T011, T012, T013, T014 | `tasks/T016-admin-dashboard.md` |

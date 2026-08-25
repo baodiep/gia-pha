@@ -42,3 +42,15 @@ export interface Person {
   deleted_at: string | null;
   deleted_by: string | null;
 }
+
+export interface BranchGrant {
+  id: string;
+  user_id: string;
+  root_person_id: string;
+  granted_by: string;
+  created_at: string;
+  revoked_at: string | null;
+  revoked_by: string | null;
+}
+
+

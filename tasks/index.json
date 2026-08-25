@@ -1,7 +1,7 @@
 {
   "project": "gia-pha-vercel",
   "schema_version": 1,
-  "current_task": "T013",
+  "current_task": "T014",
   "statuses": [
     "BACKLOG",
     "READY",
@@ -121,7 +121,7 @@
       "id": "T013",
       "title": "Admin permission management",
       "file": "tasks/T013-admin-permissions.md",
-      "status": "READY",
+      "status": "DONE",
       "depends_on": [
         "T006",
         "T008"
