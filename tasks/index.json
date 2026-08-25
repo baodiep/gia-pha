@@ -1,7 +1,7 @@
 {
   "project": "gia-pha-vercel",
   "schema_version": 1,
-  "current_task": "T006",
+  "current_task": "T007",
   "statuses": [
     "BACKLOG",
     "READY",
@@ -57,7 +57,7 @@
       "id": "T006",
       "title": "Permission service + branch grants",
       "file": "tasks/T006-permissions.md",
-      "status": "READY",
+      "status": "DONE",
       "depends_on": [
         "T005"
       ]
@@ -66,7 +66,7 @@
       "id": "T007",
       "title": "RLS security policies",
       "file": "tasks/T007-rls.md",
-      "status": "BACKLOG",
+      "status": "READY",
       "depends_on": [
         "T006"
       ]
@@ -75,7 +75,7 @@
       "id": "T008",
       "title": "Family tree visualization",
       "file": "tasks/T008-tree-ui.md",
-      "status": "BACKLOG",
+      "status": "READY",
       "depends_on": [
         "T005",
         "T006"
@@ -103,7 +103,7 @@
       "id": "T011",
       "title": "Family events",
       "file": "tasks/T011-events.md",
-      "status": "BACKLOG",
+      "status": "READY",
       "depends_on": [
         "T006"
       ]
@@ -131,7 +131,7 @@
       "id": "T014",
       "title": "Audit log & recycle bin",
       "file": "tasks/T014-audit-trash.md",
-      "status": "BACKLOG",
+      "status": "READY",
       "depends_on": [
         "T004",
         "T006"
