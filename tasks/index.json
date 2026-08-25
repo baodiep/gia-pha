@@ -1,7 +1,7 @@
 {
   "project": "gia-pha-vercel",
   "schema_version": 1,
-  "current_task": "T011",
+  "current_task": "T012",
   "statuses": [
     "BACKLOG",
     "READY",
@@ -103,7 +103,7 @@
       "id": "T011",
       "title": "Family events",
       "file": "tasks/T011-events.md",
-      "status": "READY",
+      "status": "DONE",
       "depends_on": [
         "T006"
       ]
