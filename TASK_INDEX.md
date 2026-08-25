@@ -4,8 +4,8 @@
 
 ## CURRENT TASK
 
-**T016 — Admin dashboard & navigation**  
-File: `tasks/T016-admin-dashboard.md`  
+**T017 — E2E critical journeys**  
+File: `tasks/T017-e2e.md`  
 Status: **READY**
 
 ## Quy tắc chọn task tiếp theo
@@ -34,7 +34,7 @@ Status: **READY**
 | T013 | DONE | Admin permission management | T006, T008 | `tasks/T013-admin-permissions.md` |
 | T014 | DONE | Audit log & recycle bin | T004, T006 | `tasks/T014-audit-trash.md` |
 | T015 | DONE | Avatar & basic storage | T004, T007 | `tasks/T015-storage.md` |
-| T016 | READY | Admin dashboard & navigation | T010, T011, T012, T013, T014 | `tasks/T016-admin-dashboard.md` |
+| T016 | DONE | Admin dashboard & navigation | T010, T011, T012, T013, T014 | `tasks/T016-admin-dashboard.md` |
 | T017 | READY | E2E critical journeys | T007, T009, T010, T011, T013, T014 | `tasks/T017-e2e.md` |
 | T018 | BACKLOG | Vercel deployment & production checklist | T017 | `tasks/T018-deploy.md` |
 | T019 | BACKLOG | MVP hardening & release | T018 | `tasks/T019-release.md` |

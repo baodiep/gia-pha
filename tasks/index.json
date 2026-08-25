@@ -1,7 +1,7 @@
 {
   "project": "gia-pha-vercel",
   "schema_version": 1,
-  "current_task": "T016",
+  "current_task": "T017",
   "statuses": [
     "BACKLOG",
     "READY",
@@ -151,7 +151,7 @@
       "id": "T016",
       "title": "Admin dashboard & navigation",
       "file": "tasks/T016-admin-dashboard.md",
-      "status": "READY",
+      "status": "DONE",
       "depends_on": [
         "T010",
         "T011",
