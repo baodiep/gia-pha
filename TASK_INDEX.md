@@ -4,8 +4,8 @@
 
 ## CURRENT TASK
 
-**T018 — Vercel deployment & production checklist**  
-File: `tasks/T018-deploy.md`  
+**T019 — MVP hardening & release**  
+File: `tasks/T019-release.md`  
 Status: **READY**
 
 ## Quy tắc chọn task tiếp theo
@@ -36,8 +36,8 @@ Status: **READY**
 | T015 | DONE | Avatar & basic storage | T004, T007 | `tasks/T015-storage.md` |
 | T016 | DONE | Admin dashboard & navigation | T010, T011, T012, T013, T014 | `tasks/T016-admin-dashboard.md` |
 | T017 | DONE | E2E critical journeys | T007, T009, T010, T011, T013, T014 | `tasks/T017-e2e.md` |
-| T018 | READY | Vercel deployment & production checklist | T017 | `tasks/T018-deploy.md` |
-| T019 | BACKLOG | MVP hardening & release | T018 | `tasks/T019-release.md` |
+| T018 | DONE | Vercel deployment & production checklist | T017 | `tasks/T018-deploy.md` |
+| T019 | READY | MVP hardening & release | T018 | `tasks/T019-release.md` |
 
 ## Commands
 

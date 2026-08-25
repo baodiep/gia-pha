@@ -1,7 +1,7 @@
 {
   "project": "gia-pha-vercel",
   "schema_version": 1,
-  "current_task": "T018",
+  "current_task": "T019",
   "statuses": [
     "BACKLOG",
     "READY",
@@ -178,7 +178,7 @@
       "id": "T018",
       "title": "Vercel deployment & production checklist",
       "file": "tasks/T018-deploy.md",
-      "status": "READY",
+      "status": "DONE",
       "depends_on": [
         "T017"
       ]
@@ -187,7 +187,7 @@
       "id": "T019",
       "title": "MVP hardening & release",
       "file": "tasks/T019-release.md",
-      "status": "BACKLOG",
+      "status": "READY",
       "depends_on": [
         "T018"
       ]
