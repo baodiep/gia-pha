@@ -1,5 +1,3 @@
-"use server";
-
 import * as XLSX from "xlsx";
 import { normalizePhone } from "@/lib/auth/identity";
 

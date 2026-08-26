@@ -4,8 +4,8 @@
 
 ## CURRENT TASK
 
-**T038 — MVP2 E2E, security & performance**  
-File: `tasks/T038-mvp2-e2e-security-performance.md`  
+**T039 — MVP2 production release**  
+File: `tasks/T039-mvp2-release.md`  
 Status: **READY**
 
 ## Quy tắc chọn task tiếp theo
@@ -56,8 +56,8 @@ Status: **READY**
 | T035 | DONE | Contribution QR & configuration | T021, T022 | `tasks/T035-contribution-qr.md` |
 | T036 | DONE | Contribution CRUD, search & statistics | T035 | `tasks/T036-contributions-management.md` |
 | T037 | DONE | Contribution Excel import | T036 | `tasks/T037-contributions-import.md` |
-| T038 | READY | MVP2 E2E, security & performance | T025, T026, T027, T028, T030, T031, T034, T037 | `tasks/T038-mvp2-e2e-security-performance.md` |
-| T039 | BACKLOG | MVP2 production release | T038 | `tasks/T039-mvp2-release.md` |
+| T038 | DONE | MVP2 E2E, security & performance | T025, T026, T027, T028, T030, T031, T034, T037 | `tasks/T038-mvp2-e2e-security-performance.md` |
+| T039 | READY | MVP2 production release | T038 | `tasks/T039-mvp2-release.md` |
 
 ## Commands
 
