@@ -4,8 +4,8 @@
 
 ## CURRENT TASK
 
-**T025 — Transactional family import**  
-File: `tasks/T025-family-import-transaction.md`  
+**T026 — Person claim & profile change requests**  
+File: `tasks/T026-person-claim-profile-change.md`  
 Status: **READY**
 
 ## Quy tắc chọn task tiếp theo
@@ -43,7 +43,7 @@ Status: **READY**
 | T022 | DONE | MVP2 RLS, audit & privacy | T021 | `tasks/T022-mvp2-rls-audit.md` |
 | T023 | DONE | Family Excel import template & parser | T021 | `tasks/T023-family-import-parser.md` |
 | T024 | DONE | Family import preview & duplicate detection | T023 | `tasks/T024-family-import-preview.md` |
-| T025 | READY | Transactional family import | T024, T022 | `tasks/T025-family-import-transaction.md` |
+| T025 | DONE | Transactional family import | T024, T022 | `tasks/T025-family-import-transaction.md` |
 | T026 | READY | Person claim & profile change requests | T021, T022 | `tasks/T026-person-claim-profile-change.md` |
 | T027 | READY | Password reset requests, CAPTCHA & forced password change | T021, T022 | `tasks/T027-password-reset-requests.md` |
 | T028 | READY | Kinship relationship engine | T020 | `tasks/T028-kinship-engine.md` |

@@ -1,7 +1,7 @@
 {
   "project": "gia-pha-vercel",
   "schema_version": 1,
-  "current_task": "T025",
+  "current_task": "T026",
   "statuses": [
     "BACKLOG",
     "READY",
@@ -241,7 +241,7 @@
       "id": "T025",
       "title": "Transactional family import",
       "file": "tasks/T025-family-import-transaction.md",
-      "status": "READY",
+      "status": "DONE",
       "depends_on": [
         "T024",
         "T022"

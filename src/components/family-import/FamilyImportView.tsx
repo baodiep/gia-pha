@@ -3,8 +3,10 @@
 import React, { useState, useTransition } from "react";
 import { getFamilyExcelTemplateBase64 } from "@/lib/family-import/actions";
 import { parseAndPreviewFamilyExcelAction, filterOrUpdatePreviewRowsAction } from "@/lib/family-import/preview-actions";
+import { executeFamilyImportTransactionAction, ImportExecutionResult } from "@/lib/family-import/transaction-actions";
 import { FamilyImportPreviewResult, PreviewRowItem } from "@/lib/family-import/preview";
 import { ParsedFamilyMemberRow } from "@/lib/family-import/parser";
+import Link from "next/link";
 import {
   Upload,
   FileSpreadsheet,
@@ -16,6 +18,8 @@ import {
   AlertTriangle,
   ArrowRight,
   RefreshCw,
+  Database,
+  Eye,
 } from "lucide-react";
 
 export function FamilyImportView() {
@@ -23,6 +27,7 @@ export function FamilyImportView() {
   const [previewResult, setPreviewResult] = useState<FamilyImportPreviewResult | null>(null);
   const [activeRows, setActiveRows] = useState<ParsedFamilyMemberRow[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [importResult, setImportResult] = useState<ImportExecutionResult | null>(null);
   const [isPending, startTransition] = useTransition();
 
   const handleDownloadTemplate = async () => {
@@ -59,6 +64,7 @@ export function FamilyImportView() {
       setSelectedFile(e.target.files[0]);
       setPreviewResult(null);
       setActiveRows([]);
+      setImportResult(null);
       setErrorMessage(null);
     }
   };
@@ -74,6 +80,7 @@ export function FamilyImportView() {
 
     startTransition(async () => {
       setErrorMessage(null);
+      setImportResult(null);
       const res = await parseAndPreviewFamilyExcelAction(formData);
       if (res.success && res.data) {
         setPreviewResult(res.data);
@@ -114,6 +121,27 @@ export function FamilyImportView() {
       const res = await filterOrUpdatePreviewRowsAction(nextRows);
       if (res.success && res.data) {
         setPreviewResult(res.data);
+      }
+    });
+  };
+
+  const handleExecuteImport = () => {
+    if (!previewResult || !previewResult.canProceed || activeRows.length === 0) {
+      return;
+    }
+
+    const batchId = crypto.randomUUID();
+
+    startTransition(async () => {
+      setErrorMessage(null);
+      const res = await executeFamilyImportTransactionAction(activeRows, batchId);
+      if (res.success) {
+        setImportResult(res);
+        setPreviewResult(null);
+        setActiveRows([]);
+        setSelectedFile(null);
+      } else {
+        setErrorMessage(res.error || "Nhập dữ liệu thất bại");
       }
     });
   };
@@ -168,50 +196,90 @@ export function FamilyImportView() {
         </div>
       </div>
 
-      {/* Upload Box */}
-      <div className="bg-white border border-gray-200 rounded-xl p-5 sm:p-6 shadow-sm space-y-4">
-        <label className="block text-lg font-semibold text-gray-900">
-          Chọn file Excel từ điện thoại hoặc máy tính:
-        </label>
-
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
-          <input
-            type="file"
-            accept=".xlsx, .xls"
-            onChange={handleFileChange}
-            className="block w-full text-base text-gray-700 file:mr-4 file:py-3 file:px-4 file:rounded-lg file:border-0 file:text-base file:font-semibold file:bg-gray-100 file:text-gray-800 hover:file:bg-gray-200 cursor-pointer min-h-[48px]"
-          />
-          <button
-            type="button"
-            disabled={!selectedFile || isPending}
-            onClick={handleUploadAndAnalyze}
-            className={`inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg text-base sm:text-lg font-semibold text-white min-h-[48px] shrink-0 touch-manipulation cursor-pointer ${
-              !selectedFile || isPending
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-blue-600 hover:bg-blue-700 shadow"
-            }`}
-          >
-            {isPending ? (
-              <span className="flex items-center gap-2">
-                <RefreshCw className="w-5 h-5 animate-spin" />
-                Đang phân tích...
-              </span>
-            ) : (
-              <>
-                <Upload className="w-5 h-5" />
-                <span>Xem trước & Kiểm tra dữ liệu</span>
-              </>
-            )}
-          </button>
-        </div>
-
-        {errorMessage && (
-          <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 flex items-start gap-3 text-base">
-            <AlertCircle className="w-6 h-6 shrink-0 mt-0.5" />
-            <span>{errorMessage}</span>
+      {/* Success Import Notification */}
+      {importResult && (
+        <div className="p-6 bg-green-50 border border-green-300 rounded-xl space-y-4">
+          <div className="flex items-center gap-3">
+            <CheckCircle2 className="w-8 h-8 text-green-600 shrink-0" />
+            <div>
+              <h3 className="text-xl font-bold text-green-900">Nhập dữ liệu thành công!</h3>
+              <p className="text-green-800 text-base">{importResult.message}</p>
+            </div>
           </div>
-        )}
-      </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-base font-semibold pt-2">
+            <div className="bg-white p-3 rounded-lg border border-green-200">
+              <span className="text-gray-500 block text-xs">Thành viên mới:</span>
+              <span className="text-2xl text-green-700 font-bold">{importResult.createdPersons}</span>
+            </div>
+            <div className="bg-white p-3 rounded-lg border border-green-200">
+              <span className="text-gray-500 block text-xs">Quan hệ cha/mẹ - con:</span>
+              <span className="text-2xl text-green-700 font-bold">{importResult.createdRelationships}</span>
+            </div>
+            <div className="bg-white p-3 rounded-lg border border-green-200">
+              <span className="text-gray-500 block text-xs">Quan hệ vợ/chồng:</span>
+              <span className="text-2xl text-green-700 font-bold">{importResult.createdUnions}</span>
+            </div>
+          </div>
+
+          <div className="pt-2 flex flex-wrap gap-3">
+            <Link
+              href="/"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-green-700 hover:bg-green-800 text-white font-bold rounded-lg shadow min-h-[48px] text-base sm:text-lg"
+            >
+              <Eye className="w-5 h-5" />
+              Xem Cây Gia Phả Ngay
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {/* Upload Box */}
+      {!importResult && (
+        <div className="bg-white border border-gray-200 rounded-xl p-5 sm:p-6 shadow-sm space-y-4">
+          <label className="block text-lg font-semibold text-gray-900">
+            Chọn file Excel từ điện thoại hoặc máy tính:
+          </label>
+
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+            <input
+              type="file"
+              accept=".xlsx, .xls"
+              onChange={handleFileChange}
+              className="block w-full text-base text-gray-700 file:mr-4 file:py-3 file:px-4 file:rounded-lg file:border-0 file:text-base file:font-semibold file:bg-gray-100 file:text-gray-800 hover:file:bg-gray-200 cursor-pointer min-h-[48px]"
+            />
+            <button
+              type="button"
+              disabled={!selectedFile || isPending}
+              onClick={handleUploadAndAnalyze}
+              className={`inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg text-base sm:text-lg font-semibold text-white min-h-[48px] shrink-0 touch-manipulation cursor-pointer ${
+                !selectedFile || isPending
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-blue-600 hover:bg-blue-700 shadow"
+              }`}
+            >
+              {isPending ? (
+                <span className="flex items-center gap-2">
+                  <RefreshCw className="w-5 h-5 animate-spin" />
+                  Đang phân tích...
+                </span>
+              ) : (
+                <>
+                  <Upload className="w-5 h-5" />
+                  <span>Xem trước & Kiểm tra dữ liệu</span>
+                </>
+              )}
+            </button>
+          </div>
+
+          {errorMessage && (
+            <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 flex items-start gap-3 text-base">
+              <AlertCircle className="w-6 h-6 shrink-0 mt-0.5" />
+              <span>{errorMessage}</span>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Preview Result Summary */}
       {previewResult && (
@@ -352,16 +420,31 @@ export function FamilyImportView() {
               ))}
             </div>
 
-            {/* Bottom Proceed notice */}
+            {/* Bottom Proceed Action */}
             {previewResult.canProceed && (
-              <div className="pt-4 border-t flex flex-col sm:flex-row justify-between items-center gap-3">
+              <div className="pt-6 border-t flex flex-col sm:flex-row justify-between items-center gap-4">
                 <div className="text-green-800 text-base font-semibold">
-                  ✓ Toàn bộ {previewResult.totalCount} thành viên đã sẵn sàng để nhập vào cơ sở dữ liệu (Task T025).
+                  ✓ Toàn bộ {previewResult.totalCount} thành viên đã được kiểm tra hợp lệ và sẵn sàng nhập.
                 </div>
-                <div className="flex items-center gap-2 text-base text-gray-500 italic">
-                  <span>Bước tiếp theo: Transactional import</span>
-                  <ArrowRight className="w-5 h-5" />
-                </div>
+
+                <button
+                  type="button"
+                  disabled={isPending}
+                  onClick={handleExecuteImport}
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 bg-emerald-700 hover:bg-emerald-800 text-white text-lg font-bold rounded-xl shadow-lg min-h-[52px] cursor-pointer"
+                >
+                  {isPending ? (
+                    <span className="flex items-center gap-2">
+                      <RefreshCw className="w-5 h-5 animate-spin" />
+                      Đang xử lý nhập dữ liệu...
+                    </span>
+                  ) : (
+                    <>
+                      <Database className="w-6 h-6" />
+                      <span>Xác nhận Nhập vào Cây Gia Phả</span>
+                    </>
+                  )}
+                </button>
               </div>
             )}
           </div>
@@ -370,3 +453,4 @@ export function FamilyImportView() {
     </div>
   );
 }
+
