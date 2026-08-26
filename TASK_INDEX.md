@@ -4,9 +4,7 @@
 
 ## CURRENT TASK
 
-**T039 — MVP2 production release**  
-File: `tasks/T039-mvp2-release.md`  
-Status: **READY**
+**Không còn task đang mở.**
 
 ## Quy tắc chọn task tiếp theo
 
@@ -57,7 +55,7 @@ Status: **READY**
 | T036 | DONE | Contribution CRUD, search & statistics | T035 | `tasks/T036-contributions-management.md` |
 | T037 | DONE | Contribution Excel import | T036 | `tasks/T037-contributions-import.md` |
 | T038 | DONE | MVP2 E2E, security & performance | T025, T026, T027, T028, T030, T031, T034, T037 | `tasks/T038-mvp2-e2e-security-performance.md` |
-| T039 | READY | MVP2 production release | T038 | `tasks/T039-mvp2-release.md` |
+| T039 | DONE | MVP2 production release | T038 | `tasks/T039-mvp2-release.md` |
 
 ## Commands
 

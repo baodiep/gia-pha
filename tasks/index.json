@@ -1,7 +1,7 @@
 {
   "project": "gia-pha-vercel",
   "schema_version": 1,
-  "current_task": "T039",
+  "current_task": null,
   "statuses": [
     "BACKLOG",
     "READY",
@@ -382,7 +382,7 @@
       "id": "T039",
       "title": "MVP2 production release",
       "file": "tasks/T039-mvp2-release.md",
-      "status": "READY",
+      "status": "DONE",
       "depends_on": [
         "T038"
       ]

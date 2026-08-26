@@ -1,35 +1,31 @@
-# Ứng Dụng Quản Lý Gia Phả Dòng Họ (Gia Phả MVP 1.0)
+# Ứng Dụng Quản Lý Gia Phả Dòng Họ (Gia Phả v2.0.0 - MVP2)
 
-> Web app quản lý gia phả dòng họ phân tầng tối ưu hóa cho di động và máy tính để bàn, xây dựng trên nền tảng **Next.js 16 (React 19)**, **TypeScript**, **Supabase** và **React Flow + ELK layout**.
+> Web app quản lý gia phả dòng họ phân tầng tối ưu hóa cho di động và máy tính để bàn (chuẩn Mobile UX 40+), xây dựng trên nền tảng **Next.js 16 (React 19)**, **TypeScript**, **Supabase** và **React Flow + ELK layout**.
 
 ---
 
-## 🌟 Tính Năng Nổi Bật
+## 🌟 Trạng Thái Dự Án
+- **Phiên bản hiện tại**: `v2.0.0-mvp2` (MVP2 Hoàn Tất 100% — 39/39 Tasks)
+- **Tech Stack**: Next.js 16.3.2 (Turbopack, React 19), TypeScript, Tailwind CSS, Supabase (PostgreSQL + RLS), React Flow 12 (`@xyflow/react`), `@elkjs/elkjs`, Vitest 4, Zod 4, XLSX.
 
-1. **Sơ đồ cây gia phả tương tác (Family Tree Canvas)**:
-   - Thuật toán phân tầng tự động (Layered Layout với `@elkjs/elkjs`) sắp xếp chính xác theo Đời và Chi.
-   - Hiển thị mối quan hệ cha-con trực hệ (`is_lineage_relation`), quan hệ hôn phối đa phu/thê (`unions`).
-   - Huy hiệu trạng thái sống/mất ($\dagger$), nhãn kỵ nhật và phân biệt quyền chỉnh sửa ngay trên node.
-2. **Tìm kiếm & Định vị thông minh (Search & Tree Focus)**:
-   - Tìm kiếm nhanh theo họ tên, tên thường gọi, quê quán, đời hoặc chi nhánh.
-   - Thuật toán dựng Ancestor Path: Khi người dùng tìm thành viên ngoài view hiện tại, hệ thống tự động tải chuỗi tổ tiên từ cụ tổ đến thành viên đích và zoom mượt mà đến node đó.
-3. **Phân quyền động theo nhánh (Dynamic Branch Permissions)**:
-   - Người quản lý nhánh (Branch Manager) được cấp quyền từ một Nút Gốc (Root Person).
-   - Tự động tính toán tập quyền (Editable Set) theo cây trực hệ con cháu + vợ/chồng.
-   - Không lưu cứng quyền trên từng node; thu hồi quyền có hiệu lực tức thì (Realtime revocation).
-4. **Quản lý danh sách tưởng niệm (Memorials)**:
-   - Lọc danh sách tiền nhân đã mất, vị trí an táng, tiểu sử.
-   - Định dạng ngày giỗ âm/dương chuẩn xác, không tự quy đổi phỏng đoán.
-5. **Sự kiện dòng họ (Family Events)**:
-   - Quản lý lịch giỗ tổ, họp họ, khánh thành từ đường.
-   - Phân quyền hiển thị linh hoạt: Toàn họ (`ALL_MEMBERS`), Cấp nhánh (`BRANCH`) hoặc Nội bộ (`ADMIN_ONLY`).
-6. **Trung tâm quản trị toàn diện (Admin Center)**:
-   - Quản lý tài khoản: Đăng ký với SĐT -> `PENDING` -> Admin kích hoạt -> `ACTIVE`.
-   - Cấp mật khẩu tạm thời cho thành viên cao tuổi.
-   - Phân quyền quản lý nhánh và thu hồi quyền an toàn (Soft revoke).
-   - Nhật ký kiểm toán (Audit Log) lưu snapshot JSON trước/sau thay đổi.
-   - Thùng rác (Recycle Bin) phục hồi thành viên xóa mềm mà không phá vỡ quan hệ.
-   - Quản lý ảnh đại diện với Supabase Storage an toàn.
+---
+
+## 🚀 Các Tính Năng Đã Triển Khai
+
+### 1. Cây Gia Phả & Quản Trị Thành Viên (MVP1)
+- **Sơ đồ cây gia phả tương tác**: Thuật toán phân tầng tự động (Layered Layout với `@elkjs/elkjs`) sắp xếp chính xác theo Đời và Chi.
+- **Tìm kiếm & Định vị thông minh**: Dựng chuỗi Ancestor Path và auto-focus mượt mà đến node mục tiêu.
+- **Phân quyền động theo nhánh**: `PermissionService` tính toán tập quyền trực hệ con cháu + vợ/chồng.
+- **Quản trị toàn diện**: Tài khoản Admin, phân quyền nhánh, nhật ký Audit (JSON snapshot diff), thùng rác (Recycle Bin) khôi phục xóa mềm.
+
+### 2. Mở Rộng Trải Nghiệm & Tương Tác Dòng Họ (MVP2)
+- **Nhập dữ liệu Excel giao dịch**: Nhập cây gia phả và sổ công đức từ file Excel, preview phân loại Valid/Warning/Error, kiểm soát trùng lặp và map tài khoản tự động.
+- **Tự quản hồ sơ & Đặt lại mật khẩu**: Xác nhận "Đây là tôi" (Claim person), đề xuất sửa hồ sơ, quên mật khẩu an toàn với HMAC CAPTCHA và mã PIN 8 số ngẫu nhiên.
+- **Tra cứu quan hệ họ hàng**: Thuật toán BFS tìm mối quan hệ ngắn nhất và hiển thị xưng hô thuần Việt chuẩn xác.
+- **Lịch âm thiên văn Hồ Ngọc Đức**: Tự động chuyển đổi kỵ nhật âm lịch sang dương lịch theo từng năm (hỗ trợ tháng nhuận), dashboard thành viên hợp nhất 90 ngày.
+- **Sự kiện & Điểm danh (RSVP)**: Thành viên xác nhận tham dự giỗ chạp, họp họ; Admin quản lý danh sách và số lượng khách.
+- **Sổ công đức & Cấu hình QR**: Xem mã QR chuyển khoản nhanh, sao chép số tài khoản 1-chạm, tra cứu và lọc sổ công đức minh bạch.
+- **Trung tâm thông báo & Web Push**: Nhận thông báo trong ứng dụng và thông báo đẩy màn hình điện thoại/máy tính.
 
 ---
 
@@ -37,72 +33,56 @@
 
 - **Frontend**: Next.js 16.3.2 (App Router, Turbopack), React 19, TypeScript, Tailwind CSS, Lucide Icons, `@xyflow/react` (React Flow 12), `elkjs`.
 - **Backend & Database**: Supabase (PostgreSQL 15+), Server Actions, Row-Level Security (RLS), Supabase Storage.
-- **Validation & Formats**: Zod 4, Vietnamese phone normalization.
-- **Testing**: Vitest 4 (17 test suites, 73+ unit/integration tests).
+- **Validation & Formats**: Zod 4, Vietnamese phone normalization, XLSX parser.
+- **Testing**: Vitest 4 (35 test suites, 122 unit/integration/E2E tests).
 
 ---
 
-## 🚀 Hướng Dẫn Cài Đặt & Chạy Môi Trường Local
+## 🚀 Hướng Dẫn Cài Đặt & Chạy Cục Bộ
 
-### 1. Clone repository & cài đặt dependencies
+### 1. Cài Đặt Dependencies
 ```bash
-git clone https://github.com/baodiep/gia-pha.git
-cd gia-pha
 npm install
 ```
 
-### 2. Cấu hình biến môi trường
-Tạo file `.env.local` từ mẫu `.env.example`:
+### 2. Cấu Hình Biến Môi Trường
+Tạo file `.env.local` tại thư mục gốc:
 ```env
-NEXT_PUBLIC_SUPABASE_URL="https://your-project.supabase.co"
-NEXT_PUBLIC_SUPABASE_ANON_KEY="your-anon-key"
-SUPABASE_SERVICE_ROLE_KEY="your-service-role-key"
-AUTH_INTERNAL_EMAIL_DOMAIN="auth.giapha.local"
-NEXT_PUBLIC_APP_URL="http://localhost:3000"
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 ```
 
-### 3. Nạp database schema & seed data
-Chạy lần lượt các file SQL trong thư mục `supabase/migrations/` vào Supabase SQL Editor:
-1. `supabase/migrations/001_initial_schema.sql`
-2. `supabase/migrations/002_rls_policies.sql`
-3. `supabase/migrations/003_storage_policies.sql`
-4. `supabase/seed.sql` (Dữ liệu mẫu 3 đời 2 chi)
+### 3. Áp Dụng Database Migrations
+Chạy tuần tự các script trong thư mục `supabase/migrations/`:
+- `001_initial_schema.sql`
+- `002_seed_3_generations.sql`
+- `003_cte_branch_editable.sql`
+- `004_rls_security_policies.sql`
+- `005_storage_avatars.sql`
+- `006_mvp2_foundations.sql`
+- `007_mvp2_rls_policies.sql`
+- `008_family_import_transaction.sql`
 
-### 4. Khởi động môi trường phát triển
+### 4. Khởi Chạy Server Phát Triển
 ```bash
 npm run dev
 ```
-Truy cập: [http://localhost:3000](http://localhost:3000)
+Truy cập ứng dụng tại `http://localhost:3000`.
 
 ---
 
-## 🧪 Chạy Kiểm Thử & Kiểm Tra Chất Lượng
-
+## 🧪 Kiểm Thử & Quality Gates
 ```bash
-# Kiểm tra TypeScript
+# Typecheck
 npm run typecheck
 
-# Kiểm tra Linter
+# Lint
 npm run lint
 
-# Chạy toàn bộ Test Suite (17 files, 73 tests)
+# Chạy toàn bộ 35 test suites (122 tests)
 npm test
 
-# Build Production
+# Build production
 npm run build
 ```
-
----
-
-## 📖 Hướng Dẫn Vận Hành (Admin Runbook)
-
-Chi tiết quy trình kích hoạt tài khoản, cấp quyền chi nhánh, sao lưu và khôi phục sự cố:
-👉 [Tài liệu hướng dẫn triển khai & vận hành Production (docs/production-deployment-guide.md)](docs/production-deployment-guide.md)
-
----
-
-## 🏷️ Release Notes: v1.0.0-mvp
-
-- **Version**: 1.0.0-mvp
-- **Status**: Production Ready
-- **Quality Gates**: Pass 100% Typecheck, Lint, 73 Vitest Tests, Next.js Production Static & Dynamic Build.
