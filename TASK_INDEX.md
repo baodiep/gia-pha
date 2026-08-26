@@ -4,8 +4,8 @@
 
 ## CURRENT TASK
 
-**T036 — Contribution CRUD, search & statistics**  
-File: `tasks/T036-contributions-management.md`  
+**T037 — Contribution Excel import**  
+File: `tasks/T037-contributions-import.md`  
 Status: **READY**
 
 ## Quy tắc chọn task tiếp theo
@@ -54,8 +54,8 @@ Status: **READY**
 | T033 | DONE | In-app notifications | T021, T022, T032 | `tasks/T033-inapp-notifications.md` |
 | T034 | DONE | Browser push notifications & preferences | T033 | `tasks/T034-browser-push.md` |
 | T035 | DONE | Contribution QR & configuration | T021, T022 | `tasks/T035-contribution-qr.md` |
-| T036 | READY | Contribution CRUD, search & statistics | T035 | `tasks/T036-contributions-management.md` |
-| T037 | BACKLOG | Contribution Excel import | T036 | `tasks/T037-contributions-import.md` |
+| T036 | DONE | Contribution CRUD, search & statistics | T035 | `tasks/T036-contributions-management.md` |
+| T037 | READY | Contribution Excel import | T036 | `tasks/T037-contributions-import.md` |
 | T038 | BACKLOG | MVP2 E2E, security & performance | T025, T026, T027, T028, T030, T031, T034, T037 | `tasks/T038-mvp2-e2e-security-performance.md` |
 | T039 | BACKLOG | MVP2 production release | T038 | `tasks/T039-mvp2-release.md` |
 

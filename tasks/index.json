@@ -1,7 +1,7 @@
 {
   "project": "gia-pha-vercel",
   "schema_version": 1,
-  "current_task": "T036",
+  "current_task": "T037",
   "statuses": [
     "BACKLOG",
     "READY",
@@ -348,7 +348,7 @@
       "id": "T036",
       "title": "Contribution CRUD, search & statistics",
       "file": "tasks/T036-contributions-management.md",
-      "status": "READY",
+      "status": "DONE",
       "depends_on": [
         "T035"
       ]
@@ -357,7 +357,7 @@
       "id": "T037",
       "title": "Contribution Excel import",
       "file": "tasks/T037-contributions-import.md",
-      "status": "BACKLOG",
+      "status": "READY",
       "depends_on": [
         "T036"
       ]
