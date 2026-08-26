@@ -1,7 +1,7 @@
 {
   "project": "gia-pha-vercel",
   "schema_version": 1,
-  "current_task": "T037",
+  "current_task": "T038",
   "statuses": [
     "BACKLOG",
     "READY",
@@ -357,7 +357,7 @@
       "id": "T037",
       "title": "Contribution Excel import",
       "file": "tasks/T037-contributions-import.md",
-      "status": "READY",
+      "status": "DONE",
       "depends_on": [
         "T036"
       ]
@@ -366,7 +366,7 @@
       "id": "T038",
       "title": "MVP2 E2E, security & performance",
       "file": "tasks/T038-mvp2-e2e-security-performance.md",
-      "status": "BACKLOG",
+      "status": "READY",
       "depends_on": [
         "T025",
         "T026",
