@@ -1,7 +1,7 @@
 {
   "project": "gia-pha-vercel",
   "schema_version": 1,
-  "current_task": "T030",
+  "current_task": "T031",
   "statuses": [
     "BACKLOG",
     "READY",
@@ -289,7 +289,7 @@
       "id": "T030",
       "title": "Member dashboard & family calendar",
       "file": "tasks/T030-member-dashboard-calendar.md",
-      "status": "READY",
+      "status": "DONE",
       "depends_on": [
         "T029"
       ]

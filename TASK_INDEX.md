@@ -4,8 +4,8 @@
 
 ## CURRENT TASK
 
-**T030 — Member dashboard & family calendar**  
-File: `tasks/T030-member-dashboard-calendar.md`  
+**T031 — External albums, documents & family history**  
+File: `tasks/T031-external-family-resources.md`  
 Status: **READY**
 
 ## Quy tắc chọn task tiếp theo
@@ -48,7 +48,7 @@ Status: **READY**
 | T027 | DONE | Password reset requests, CAPTCHA & forced password change | T021, T022 | `tasks/T027-password-reset-requests.md` |
 | T028 | DONE | Kinship relationship engine | T020 | `tasks/T028-kinship-engine.md` |
 | T029 | DONE | Lunar calendar & memorial recurrence | T020 | `tasks/T029-lunar-memorials.md` |
-| T030 | READY | Member dashboard & family calendar | T029 | `tasks/T030-member-dashboard-calendar.md` |
+| T030 | DONE | Member dashboard & family calendar | T029 | `tasks/T030-member-dashboard-calendar.md` |
 | T031 | READY | External albums, documents & family history | T021, T022 | `tasks/T031-external-family-resources.md` |
 | T032 | READY | Event RSVP & attendance | T021, T022 | `tasks/T032-event-rsvp.md` |
 | T033 | BACKLOG | In-app notifications | T021, T022, T032 | `tasks/T033-inapp-notifications.md` |
