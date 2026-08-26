@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireActiveUser } from "@/features/auth/actions";
+import { recordAuditLog } from "@/features/admin/audit-actions";
 import { personInputSchema, PersonInput } from "./validation";
 import { Person } from "@/types/domain";
 
@@ -112,6 +113,14 @@ export async function createPerson(input: PersonInput): Promise<PersonActionResu
       return { success: false, error: error.message };
     }
 
+    // Record audit log
+    await recordAuditLog({
+      action: "CREATE",
+      entityType: "PERSONS",
+      entityId: data.id,
+      newValue: data,
+    });
+
     return {
       success: true,
       data: data as Person,
@@ -154,6 +163,13 @@ export async function updatePerson(id: string, input: PersonInput): Promise<Pers
       updated_at: new Date().toISOString(),
     };
 
+    // Fetch old person data for audit snapshot
+    const { data: oldData } = await supabase
+      .from("persons")
+      .select("*")
+      .eq("id", id)
+      .maybeSingle();
+
     const { data, error } = await supabase
       .from("persons")
       .update(updatePayload)
@@ -165,6 +181,15 @@ export async function updatePerson(id: string, input: PersonInput): Promise<Pers
     if (error) {
       return { success: false, error: error.message };
     }
+
+    // Record audit log
+    await recordAuditLog({
+      action: "UPDATE",
+      entityType: "PERSONS",
+      entityId: id,
+      oldValue: oldData || undefined,
+      newValue: data,
+    });
 
     return {
       success: true,
@@ -200,6 +225,13 @@ export async function softDeletePerson(id: string): Promise<PersonActionResult> 
     if (error) {
       return { success: false, error: error.message };
     }
+
+    // Record audit log for soft delete
+    await recordAuditLog({
+      action: "DELETE",
+      entityType: "PERSONS",
+      entityId: id,
+    });
 
     return {
       success: true,

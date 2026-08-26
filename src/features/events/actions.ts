@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireActiveUser } from "@/features/auth/actions";
 import { getManagedBranches, getEditablePersonIds } from "@/features/permissions/actions";
+import { recordAuditLog } from "@/features/admin/audit-actions";
 import { familyEventInputSchema, FamilyEventInput } from "./validation";
 import { EventStatus, EventVisibility } from "@/types/domain";
 
@@ -121,6 +122,14 @@ export async function createFamilyEvent(input: FamilyEventInput): Promise<EventA
       return { success: false, error: error.message };
     }
 
+    // Record audit log
+    await recordAuditLog({
+      action: "CREATE",
+      entityType: "FAMILY_EVENTS",
+      entityId: data.id,
+      newValue: data,
+    });
+
     return {
       success: true,
       data: data as FamilyEvent,
@@ -147,6 +156,13 @@ export async function updateFamilyEvent(
 
     const supabase = await createClient();
 
+    // Fetch old event for audit log
+    const { data: oldEvent } = await supabase
+      .from("family_events")
+      .select("*")
+      .eq("id", id)
+      .maybeSingle();
+
     const { data, error } = await supabase
       .from("family_events")
       .update({
@@ -167,6 +183,15 @@ export async function updateFamilyEvent(
     if (error) {
       return { success: false, error: error.message };
     }
+
+    // Record audit log
+    await recordAuditLog({
+      action: "UPDATE",
+      entityType: "FAMILY_EVENTS",
+      entityId: id,
+      oldValue: oldEvent || undefined,
+      newValue: data,
+    });
 
     return {
       success: true,
@@ -200,6 +225,14 @@ export async function cancelFamilyEvent(id: string): Promise<EventActionResult> 
     if (error) {
       return { success: false, error: error.message };
     }
+
+    // Record audit log for cancelled event
+    await recordAuditLog({
+      action: "UPDATE",
+      entityType: "FAMILY_EVENTS",
+      entityId: id,
+      newValue: { status: "CANCELLED" },
+    });
 
     return {
       success: true,

@@ -149,6 +149,12 @@ export async function getTreeGraphData(options?: {
   // Check which persons have children
   const parentWithChildrenSet = new Set(relationsList.map((r) => r.parent_id));
 
+  // Map displayOrder of person as a child in parent_child
+  const childOrderMap = new Map<string, number>();
+  for (const r of relationsList) {
+    childOrderMap.set(r.child_id, r.display_order ?? 0);
+  }
+
   // Lọc chỉ lấy những người là Trực hệ làm Nút chính của cây (người phối ngẫu sẽ được gắn ngang hàng bên cạnh nút chính)
   const mainLineagePersons = personsList.filter((p) => !isSpouseOfLineage(p.id, p.generation_no));
 
@@ -169,6 +175,7 @@ export async function getTreeGraphData(options?: {
         isSpouse: false,
         hasChildren: parentWithChildrenSet.has(p.id),
         isExpanded: true,
+        displayOrder: childOrderMap.get(p.id) ?? 0,
         managers: managerMap.get(p.id) || [],
         spouses: spouseMap.get(p.id) || [],
       },

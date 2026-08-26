@@ -15,6 +15,7 @@ export type TreePersonNodeData = {
   isSpouse?: boolean;
   hasChildren: boolean;
   isExpanded: boolean;
+  displayOrder?: number;
   managers?: Array<{
     userId: string;
     loginName: string;
@@ -46,7 +47,6 @@ export async function computeTreeLayout(
   options: LayoutOptions = {}
 ) {
   // Nếu có vợ/chồng đi kèm ngang hàng, tăng chiều rộng của node layout
-  const nodeWidth = options.nodeWidth || 380;
   const nodeHeight = options.nodeHeight || 135;
 
   const elkGraph: ElkNode = {
@@ -54,14 +54,19 @@ export async function computeTreeLayout(
     layoutOptions: {
       "elk.algorithm": "layered",
       "elk.direction": options.direction === "RIGHT" ? "RIGHT" : "DOWN",
-      "elk.spacing.nodeNode": "50",
-      "elk.layered.spacing.nodeNodeBetweenLayers": "80",
-      "elk.layered.nodePlacement.strategy": "NETWORK_SIMPLEX",
+      "elk.spacing.nodeNode": "60",
+      "elk.layered.spacing.nodeNodeBetweenLayers": "90",
+      "elk.layered.nodePlacement.strategy": "BRANDES_KOEPF",
+      "elk.layered.crossingMinimization.strategy": "LAYER_SWEEP",
+      "elk.layered.considerModelOrder.strategy": "PREFER_NODES",
     },
     children: nodes.map((node) => ({
       id: node.id,
       width: node.data.spouses && node.data.spouses.length > 0 ? 380 : 200,
       height: nodeHeight,
+      layoutOptions: {
+        "elk.position": `(${node.data.displayOrder ?? 0}, 0)`,
+      },
     })),
     edges: edges.map((edge) => ({
       id: edge.id,

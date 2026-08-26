@@ -116,24 +116,54 @@ export async function getAuditLogs(options?: {
  * Lấy danh sách thành viên trong thùng rác (đã bị xóa mềm)
  */
 export async function getTrashPersons(): Promise<DeletedPersonItem[]> {
-  const { profile } = await requireActiveUser();
-  if (!profile.is_admin) {
-    throw new Error("Chỉ Admin mới có quyền xem Thùng rác");
+  try {
+    const { profile } = await requireActiveUser();
+    if (!profile.is_admin) {
+      throw new Error("Chỉ Admin mới có quyền xem Thùng rác");
+    }
+
+    const admin = createAdminClient();
+
+    const { data: persons, error } = await admin
+      .from("persons")
+      .select("*")
+      .not("deleted_at", "is", null)
+      .order("deleted_at", { ascending: false });
+
+    if (error) {
+      throw new Error(`Không thể tải danh sách thùng rác: ${error.message}`);
+    }
+
+    if (!persons || persons.length === 0) {
+      return [];
+    }
+
+    const deleterIds = Array.from(
+      new Set(persons.map((p) => p.deleted_by).filter((id): id is string => !!id))
+    );
+
+    let profilesMap: Record<string, { login_name: string }> = {};
+    if (deleterIds.length > 0) {
+      const { data: profiles } = await admin
+        .from("profiles")
+        .select("id, login_name")
+        .in("id", deleterIds);
+
+      if (profiles) {
+        profilesMap = Object.fromEntries(
+          profiles.map((p) => [p.id, { login_name: p.login_name }])
+        );
+      }
+    }
+
+    return persons.map((p) => ({
+      ...p,
+      deleted_by_profile: p.deleted_by ? profilesMap[p.deleted_by] || null : null,
+    })) as DeletedPersonItem[];
+  } catch (err) {
+    console.error("getTrashPersons error:", err);
+    return [];
   }
-
-  const supabase = await createClient();
-
-  const { data, error } = await supabase
-    .from("persons")
-    .select("*, deleted_by_profile:deleted_by(login_name)")
-    .not("deleted_at", "is", null)
-    .order("deleted_at", { ascending: false });
-
-  if (error) {
-    throw new Error(`Không thể tải danh sách thùng rác: ${error.message}`);
-  }
-
-  return (data || []) as DeletedPersonItem[];
 }
 
 /**

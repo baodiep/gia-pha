@@ -151,6 +151,35 @@ export async function addUnion(input: UnionInput): Promise<RelationshipActionRes
 }
 
 /**
+ * Update parent-child display order (Thứ tự con cái: 1, 2, 3...)
+ */
+export async function updateParentChildOrder(childId: string, displayOrder: number): Promise<RelationshipActionResult> {
+  try {
+    await requireActiveUser();
+    const supabase = await createClient();
+
+    const { error } = await supabase
+      .from("parent_child")
+      .update({ display_order: displayOrder })
+      .eq("child_id", childId);
+
+    if (error) {
+      return { success: false, error: error.message };
+    }
+
+    return {
+      success: true,
+      message: "Cập nhật thứ tự thành công",
+    };
+  } catch (err: unknown) {
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : "Đã xảy ra lỗi khi cập nhật thứ tự",
+    };
+  }
+}
+
+/**
  * Remove union
  */
 export async function removeUnion(unionId: string): Promise<RelationshipActionResult> {

@@ -28,21 +28,28 @@ export function GrantBranchModal({ isOpen, onClose, onSuccess }: GrantBranchModa
   useEffect(() => {
     if (!isOpen) return;
 
-    setMessage(null);
+    let ignore = false;
     startTransition(async () => {
+      if (!ignore) setMessage(null);
       try {
         const [accList, personList] = await Promise.all([
           getActiveEligibleAccounts(),
           getPersons(),
         ]);
-        setAccounts(accList);
-        setPersons(personList);
-        if (accList.length > 0) setSelectedUserId(accList[0].id);
-        if (personList.length > 0) setSelectedRootId(personList[0].id);
+        if (!ignore) {
+          setAccounts(accList);
+          setPersons(personList);
+          if (accList.length > 0) setSelectedUserId(accList[0].id);
+          if (personList.length > 0) setSelectedRootId(personList[0].id);
+        }
       } catch (err) {
         console.error("Load modal data error:", err);
       }
     });
+
+    return () => {
+      ignore = true;
+    };
   }, [isOpen]);
 
   if (!isOpen) return null;

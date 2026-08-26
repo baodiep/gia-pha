@@ -164,7 +164,7 @@ function FamilyTreeContent({ initialRootId, onSelectPerson }: FamilyTreeViewProp
       setNodes(nodesWithHandlers as unknown as Node[]);
       setEdges(layouted.edges as Edge[]);
 
-      // Sau khi layout xong, bù trừ viewport để nút đang bấm toggle đứng yên trên màn hình
+      // Sau khi layout xong, neo giữ vị trí chính xác của node vừa bấm
       if (anchorPersonId && anchorPrevPos) {
         const newAnchorNode = layouted.nodes.find((n) => n.id === anchorPersonId);
         if (newAnchorNode) {
@@ -275,12 +275,20 @@ function FamilyTreeContent({ initialRootId, onSelectPerson }: FamilyTreeViewProp
     rawGraphDataRef.current.edges.forEach((e) => {
       allParents.add(e.source);
     });
+    setAnchorId(null);
     setCollapsedIds(allParents);
+    setTimeout(() => {
+      fitView({ padding: 0.2, duration: 400 });
+    }, 100);
   };
 
   // Mở rộng toàn bộ
   const handleExpandAll = () => {
+    setAnchorId(null);
     setCollapsedIds(new Set());
+    setTimeout(() => {
+      fitView({ padding: 0.2, duration: 400 });
+    }, 100);
   };
 
   const onNodeClick = useCallback(

@@ -39,6 +39,11 @@ export function AdminAccountManagementView() {
   const [newName, setNewName] = useState("");
   const [newTempPassword, setNewTempPassword] = useState("");
   const [newIsAdmin, setNewIsAdmin] = useState(false);
+  const [createErrors, setCreateErrors] = useState<{
+    phone?: string;
+    name?: string;
+    password?: string;
+  }>({});
   const [modalMessage, setModalMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
   const loadAccounts = () => {
@@ -75,9 +80,25 @@ export function AdminAccountManagementView() {
     e.preventDefault();
     setModalMessage(null);
 
+    const errors: { phone?: string; name?: string; password?: string } = {};
+    if (!newPhone.trim()) {
+      errors.phone = "Vui lòng nhập số điện thoại";
+    }
+    if (!newName.trim()) {
+      errors.name = "Vui lòng nhập họ và tên";
+    }
+    if (!newTempPassword.trim()) {
+      errors.password = "Vui lòng nhập mật khẩu tạm thời";
+    } else if (newTempPassword.length < 6) {
+      errors.password = "Mật khẩu tạm thời phải từ 6 ký tự trở lên";
+    }
+
+    setCreateErrors(errors);
+    if (Object.keys(errors).length > 0) return;
+
     const res = await adminCreateAccount({
-      phone: newPhone,
-      fullName: newName,
+      phone: newPhone.trim(),
+      fullName: newName.trim(),
       temporaryPassword: newTempPassword,
       isAdmin: newIsAdmin,
     });
@@ -90,6 +111,7 @@ export function AdminAccountManagementView() {
         setNewName("");
         setNewTempPassword("");
         setNewIsAdmin(false);
+        setCreateErrors({});
         setModalMessage(null);
         loadAccounts();
       }, 1200);
@@ -323,12 +345,24 @@ export function AdminAccountManagementView() {
                 </label>
                 <input
                   type="text"
-                  required
                   placeholder="Ví dụ: 0912345678"
                   value={newPhone}
-                  onChange={(e) => setNewPhone(e.target.value)}
-                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                  onChange={(e) => {
+                    setNewPhone(e.target.value);
+                    if (createErrors.phone) setCreateErrors((prev) => ({ ...prev, phone: undefined }));
+                  }}
+                  className={`w-full rounded-lg border px-3 py-2 text-xs focus:outline-none dark:bg-slate-800 dark:text-white ${
+                    createErrors.phone
+                      ? "border-rose-500 bg-rose-50/50"
+                      : "border-slate-200 focus:ring-1 focus:ring-slate-900 dark:border-slate-700"
+                  }`}
                 />
+                {createErrors.phone && (
+                  <p className="mt-1 text-[11px] font-semibold text-rose-600 flex items-center gap-1">
+                    <AlertCircle className="h-3 w-3" />
+                    <span>{createErrors.phone}</span>
+                  </p>
+                )}
               </div>
 
               <div>
@@ -337,12 +371,24 @@ export function AdminAccountManagementView() {
                 </label>
                 <input
                   type="text"
-                  required
                   placeholder="Ví dụ: Nguyễn Văn Nam"
                   value={newName}
-                  onChange={(e) => setNewName(e.target.value)}
-                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                  onChange={(e) => {
+                    setNewName(e.target.value);
+                    if (createErrors.name) setCreateErrors((prev) => ({ ...prev, name: undefined }));
+                  }}
+                  className={`w-full rounded-lg border px-3 py-2 text-xs focus:outline-none dark:bg-slate-800 dark:text-white ${
+                    createErrors.name
+                      ? "border-rose-500 bg-rose-50/50"
+                      : "border-slate-200 focus:ring-1 focus:ring-slate-900 dark:border-slate-700"
+                  }`}
                 />
+                {createErrors.name && (
+                  <p className="mt-1 text-[11px] font-semibold text-rose-600 flex items-center gap-1">
+                    <AlertCircle className="h-3 w-3" />
+                    <span>{createErrors.name}</span>
+                  </p>
+                )}
               </div>
 
               <div>
@@ -353,13 +399,25 @@ export function AdminAccountManagementView() {
                   <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
                   <input
                     type="text"
-                    required
                     placeholder="Tối thiểu 6 ký tự"
                     value={newTempPassword}
-                    onChange={(e) => setNewTempPassword(e.target.value)}
-                    className="w-full rounded-lg border border-slate-200 pl-9 pr-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-white font-mono"
+                    onChange={(e) => {
+                      setNewTempPassword(e.target.value);
+                      if (createErrors.password) setCreateErrors((prev) => ({ ...prev, password: undefined }));
+                    }}
+                    className={`w-full rounded-lg border pl-9 pr-3 py-2 text-xs focus:outline-none dark:bg-slate-800 dark:text-white font-mono ${
+                      createErrors.password
+                        ? "border-rose-500 bg-rose-50/50"
+                        : "border-slate-200 focus:ring-1 focus:ring-slate-900 dark:border-slate-700"
+                    }`}
                   />
                 </div>
+                {createErrors.password && (
+                  <p className="mt-1 text-[11px] font-semibold text-rose-600 flex items-center gap-1">
+                    <AlertCircle className="h-3 w-3" />
+                    <span>{createErrors.password}</span>
+                  </p>
+                )}
               </div>
 
               <div className="flex items-center gap-2 pt-1">
