@@ -4,13 +4,15 @@ import React, { useState, useEffect, useTransition } from "react";
 import { getSystemSettings, updateSystemSettingsAction, SystemSettings } from "@/features/admin/settings-actions";
 import { LogoUploadControl } from "@/components/storage/LogoUploadControl";
 import { BackButton } from "@/components/ui/BackButton";
-import { Sparkles, Image, CheckCircle2, AlertCircle, Save, Globe } from "lucide-react";
+import { Sparkles, Image as ImageIcon, CheckCircle2, AlertCircle, Save, Globe, Trash2, LayoutTemplate } from "lucide-react";
 
 export function AdminSettingsView() {
   const [settings, setSettings] = useState<SystemSettings | null>(null);
   const [appTitle, setAppTitle] = useState("");
   const [appSubtitle, setAppSubtitle] = useState("");
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const [treeBackgroundUrl, setTreeBackgroundUrl] = useState<string | null>(null);
+
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -22,6 +24,7 @@ export function AdminSettingsView() {
         setAppTitle(data.app_title);
         setAppSubtitle(data.app_subtitle);
         setLogoUrl(data.logo_url);
+        setTreeBackgroundUrl(data.tree_background_url || null);
       } catch (err) {
         console.error("Failed to load settings:", err);
       }
@@ -37,6 +40,9 @@ export function AdminSettingsView() {
     formData.append("appSubtitle", appSubtitle);
     if (logoUrl) {
       formData.append("logoUrl", logoUrl);
+    }
+    if (treeBackgroundUrl) {
+      formData.append("treeBackgroundUrl", treeBackgroundUrl);
     }
 
     startTransition(async () => {
@@ -62,11 +68,11 @@ export function AdminSettingsView() {
             <div className="flex items-center gap-2">
               <Sparkles className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
               <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-                Cài đặt Logo & Tên Dòng họ
+                Cài đặt Logo, Tên & Hình nền Cây Gia Phả
               </h1>
             </div>
             <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-              Tùy chỉnh thương hiệu, tên hiển thị và huy hiệu gia tộc xuất hiện ở góc trên bên trái ứng dụng
+              Tùy chỉnh thương hiệu gia tộc, huy hiệu và ảnh nền phong cách hoài cổ cho sơ đồ phả hệ
             </p>
           </div>
         </div>
@@ -75,7 +81,7 @@ export function AdminSettingsView() {
       {/* Main Settings Card */}
       <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Logo preview and upload */}
+          {/* 1. Logo preview and upload */}
           <div>
             <label className="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">
               Logo / Huy hiệu dòng họ
@@ -99,7 +105,7 @@ export function AdminSettingsView() {
                   <button
                     type="button"
                     onClick={() => setLogoUrl(null)}
-                    className="block text-xs font-semibold text-rose-600 hover:underline"
+                    className="block text-xs font-semibold text-rose-600 hover:underline cursor-pointer"
                   >
                     Gỡ logo (sử dụng biểu tượng mặc định)
                   </button>
@@ -111,8 +117,62 @@ export function AdminSettingsView() {
             </div>
           </div>
 
-          {/* Tên dòng họ */}
-          <div>
+          {/* 2. Background image for Family Tree */}
+          <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
+            <label className="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-1">
+              Ảnh nền (Background) sơ đồ Cây Gia Phả
+            </label>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
+              Ảnh nền hoài cổ, rồng phượng, cuốn thư hoặc khung tranh phong thủy hiển thị chìm dưới cây gia phả.
+            </p>
+
+            <div className="space-y-3">
+              {/* Preview */}
+              {treeBackgroundUrl ? (
+                <div className="relative rounded-2xl border border-slate-300 overflow-hidden h-40 bg-slate-100 dark:bg-slate-800">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={treeBackgroundUrl}
+                    alt="Background cây gia phả"
+                    className="w-full h-full object-cover opacity-80"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setTreeBackgroundUrl(null)}
+                    className="absolute top-2 right-2 rounded-lg bg-rose-600/90 hover:bg-rose-700 text-white px-2.5 py-1 text-xs font-bold flex items-center gap-1 shadow-md cursor-pointer"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                    <span>Xóa ảnh nền</span>
+                  </button>
+                </div>
+              ) : (
+                <div className="rounded-2xl border-2 border-dashed border-slate-200 p-6 text-center bg-slate-50/50 dark:border-slate-800 dark:bg-slate-800/40">
+                  <ImageIcon className="h-8 w-8 mx-auto text-slate-400 mb-1" />
+                  <span className="text-xs font-semibold text-slate-500">
+                    Chưa cài đặt ảnh nền tùy chỉnh (Cây gia phả đang dùng nền lưới tiêu chuẩn)
+                  </span>
+                </div>
+              )}
+
+              {/* URL or Upload Input */}
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                <input
+                  type="url"
+                  value={treeBackgroundUrl || ""}
+                  onChange={(e) => setTreeBackgroundUrl(e.target.value.trim() || null)}
+                  placeholder="Nhập đường dẫn URL ảnh nền (https://...)"
+                  className="flex-1 rounded-xl border border-slate-300 px-3.5 py-2 text-xs sm:text-sm font-medium focus:border-indigo-600 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                />
+                <LogoUploadControl
+                  currentLogoUrl={treeBackgroundUrl}
+                  onUploadSuccess={(url: string) => setTreeBackgroundUrl(url)}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* 3. Tên dòng họ */}
+          <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
             <label className="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-1">
               Tên chính hiển thị (Tên Dòng họ / Phần mềm) *
             </label>
@@ -126,7 +186,7 @@ export function AdminSettingsView() {
             />
           </div>
 
-          {/* Phụ đề */}
+          {/* 4. Phụ đề */}
           <div>
             <label className="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-1">
               Dòng phụ đề bên dưới
@@ -185,7 +245,7 @@ export function AdminSettingsView() {
             <button
               type="submit"
               disabled={isPending}
-              className="flex items-center gap-2 rounded-xl bg-indigo-600 px-6 py-3 text-base font-bold text-white shadow-md hover:bg-indigo-700 disabled:opacity-50 min-h-[48px]"
+              className="flex items-center gap-2 rounded-xl bg-indigo-600 px-6 py-3 text-base font-bold text-white shadow-md hover:bg-indigo-700 disabled:opacity-50 min-h-[48px] cursor-pointer"
             >
               <Save className="h-5 w-5" />
               <span>{isPending ? "Đang lưu..." : "Lưu cài đặt"}</span>

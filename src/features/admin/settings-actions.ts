@@ -11,6 +11,7 @@ export interface SystemSettings {
   app_title: string;
   app_subtitle: string;
   logo_url: string | null;
+  tree_background_url?: string | null;
   updated_at?: string;
   updated_by?: string;
 }
@@ -20,12 +21,14 @@ const DEFAULT_SETTINGS: SystemSettings = {
   app_title: "Gia Phả Dòng Họ",
   app_subtitle: "Sơ đồ cây phả hệ",
   logo_url: null,
+  tree_background_url: null,
 };
 
 const settingsSchema = z.object({
   appTitle: z.string().min(2, "Tên dòng họ/phần mềm tối thiểu 2 ký tự"),
   appSubtitle: z.string().default("Sơ đồ cây phả hệ"),
   logoUrl: z.string().nullable().optional(),
+  treeBackgroundUrl: z.string().nullable().optional(),
 });
 
 /**
@@ -65,6 +68,7 @@ export async function updateSystemSettingsAction(formData: FormData) {
       appTitle: formData.get("appTitle") as string,
       appSubtitle: (formData.get("appSubtitle") as string) || "Sơ đồ cây phả hệ",
       logoUrl: (formData.get("logoUrl") as string) || null,
+      treeBackgroundUrl: (formData.get("treeBackgroundUrl") as string) || null,
     };
 
     const validated = settingsSchema.parse(rawData);
@@ -78,6 +82,7 @@ export async function updateSystemSettingsAction(formData: FormData) {
       app_title: validated.appTitle,
       app_subtitle: validated.appSubtitle,
       logo_url: validated.logoUrl,
+      tree_background_url: validated.treeBackgroundUrl,
       updated_at: new Date().toISOString(),
       updated_by: adminId,
     };

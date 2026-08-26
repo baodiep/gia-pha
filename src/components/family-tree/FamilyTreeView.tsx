@@ -25,6 +25,7 @@ import { computeTreeLayout, TreePersonNodeData } from "@/lib/tree/elk-layout";
 import { getTreeGraphData } from "@/features/tree/actions";
 import { getAncestorPath } from "@/features/tree/search-actions";
 import { getCurrentUser } from "@/features/auth/actions";
+import { getSystemSettings, SystemSettings } from "@/features/admin/settings-actions";
 import { Profile } from "@/types/domain";
 import { Users, Filter, PlusCircle, ChevronsDown, ChevronsUp, RotateCw } from "lucide-react";
 import Link from "next/link";
@@ -48,6 +49,7 @@ function FamilyTreeContent({ initialRootId, onSelectPerson }: FamilyTreeViewProp
   const [currentUser, setCurrentUser] = useState<Profile | null>(null);
   const [selectedPersonId, setSelectedPersonId] = useState<string | null>(null);
   const [selectedIsEditable, setSelectedIsEditable] = useState(false);
+  const [treeBackgroundUrl, setTreeBackgroundUrl] = useState<string | null>(null);
 
   // Add person modal state
   const [showAddPersonModal, setShowAddPersonModal] = useState(false);
@@ -70,6 +72,13 @@ function FamilyTreeContent({ initialRootId, onSelectPerson }: FamilyTreeViewProp
 
   useEffect(() => {
     getCurrentUser().then(setCurrentUser).catch(() => {});
+    getSystemSettings()
+      .then((settings) => {
+        if (settings.tree_background_url) {
+          setTreeBackgroundUrl(settings.tree_background_url);
+        }
+      })
+      .catch(() => {});
   }, []);
 
   // Hàm tính toán tập hợp các node và edge hiển thị dựa trên collapsedIds
@@ -472,8 +481,23 @@ function FamilyTreeContent({ initialRootId, onSelectPerson }: FamilyTreeViewProp
           nodeTypes={nodeTypes}
           minZoom={0.2}
           maxZoom={1.5}
+          className="relative"
+          style={
+            treeBackgroundUrl
+              ? {
+                  backgroundImage: `url(${treeBackgroundUrl})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                  backgroundRepeat: "no-repeat",
+                }
+              : undefined
+          }
         >
-          <Background variant={BackgroundVariant.Dots} gap={16} size={1} />
+          {treeBackgroundUrl ? (
+            <div className="absolute inset-0 bg-white/40 dark:bg-slate-950/60 backdrop-blur-[1px] pointer-events-none z-0" />
+          ) : (
+            <Background variant={BackgroundVariant.Dots} gap={16} size={1} />
+          )}
           <Controls />
         </ReactFlow>
       )}
