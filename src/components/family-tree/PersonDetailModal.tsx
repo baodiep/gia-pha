@@ -60,14 +60,12 @@ export function PersonDetailModal({
   useEffect(() => {
     if (!personId) return;
 
-    let ignore = false;
-    setIsLoading(true);
-    setMessage(null);
-
-    async function loadPerson() {
+    const timeout = setTimeout(async () => {
+      setIsLoading(true);
+      setMessage(null);
       try {
         const data = await getPersonById(personId!);
-        if (!ignore && data) {
+        if (data) {
           setPerson(data);
           setFullName(data.full_name || "");
           setGender(data.gender || "MALE");
@@ -88,15 +86,11 @@ export function PersonDetailModal({
       } catch (err) {
         console.error("Load person error:", err);
       } finally {
-        if (!ignore) setIsLoading(false);
+        setIsLoading(false);
       }
-    }
+    }, 0);
 
-    loadPerson();
-
-    return () => {
-      ignore = true;
-    };
+    return () => clearTimeout(timeout);
   }, [personId]);
 
   if (!personId) return null;
