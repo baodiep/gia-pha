@@ -164,7 +164,7 @@ function FamilyTreeContent({ initialRootId, onSelectPerson }: FamilyTreeViewProp
       setNodes(nodesWithHandlers as unknown as Node[]);
       setEdges(layouted.edges as Edge[]);
 
-      // Sau khi layout xong, bù trừ viewport để nút đang bấm toggle đứng yên trên màn hình
+      // Sau khi layout xong, giữ nguyên trọng tâm màn hình hoặc neo theo node vừa bấm
       if (anchorPersonId && anchorPrevPos) {
         const newAnchorNode = layouted.nodes.find((n) => n.id === anchorPersonId);
         if (newAnchorNode) {
@@ -176,11 +176,16 @@ function FamilyTreeContent({ initialRootId, onSelectPerson }: FamilyTreeViewProp
               y: currentViewport.y - deltaY,
               zoom: currentViewport.zoom,
             },
-            { duration: 0 }
+            { duration: 300 }
           );
         }
       } else if (isInitialLoadRef.current) {
         isInitialLoadRef.current = false;
+        setTimeout(() => {
+          fitView({ padding: 0.2, duration: 400 });
+        }, 50);
+      } else {
+        // Giữ nguyên viewport khi expandAll / collapseAll, tránh giật màn hình
         setTimeout(() => {
           fitView({ padding: 0.2, duration: 400 });
         }, 50);
