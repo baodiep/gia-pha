@@ -4,8 +4,8 @@
 
 ## CURRENT TASK
 
-**T033 — In-app notifications**  
-File: `tasks/T033-inapp-notifications.md`  
+**T034 — Browser push notifications & preferences**  
+File: `tasks/T034-browser-push.md`  
 Status: **READY**
 
 ## Quy tắc chọn task tiếp theo
@@ -51,8 +51,8 @@ Status: **READY**
 | T030 | DONE | Member dashboard & family calendar | T029 | `tasks/T030-member-dashboard-calendar.md` |
 | T031 | DONE | External albums, documents & family history | T021, T022 | `tasks/T031-external-family-resources.md` |
 | T032 | DONE | Event RSVP & attendance | T021, T022 | `tasks/T032-event-rsvp.md` |
-| T033 | READY | In-app notifications | T021, T022, T032 | `tasks/T033-inapp-notifications.md` |
-| T034 | BACKLOG | Browser push notifications & preferences | T033 | `tasks/T034-browser-push.md` |
+| T033 | DONE | In-app notifications | T021, T022, T032 | `tasks/T033-inapp-notifications.md` |
+| T034 | READY | Browser push notifications & preferences | T033 | `tasks/T034-browser-push.md` |
 | T035 | READY | Contribution QR & configuration | T021, T022 | `tasks/T035-contribution-qr.md` |
 | T036 | BACKLOG | Contribution CRUD, search & statistics | T035 | `tasks/T036-contributions-management.md` |
 | T037 | BACKLOG | Contribution Excel import | T036 | `tasks/T037-contributions-import.md` |

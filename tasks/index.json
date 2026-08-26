@@ -1,7 +1,7 @@
 {
   "project": "gia-pha-vercel",
   "schema_version": 1,
-  "current_task": "T033",
+  "current_task": "T034",
   "statuses": [
     "BACKLOG",
     "READY",
@@ -318,7 +318,7 @@
       "id": "T033",
       "title": "In-app notifications",
       "file": "tasks/T033-inapp-notifications.md",
-      "status": "READY",
+      "status": "DONE",
       "depends_on": [
         "T021",
         "T022",
@@ -329,7 +329,7 @@
       "id": "T034",
       "title": "Browser push notifications & preferences",
       "file": "tasks/T034-browser-push.md",
-      "status": "BACKLOG",
+      "status": "READY",
       "depends_on": [
         "T033"
       ]
