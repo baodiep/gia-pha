@@ -18,6 +18,7 @@ import "@xyflow/react/dist/style.css";
 import { PersonNode } from "./PersonNode";
 import { TreeSearchOverlay } from "./TreeSearchOverlay";
 import { PersonDetailModal } from "./PersonDetailModal";
+import { AddPersonModal } from "./AddPersonModal";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { computeTreeLayout, TreePersonNodeData } from "@/lib/tree/elk-layout";
 
@@ -47,6 +48,11 @@ function FamilyTreeContent({ initialRootId, onSelectPerson }: FamilyTreeViewProp
   const [currentUser, setCurrentUser] = useState<Profile | null>(null);
   const [selectedPersonId, setSelectedPersonId] = useState<string | null>(null);
   const [selectedIsEditable, setSelectedIsEditable] = useState(false);
+
+  // Add person modal state
+  const [showAddPersonModal, setShowAddPersonModal] = useState(false);
+  const [addPersonRelative, setAddPersonRelative] = useState<any>(null);
+  const [addPersonRelationType, setAddPersonRelationType] = useState<"CHILD" | "SPOUSE" | "PARENT" | "ROOT">("ROOT");
   
   // Lưu trữ full data ban đầu từ server để toggle expand/collapse
   const rawGraphDataRef = useRef<{
@@ -364,6 +370,22 @@ function FamilyTreeContent({ initialRootId, onSelectPerson }: FamilyTreeViewProp
           </button>
         )}
 
+        {/* Nút Thêm Thành Viên Mới */}
+        {currentUser && (
+          <button
+            onClick={() => {
+              setAddPersonRelative(null);
+              setAddPersonRelationType("ROOT");
+              setShowAddPersonModal(true);
+            }}
+            title="Thêm thành viên mới vào gia phả"
+            className="flex items-center gap-1.5 rounded-lg bg-emerald-700 text-white hover:bg-emerald-800 px-2.5 sm:px-3 py-1.5 text-xs font-bold transition-all shadow-sm cursor-pointer"
+          >
+            <PlusCircle className="h-4 w-4" />
+            <span className="hidden sm:inline">Thêm người</span>
+          </button>
+        )}
+
         <div className="h-4 w-px bg-slate-200 dark:bg-slate-700 mx-0.5" />
 
         {/* Nút Đóng / Mở toàn bộ */}
@@ -472,6 +494,23 @@ function FamilyTreeContent({ initialRootId, onSelectPerson }: FamilyTreeViewProp
         isEditable={selectedIsEditable}
         onClose={() => setSelectedPersonId(null)}
         onSuccess={() => {
+          loadTree();
+        }}
+        onAddRelative={(person, relType) => {
+          setAddPersonRelative(person);
+          setAddPersonRelationType(relType);
+          setShowAddPersonModal(true);
+        }}
+      />
+
+      {/* Add Person Modal */}
+      <AddPersonModal
+        isOpen={showAddPersonModal}
+        relatedPerson={addPersonRelative}
+        relationType={addPersonRelationType}
+        onClose={() => setShowAddPersonModal(false)}
+        onSuccess={() => {
+          setShowAddPersonModal(false);
           loadTree();
         }}
       />
