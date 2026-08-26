@@ -1,7 +1,7 @@
 {
   "project": "gia-pha-vercel",
   "schema_version": 1,
-  "current_task": "T035",
+  "current_task": "T036",
   "statuses": [
     "BACKLOG",
     "READY",
@@ -338,7 +338,7 @@
       "id": "T035",
       "title": "Contribution QR & configuration",
       "file": "tasks/T035-contribution-qr.md",
-      "status": "READY",
+      "status": "DONE",
       "depends_on": [
         "T021",
         "T022"
@@ -348,7 +348,7 @@
       "id": "T036",
       "title": "Contribution CRUD, search & statistics",
       "file": "tasks/T036-contributions-management.md",
-      "status": "BACKLOG",
+      "status": "READY",
       "depends_on": [
         "T035"
       ]
