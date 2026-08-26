@@ -1,7 +1,7 @@
 {
   "project": "gia-pha-vercel",
   "schema_version": 1,
-  "current_task": "T027",
+  "current_task": "T028",
   "statuses": [
     "BACKLOG",
     "READY",
@@ -261,7 +261,7 @@
       "id": "T027",
       "title": "Password reset requests, CAPTCHA & forced password change",
       "file": "tasks/T027-password-reset-requests.md",
-      "status": "READY",
+      "status": "DONE",
       "depends_on": [
         "T021",
         "T022"

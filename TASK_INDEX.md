@@ -4,8 +4,8 @@
 
 ## CURRENT TASK
 
-**T027 — Password reset requests, CAPTCHA & forced password change**  
-File: `tasks/T027-password-reset-requests.md`  
+**T028 — Kinship relationship engine**  
+File: `tasks/T028-kinship-engine.md`  
 Status: **READY**
 
 ## Quy tắc chọn task tiếp theo
@@ -45,7 +45,7 @@ Status: **READY**
 | T024 | DONE | Family import preview & duplicate detection | T023 | `tasks/T024-family-import-preview.md` |
 | T025 | DONE | Transactional family import | T024, T022 | `tasks/T025-family-import-transaction.md` |
 | T026 | DONE | Person claim & profile change requests | T021, T022 | `tasks/T026-person-claim-profile-change.md` |
-| T027 | READY | Password reset requests, CAPTCHA & forced password change | T021, T022 | `tasks/T027-password-reset-requests.md` |
+| T027 | DONE | Password reset requests, CAPTCHA & forced password change | T021, T022 | `tasks/T027-password-reset-requests.md` |
 | T028 | READY | Kinship relationship engine | T020 | `tasks/T028-kinship-engine.md` |
 | T029 | READY | Lunar calendar & memorial recurrence | T020 | `tasks/T029-lunar-memorials.md` |
 | T030 | BACKLOG | Member dashboard & family calendar | T029 | `tasks/T030-member-dashboard-calendar.md` |
