@@ -1,7 +1,7 @@
 {
   "project": "gia-pha-vercel",
   "schema_version": 1,
-  "current_task": "T029",
+  "current_task": "T030",
   "statuses": [
     "BACKLOG",
     "READY",
@@ -280,7 +280,7 @@
       "id": "T029",
       "title": "Lunar calendar & memorial recurrence",
       "file": "tasks/T029-lunar-memorials.md",
-      "status": "READY",
+      "status": "DONE",
       "depends_on": [
         "T020"
       ]
@@ -289,7 +289,7 @@
       "id": "T030",
       "title": "Member dashboard & family calendar",
       "file": "tasks/T030-member-dashboard-calendar.md",
-      "status": "BACKLOG",
+      "status": "READY",
       "depends_on": [
         "T029"
       ]

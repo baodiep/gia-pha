@@ -114,7 +114,7 @@ export function MemorialListView() {
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {members.map((person) => {
-            const { solarText, lunarText } = formatAnniversaryDisplay(person);
+            const { solarText, lunarText, currentYearSolarText } = formatAnniversaryDisplay(person);
 
             return (
               <div
@@ -156,6 +156,13 @@ export function MemorialListView() {
                     <div className="flex items-center gap-2 text-amber-700 dark:text-amber-400 font-medium">
                       <Calendar className="h-3.5 w-3.5 shrink-0" />
                       <span>Ngày giỗ: {lunarText}</span>
+                    </div>
+                  )}
+
+                  {currentYearSolarText && (
+                    <div className="flex items-center gap-2 text-emerald-800 dark:text-emerald-300 font-semibold bg-emerald-50 dark:bg-emerald-950/40 px-2.5 py-1.5 rounded-lg border border-emerald-200 dark:border-emerald-800">
+                      <Calendar className="h-3.5 w-3.5 shrink-0 text-emerald-600" />
+                      <span>{currentYearSolarText}</span>
                     </div>
                   )}
 
