@@ -4,7 +4,9 @@
 
 ## CURRENT TASK
 
-**Không còn task đang mở.**
+**T020 — MVP2 baseline & specification**  
+File: `tasks/T020-mvp2-baseline.md`  
+Status: **READY**
 
 ## Quy tắc chọn task tiếp theo
 
@@ -36,14 +38,34 @@
 | T017 | DONE | E2E critical journeys | T007, T009, T010, T011, T013, T014 | `tasks/T017-e2e.md` |
 | T018 | DONE | Vercel deployment & production checklist | T017 | `tasks/T018-deploy.md` |
 | T019 | DONE | MVP hardening & release | T018 | `tasks/T019-release.md` |
+| T020 | READY | MVP2 baseline & specification | T019 | `tasks/T020-mvp2-baseline.md` |
+| T021 | BACKLOG | MVP2 database foundations | T020 | `tasks/T021-mvp2-database.md` |
+| T022 | BACKLOG | MVP2 RLS, audit & privacy | T021 | `tasks/T022-mvp2-rls-audit.md` |
+| T023 | BACKLOG | Family Excel import template & parser | T021 | `tasks/T023-family-import-parser.md` |
+| T024 | BACKLOG | Family import preview & duplicate detection | T023 | `tasks/T024-family-import-preview.md` |
+| T025 | BACKLOG | Transactional family import | T024, T022 | `tasks/T025-family-import-transaction.md` |
+| T026 | BACKLOG | Person claim & profile change requests | T021, T022 | `tasks/T026-person-claim-profile-change.md` |
+| T027 | BACKLOG | Password reset requests, CAPTCHA & forced password change | T021, T022 | `tasks/T027-password-reset-requests.md` |
+| T028 | BACKLOG | Kinship relationship engine | T020 | `tasks/T028-kinship-engine.md` |
+| T029 | BACKLOG | Lunar calendar & memorial recurrence | T020 | `tasks/T029-lunar-memorials.md` |
+| T030 | BACKLOG | Member dashboard & family calendar | T029 | `tasks/T030-member-dashboard-calendar.md` |
+| T031 | BACKLOG | External albums, documents & family history | T021, T022 | `tasks/T031-external-family-resources.md` |
+| T032 | BACKLOG | Event RSVP & attendance | T021, T022 | `tasks/T032-event-rsvp.md` |
+| T033 | BACKLOG | In-app notifications | T021, T022, T032 | `tasks/T033-inapp-notifications.md` |
+| T034 | BACKLOG | Browser push notifications & preferences | T033 | `tasks/T034-browser-push.md` |
+| T035 | BACKLOG | Contribution QR & configuration | T021, T022 | `tasks/T035-contribution-qr.md` |
+| T036 | BACKLOG | Contribution CRUD, search & statistics | T035 | `tasks/T036-contributions-management.md` |
+| T037 | BACKLOG | Contribution Excel import | T036 | `tasks/T037-contributions-import.md` |
+| T038 | BACKLOG | MVP2 E2E, security & performance | T025, T026, T027, T028, T030, T031, T034, T037 | `tasks/T038-mvp2-e2e-security-performance.md` |
+| T039 | BACKLOG | MVP2 production release | T038 | `tasks/T039-mvp2-release.md` |
 
 ## Commands
 
 ```bash
 npm run task:current
 npm run task:list
-npm run task:start -- T001
-npm run task:done -- T001
-npm run task:block -- T001 "reason"
+npm run task:start -- T020
+npm run task:done -- T020
+npm run task:block -- T020 "reason"
 npm run task:refresh
 ```
