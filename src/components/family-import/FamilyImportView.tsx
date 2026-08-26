@@ -1,13 +1,27 @@
 "use client";
 
 import React, { useState, useTransition } from "react";
-import { parseFamilyExcelAction, getFamilyExcelTemplateBase64 } from "@/lib/family-import/actions";
-import { ParseFamilyExcelResult } from "@/lib/family-import/parser";
-import { Upload, FileSpreadsheet, Download, AlertCircle, CheckCircle2, HelpCircle, ArrowRight } from "lucide-react";
+import { getFamilyExcelTemplateBase64 } from "@/lib/family-import/actions";
+import { parseAndPreviewFamilyExcelAction, filterOrUpdatePreviewRowsAction } from "@/lib/family-import/preview-actions";
+import { FamilyImportPreviewResult, PreviewRowItem } from "@/lib/family-import/preview";
+import { ParsedFamilyMemberRow } from "@/lib/family-import/parser";
+import {
+  Upload,
+  FileSpreadsheet,
+  Download,
+  AlertCircle,
+  CheckCircle2,
+  HelpCircle,
+  Trash2,
+  AlertTriangle,
+  ArrowRight,
+  RefreshCw,
+} from "lucide-react";
 
 export function FamilyImportView() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [parseResult, setParseResult] = useState<ParseFamilyExcelResult | null>(null);
+  const [previewResult, setPreviewResult] = useState<FamilyImportPreviewResult | null>(null);
+  const [activeRows, setActiveRows] = useState<ParsedFamilyMemberRow[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -21,7 +35,9 @@ export function FamilyImportView() {
           byteNumbers[i] = byteCharacters.charCodeAt(i);
         }
         const byteArray = new Uint8Array(byteNumbers);
-        const blob = new Blob([byteArray], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+        const blob = new Blob([byteArray], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
@@ -41,12 +57,13 @@ export function FamilyImportView() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setSelectedFile(e.target.files[0]);
-      setParseResult(null);
+      setPreviewResult(null);
+      setActiveRows([]);
       setErrorMessage(null);
     }
   };
 
-  const handleUploadAndParse = () => {
+  const handleUploadAndAnalyze = () => {
     if (!selectedFile) {
       setErrorMessage("Vui lòng chọn file Excel");
       return;
@@ -57,11 +74,46 @@ export function FamilyImportView() {
 
     startTransition(async () => {
       setErrorMessage(null);
-      const res = await parseFamilyExcelAction(formData);
+      const res = await parseAndPreviewFamilyExcelAction(formData);
       if (res.success && res.data) {
-        setParseResult(res.data);
+        setPreviewResult(res.data);
+        setActiveRows(
+          res.data.rows.map((r) => ({
+            rowNumber: r.rowNumber,
+            externalId: r.externalId,
+            fullName: r.fullName,
+            gender: r.gender,
+            lifeStatus: r.lifeStatus,
+            birthDate: r.birthDate,
+            deathDate: r.deathDate,
+            deathLunarDay: r.deathLunarDay,
+            deathLunarMonth: r.deathLunarMonth,
+            deathLunarIsLeapMonth: r.deathLunarIsLeapMonth,
+            deathAnniversaryNote: r.deathAnniversaryNote,
+            fatherExternalId: r.fatherExternalId,
+            motherExternalId: r.motherExternalId,
+            spouseExternalIds: r.spouseExternalIds,
+            generationNo: r.generationNo,
+            branchCode: r.branchCode,
+            birthPlace: r.birthPlace,
+            hometown: r.hometown,
+            bio: r.bio,
+          }))
+        );
       } else {
-        setErrorMessage(res.error || "Có lỗi xảy ra khi đọc file");
+        setErrorMessage(res.error || "Có lỗi xảy ra khi phân tích file");
+      }
+    });
+  };
+
+  const handleDeleteRow = (externalId: string) => {
+    const nextRows = activeRows.filter((r) => r.externalId !== externalId);
+    setActiveRows(nextRows);
+
+    startTransition(async () => {
+      const res = await filterOrUpdatePreviewRowsAction(nextRows);
+      if (res.success && res.data) {
+        setPreviewResult(res.data);
       }
     });
   };
@@ -96,11 +148,11 @@ export function FamilyImportView() {
           </div>
           <div className="bg-white p-3.5 rounded-lg border border-emerald-100 shadow-sm flex items-start gap-3">
             <span className="bg-emerald-700 text-white font-bold rounded-full w-7 h-7 flex items-center justify-center shrink-0">3</span>
-            <span>Chọn file đã điền và nhấn <strong>&quot;Kiểm tra dữ liệu file&quot;</strong>.</span>
+            <span>Chọn file đã điền và nhấn <strong>&quot;Xem trước & Kiểm tra dữ liệu&quot;</strong>.</span>
           </div>
           <div className="bg-white p-3.5 rounded-lg border border-emerald-100 shadow-sm flex items-start gap-3">
             <span className="bg-emerald-700 text-white font-bold rounded-full w-7 h-7 flex items-center justify-center shrink-0">4</span>
-            <span>Xem trước danh sách hợp lệ và xác nhận nhập vào cây gia phả.</span>
+            <span>Đối chiếu danh sách, loại bỏ lỗi (nếu có) và xác nhận nhập vào gia phả.</span>
           </div>
         </div>
 
@@ -121,7 +173,7 @@ export function FamilyImportView() {
         <label className="block text-lg font-semibold text-gray-900">
           Chọn file Excel từ điện thoại hoặc máy tính:
         </label>
-        
+
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
           <input
             type="file"
@@ -132,7 +184,7 @@ export function FamilyImportView() {
           <button
             type="button"
             disabled={!selectedFile || isPending}
-            onClick={handleUploadAndParse}
+            onClick={handleUploadAndAnalyze}
             className={`inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg text-base sm:text-lg font-semibold text-white min-h-[48px] shrink-0 touch-manipulation cursor-pointer ${
               !selectedFile || isPending
                 ? "bg-gray-400 cursor-not-allowed"
@@ -140,11 +192,14 @@ export function FamilyImportView() {
             }`}
           >
             {isPending ? (
-              <span>Đang kiểm tra...</span>
+              <span className="flex items-center gap-2">
+                <RefreshCw className="w-5 h-5 animate-spin" />
+                Đang phân tích...
+              </span>
             ) : (
               <>
                 <Upload className="w-5 h-5" />
-                <span>Kiểm tra dữ liệu file</span>
+                <span>Xem trước & Kiểm tra dữ liệu</span>
               </>
             )}
           </button>
@@ -158,142 +213,158 @@ export function FamilyImportView() {
         )}
       </div>
 
-      {/* Parse Result Summary */}
-      {parseResult && (
+      {/* Preview Result Summary */}
+      {previewResult && (
         <div className="space-y-6">
           <div className="bg-white border border-gray-200 rounded-xl p-5 sm:p-6 shadow-sm space-y-4">
             <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-              {parseResult.success ? (
+              {previewResult.canProceed ? (
                 <CheckCircle2 className="w-6 h-6 text-green-600" />
               ) : (
-                <AlertCircle className="w-6 h-6 text-amber-600" />
+                <AlertCircle className="w-6 h-6 text-red-600" />
               )}
-              Kết quả kiểm tra file:
+              Kết quả kiểm tra dữ liệu trước khi nhập:
             </h3>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-base sm:text-lg">
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 text-base sm:text-lg">
               <div className="bg-gray-50 border border-gray-200 p-4 rounded-lg">
-                <span className="text-gray-500 block text-sm">Tổng số dòng đọc:</span>
-                <span className="font-bold text-2xl text-gray-900">{parseResult.totalRows}</span>
+                <span className="text-gray-500 block text-sm">Tổng số thành viên:</span>
+                <span className="font-bold text-2xl text-gray-900">{previewResult.totalCount}</span>
               </div>
               <div className="bg-green-50 border border-green-200 p-4 rounded-lg">
-                <span className="text-green-700 block text-sm">Dòng hợp lệ:</span>
-                <span className="font-bold text-2xl text-green-800">{parseResult.validRows.length}</span>
+                <span className="text-green-700 block text-sm">Hợp lệ (Sẵn sàng):</span>
+                <span className="font-bold text-2xl text-green-800">{previewResult.validCount}</span>
+              </div>
+              <div className="bg-amber-50 border border-amber-200 p-4 rounded-lg">
+                <span className="text-amber-700 block text-sm">Có cảnh báo:</span>
+                <span className="font-bold text-2xl text-amber-800">{previewResult.warningCount}</span>
               </div>
               <div className="bg-red-50 border border-red-200 p-4 rounded-lg">
-                <span className="text-red-700 block text-sm">Số lỗi phát hiện:</span>
-                <span className="font-bold text-2xl text-red-800">{parseResult.errors.length}</span>
+                <span className="text-red-700 block text-sm">Có lỗi chặn:</span>
+                <span className="font-bold text-2xl text-red-800">{previewResult.errorCount}</span>
               </div>
             </div>
 
-            {/* Error details if any */}
-            {parseResult.errors.length > 0 && (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-4 space-y-2">
-                <h4 className="font-bold text-red-900 text-base">Danh sách các lỗi cần sửa trong file:</h4>
-                <ul className="list-disc pl-5 space-y-1 text-red-800 text-base">
-                  {parseResult.errors.map((err, i) => (
-                    <li key={i}>
-                      <strong>Dòng {err.rowNumber}:</strong> {err.column ? `[${err.column}] ` : ""}{err.message}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {/* Warning details if any */}
-            {parseResult.warnings.length > 0 && (
-              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 space-y-2">
-                <h4 className="font-bold text-amber-900 text-base">Lưu ý quan hệ tham chiếu:</h4>
-                <ul className="list-disc pl-5 space-y-1 text-amber-800 text-base">
-                  {parseResult.warnings.map((w, i) => (
-                    <li key={i}>
-                      <strong>Dòng {w.rowNumber}:</strong> {w.message}
-                    </li>
-                  ))}
-                </ul>
+            {!previewResult.canProceed && (
+              <div className="p-4 bg-red-50 border border-red-300 rounded-lg text-red-900 text-base space-y-1">
+                <strong>Chưa thể nhập vào gia phả:</strong> Vui lòng loại bỏ hoặc sửa các dòng có lỗi đỏ bên dưới (hoặc chỉnh sửa file Excel gốc rồi tải lên lại).
               </div>
             )}
           </div>
 
-          {/* Valid rows preview */}
-          {parseResult.validRows.length > 0 && (
-            <div className="bg-white border border-gray-200 rounded-xl p-5 sm:p-6 shadow-sm space-y-4">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                <h3 className="text-xl font-bold text-gray-900">
-                  Xem trước danh sách hợp lệ ({parseResult.validRows.length} thành viên)
-                </h3>
-              </div>
+          {/* List/Cards Preview */}
+          <div className="bg-white border border-gray-200 rounded-xl p-5 sm:p-6 shadow-sm space-y-4">
+            <h3 className="text-xl font-bold text-gray-900">
+              Chi tiết từng thành viên trong file ({previewResult.rows.length})
+            </h3>
 
-              {/* Responsive Cards for Mobile & Table for Desktop */}
-              <div className="block sm:hidden space-y-3">
-                {parseResult.validRows.map((r) => (
-                  <div key={r.externalId} className="border border-gray-200 rounded-lg p-4 bg-gray-50 space-y-1 text-base">
-                    <div className="flex justify-between items-center font-bold text-gray-900 text-lg">
-                      <span>{r.fullName}</span>
-                      <span className="text-sm bg-gray-200 px-2 py-0.5 rounded text-gray-700">{r.externalId}</span>
+            <div className="space-y-4">
+              {previewResult.rows.map((row: PreviewRowItem) => (
+                <div
+                  key={row.externalId}
+                  className={`border rounded-xl p-4 sm:p-5 space-y-3 ${
+                    row.status === "ERROR"
+                      ? "border-red-300 bg-red-50/40"
+                      : row.status === "WARNING"
+                      ? "border-amber-300 bg-amber-50/40"
+                      : "border-gray-200 bg-white"
+                  }`}
+                >
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                    <div className="flex items-center gap-3">
+                      <span className="font-mono text-sm bg-gray-200 text-gray-800 px-2.5 py-1 rounded font-bold">
+                        {row.externalId}
+                      </span>
+                      <span className="text-xl font-bold text-gray-900">{row.fullName}</span>
+                      <span
+                        className={`text-sm px-2.5 py-0.5 rounded font-medium ${
+                          row.status === "ERROR"
+                            ? "bg-red-200 text-red-900"
+                            : row.status === "WARNING"
+                            ? "bg-amber-200 text-amber-900"
+                            : "bg-green-100 text-green-800"
+                        }`}
+                      >
+                        {row.status === "ERROR" ? "Có lỗi" : row.status === "WARNING" ? "Cảnh báo" : "Hợp lệ"}
+                      </span>
                     </div>
-                    <div className="text-gray-600">
-                      <span>Giới tính: {r.gender === "MALE" ? "Nam" : r.gender === "FEMALE" ? "Nữ" : "Khác"}</span> |{" "}
-                      <span>{r.lifeStatus === "DECEASED" ? "Đã mất" : "Còn sống"}</span>
+
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteRow(row.externalId)}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm text-red-600 hover:text-red-800 hover:bg-red-100 rounded-lg transition min-h-[44px] cursor-pointer"
+                      title="Bỏ dòng này khỏi đợt nhập"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      <span>Bỏ dòng này</span>
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-base text-gray-700">
+                    <div>
+                      <span className="text-gray-500 text-sm block">Giới tính:</span>
+                      <span>{row.gender === "MALE" ? "Nam" : row.gender === "FEMALE" ? "Nữ" : "Khác"}</span>
                     </div>
-                    {(r.fatherExternalId || r.motherExternalId) && (
-                      <div className="text-sm text-gray-500">
-                        Cha: {r.fatherExternalId || "—"} | Mẹ: {r.motherExternalId || "—"}
+                    <div>
+                      <span className="text-gray-500 text-sm block">Tình trạng:</span>
+                      <span>{row.lifeStatus === "DECEASED" ? "Đã mất" : "Còn sống"}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500 text-sm block">Mã cha / Mẹ:</span>
+                      <span>{row.fatherExternalId || "—"} / {row.motherExternalId || "—"}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500 text-sm block">Vợ/Chồng:</span>
+                      <span>{row.spouseExternalIds.length > 0 ? row.spouseExternalIds.join(", ") : "—"}</span>
+                    </div>
+                  </div>
+
+                  {/* Errors display */}
+                  {row.errors.length > 0 && (
+                    <div className="p-3 bg-red-100/80 border border-red-200 rounded-lg text-red-900 text-base space-y-1">
+                      <div className="font-bold flex items-center gap-1.5">
+                        <AlertCircle className="w-4 h-4 text-red-700" />
+                        Lỗi chặn cần sửa:
                       </div>
-                    )}
-                  </div>
-                ))}
-              </div>
+                      <ul className="list-disc pl-5 text-sm sm:text-base">
+                        {row.errors.map((err, i) => (
+                          <li key={i}>{err}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
 
-              <div className="hidden sm:block overflow-x-auto">
-                <table className="w-full text-left border-collapse text-base">
-                  <thead>
-                    <tr className="bg-gray-100 text-gray-700 border-b">
-                      <th className="p-3">Mã</th>
-                      <th className="p-3">Họ và tên</th>
-                      <th className="p-3">Giới tính</th>
-                      <th className="p-3">Trạng thái</th>
-                      <th className="p-3">Đời</th>
-                      <th className="p-3">Mã cha / mẹ</th>
-                      <th className="p-3">Mã vợ/chồng</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-200">
-                    {parseResult.validRows.map((r) => (
-                      <tr key={r.externalId} className="hover:bg-gray-50">
-                        <td className="p-3 font-mono text-sm font-semibold text-gray-700">{r.externalId}</td>
-                        <td className="p-3 font-medium text-gray-900">{r.fullName}</td>
-                        <td className="p-3 text-gray-700">{r.gender === "MALE" ? "Nam" : r.gender === "FEMALE" ? "Nữ" : "Khác"}</td>
-                        <td className="p-3">
-                          <span className={`px-2 py-0.5 rounded text-sm font-medium ${
-                            r.lifeStatus === "DECEASED" ? "bg-gray-200 text-gray-800" : "bg-green-100 text-green-800"
-                          }`}>
-                            {r.lifeStatus === "DECEASED" ? "Đã mất" : "Còn sống"}
-                          </span>
-                        </td>
-                        <td className="p-3 text-gray-700">{r.generationNo ? `Đời ${r.generationNo}` : "—"}</td>
-                        <td className="p-3 text-sm text-gray-600">
-                          {r.fatherExternalId || r.motherExternalId ? `${r.fatherExternalId || "—"} / ${r.motherExternalId || "—"}` : "—"}
-                        </td>
-                        <td className="p-3 text-sm text-gray-600">
-                          {r.spouseExternalIds.length > 0 ? r.spouseExternalIds.join(", ") : "—"}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-
-              {parseResult.success && (
-                <div className="pt-3 border-t flex justify-end">
-                  <div className="flex items-center gap-2 text-base text-gray-500 italic">
-                    <span>Sẵn sàng cho bước xem trước & đối chiếu trùng lặp (Task T024)</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </div>
+                  {/* Warnings display */}
+                  {row.warnings.length > 0 && (
+                    <div className="p-3 bg-amber-100/80 border border-amber-200 rounded-lg text-amber-900 text-base space-y-1">
+                      <div className="font-bold flex items-center gap-1.5">
+                        <AlertTriangle className="w-4 h-4 text-amber-700" />
+                        Cảnh báo kiểm tra:
+                      </div>
+                      <ul className="list-disc pl-5 text-sm sm:text-base">
+                        {row.warnings.map((w, i) => (
+                          <li key={i}>{w}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
-              )}
+              ))}
             </div>
-          )}
+
+            {/* Bottom Proceed notice */}
+            {previewResult.canProceed && (
+              <div className="pt-4 border-t flex flex-col sm:flex-row justify-between items-center gap-3">
+                <div className="text-green-800 text-base font-semibold">
+                  ✓ Toàn bộ {previewResult.totalCount} thành viên đã sẵn sàng để nhập vào cơ sở dữ liệu (Task T025).
+                </div>
+                <div className="flex items-center gap-2 text-base text-gray-500 italic">
+                  <span>Bước tiếp theo: Transactional import</span>
+                  <ArrowRight className="w-5 h-5" />
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>

@@ -1,7 +1,7 @@
 {
   "project": "gia-pha-vercel",
   "schema_version": 1,
-  "current_task": "T024",
+  "current_task": "T025",
   "statuses": [
     "BACKLOG",
     "READY",
@@ -232,7 +232,7 @@
       "id": "T024",
       "title": "Family import preview & duplicate detection",
       "file": "tasks/T024-family-import-preview.md",
-      "status": "READY",
+      "status": "DONE",
       "depends_on": [
         "T023"
       ]
@@ -241,7 +241,7 @@
       "id": "T025",
       "title": "Transactional family import",
       "file": "tasks/T025-family-import-transaction.md",
-      "status": "BACKLOG",
+      "status": "READY",
       "depends_on": [
         "T024",
         "T022"
