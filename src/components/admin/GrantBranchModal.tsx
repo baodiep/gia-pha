@@ -28,8 +28,8 @@ export function GrantBranchModal({ isOpen, onClose, onSuccess }: GrantBranchModa
   useEffect(() => {
     if (!isOpen) return;
 
-    setMessage(null);
     startTransition(async () => {
+      setMessage(null);
       try {
         const [accList, personList] = await Promise.all([
           getActiveEligibleAccounts(),

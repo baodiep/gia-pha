@@ -25,6 +25,7 @@ interface PersonDetailModalProps {
   isEditable?: boolean;
   onClose: () => void;
   onSuccess: () => void;
+  onAddRelative?: (person: Person, relationType: "CHILD" | "SPOUSE" | "PARENT") => void;
 }
 
 export function PersonDetailModal({
@@ -32,6 +33,7 @@ export function PersonDetailModal({
   isEditable = false,
   onClose,
   onSuccess,
+  onAddRelative,
 }: PersonDetailModalProps) {
   const [person, setPerson] = useState<Person | null>(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -61,10 +63,12 @@ export function PersonDetailModal({
     if (!personId) return;
 
     let ignore = false;
-    setIsLoading(true);
-    setMessage(null);
 
     async function loadPerson() {
+      if (!ignore) {
+        setIsLoading(true);
+        setMessage(null);
+      }
       try {
         const data = await getPersonById(personId!);
         if (!ignore && data) {
@@ -573,14 +577,42 @@ export function PersonDetailModal({
               </div>
             </>
           ) : (
-            <div className="w-full flex justify-end">
-              <button
-                type="button"
-                onClick={onClose}
-                className="rounded-xl bg-slate-900 px-5 py-2.5 text-xs sm:text-sm font-bold text-white hover:bg-slate-800 dark:bg-white dark:text-slate-900 min-h-[44px]"
-              >
-                Đóng
-              </button>
+            <div className="w-full flex flex-col sm:flex-row items-center justify-between gap-2">
+              {isEditable && onAddRelative && person && (
+                <div className="flex flex-wrap items-center gap-1.5 w-full sm:w-auto">
+                  <button
+                    type="button"
+                    onClick={() => onAddRelative(person, "CHILD")}
+                    className="flex-1 sm:flex-none px-3 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold rounded-xl text-xs sm:text-sm flex items-center justify-center gap-1 min-h-[40px] cursor-pointer"
+                  >
+                    <span>+ Thêm con</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onAddRelative(person, "SPOUSE")}
+                    className="flex-1 sm:flex-none px-3 py-2 bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-300 font-bold rounded-xl text-xs sm:text-sm flex items-center justify-center gap-1 min-h-[40px] cursor-pointer"
+                  >
+                    <span>+ Thêm vợ/chồng</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onAddRelative(person, "PARENT")}
+                    className="flex-1 sm:flex-none px-3 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-300 font-bold rounded-xl text-xs sm:text-sm flex items-center justify-center gap-1 min-h-[40px] cursor-pointer"
+                  >
+                    <span>+ Thêm cha/mẹ</span>
+                  </button>
+                </div>
+              )}
+
+              <div className="w-full sm:w-auto flex justify-end">
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="w-full sm:w-auto rounded-xl bg-slate-900 px-5 py-2.5 text-xs sm:text-sm font-bold text-white hover:bg-slate-800 dark:bg-white dark:text-slate-900 min-h-[44px] cursor-pointer"
+                >
+                  Đóng
+                </button>
+              </div>
             </div>
           )}
         </div>
