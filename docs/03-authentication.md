@@ -3,14 +3,14 @@
 ## Visible account
 
 Phone input `0912 345 678` được normalize thành `0912345678`.
-Tên đăng nhập hiển thị: `0912345678@`.
+Tên đăng nhập hiển thị: `0912345678` (chuẩn hóa số điện thoại, không còn hậu tố `@`).
 
 ## Internal identity
 
 Supabase Auth yêu cầu identifier kỹ thuật hợp lệ cho password flow. Server map:
 
 ```text
-0912345678@ -> 0912345678@auth.giapha.local
+0912345678 -> 0912345678@auth.giapha.local
 ```
 
 Domain lấy từ `AUTH_INTERNAL_EMAIL_DOMAIN`.

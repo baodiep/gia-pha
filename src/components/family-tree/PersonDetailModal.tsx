@@ -61,10 +61,10 @@ export function PersonDetailModal({
     if (!personId) return;
 
     let ignore = false;
-    setIsLoading(true);
-    setMessage(null);
 
     async function loadPerson() {
+      setIsLoading(true);
+      setMessage(null);
       try {
         const data = await getPersonById(personId!);
         if (!ignore && data) {

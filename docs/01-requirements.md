@@ -30,7 +30,7 @@ Xây dựng web gia phả cho phép toàn bộ thành viên xem cây dòng họ,
 
 - Self-register hoặc Admin create -> `PENDING`.
 - Admin activate -> `ACTIVE`.
-- Visible username = số điện thoại chuẩn hóa + `@`.
+- Visible username = số điện thoại chuẩn hóa (ví dụ: `0912345678`, không còn hậu tố `@`).
 - Login bằng username + password.
 - SMS activation/OTP để Phase 2.
 

@@ -1,47 +1,391 @@
 {
   "project": "gia-pha-vercel",
   "schema_version": 1,
-  "current_task": "T020",
-  "statuses": ["BACKLOG", "READY", "IN_PROGRESS", "BLOCKED", "DONE"],
+  "current_task": "T021",
+  "statuses": [
+    "BACKLOG",
+    "READY",
+    "IN_PROGRESS",
+    "BLOCKED",
+    "DONE"
+  ],
   "tasks": [
-    {"id":"T001","title":"Bootstrap project & quality gates","file":"tasks/T001-bootstrap.md","status":"DONE","depends_on":[]},
-    {"id":"T002","title":"Apply database schema & seed","file":"tasks/T002-database.md","status":"DONE","depends_on":["T001"]},
-    {"id":"T003","title":"Account registration, activation & login","file":"tasks/T003-auth.md","status":"DONE","depends_on":["T002"]},
-    {"id":"T004","title":"Person CRUD + deceased fields","file":"tasks/T004-persons.md","status":"DONE","depends_on":["T003"]},
-    {"id":"T005","title":"Parent-child & spouse relationships","file":"tasks/T005-relationships.md","status":"DONE","depends_on":["T004"]},
-    {"id":"T006","title":"Permission service + branch grants","file":"tasks/T006-permissions.md","status":"DONE","depends_on":["T005"]},
-    {"id":"T007","title":"RLS security policies","file":"tasks/T007-rls.md","status":"DONE","depends_on":["T006"]},
-    {"id":"T008","title":"Family tree visualization","file":"tasks/T008-tree-ui.md","status":"DONE","depends_on":["T005","T006"]},
-    {"id":"T009","title":"Search & tree focus","file":"tasks/T009-search.md","status":"DONE","depends_on":["T008"]},
-    {"id":"T010","title":"Memorials & deceased members","file":"tasks/T010-memorials.md","status":"DONE","depends_on":["T004"]},
-    {"id":"T011","title":"Family events","file":"tasks/T011-events.md","status":"DONE","depends_on":["T006"]},
-    {"id":"T012","title":"Admin account management","file":"tasks/T012-admin-accounts.md","status":"DONE","depends_on":["T003"]},
-    {"id":"T013","title":"Admin permission management","file":"tasks/T013-admin-permissions.md","status":"DONE","depends_on":["T006","T008"]},
-    {"id":"T014","title":"Audit log & recycle bin","file":"tasks/T014-audit-trash.md","status":"DONE","depends_on":["T004","T006"]},
-    {"id":"T015","title":"Avatar & basic storage","file":"tasks/T015-storage.md","status":"DONE","depends_on":["T004","T007"]},
-    {"id":"T016","title":"Admin dashboard & navigation","file":"tasks/T016-admin-dashboard.md","status":"DONE","depends_on":["T010","T011","T012","T013","T014"]},
-    {"id":"T017","title":"E2E critical journeys","file":"tasks/T017-e2e.md","status":"DONE","depends_on":["T007","T009","T010","T011","T013","T014"]},
-    {"id":"T018","title":"Vercel deployment & production checklist","file":"tasks/T018-deploy.md","status":"DONE","depends_on":["T017"]},
-    {"id":"T019","title":"MVP hardening & release","file":"tasks/T019-release.md","status":"DONE","depends_on":["T018"]},
-    {"id":"T020","title":"MVP2 baseline & specification","file":"tasks/T020-mvp2-baseline.md","status":"READY","depends_on":["T019"]},
-    {"id":"T021","title":"MVP2 database foundations","file":"tasks/T021-mvp2-database.md","status":"BACKLOG","depends_on":["T020"]},
-    {"id":"T022","title":"MVP2 RLS, audit & privacy","file":"tasks/T022-mvp2-rls-audit.md","status":"BACKLOG","depends_on":["T021"]},
-    {"id":"T023","title":"Family Excel import template & parser","file":"tasks/T023-family-import-parser.md","status":"BACKLOG","depends_on":["T021"]},
-    {"id":"T024","title":"Family import preview & duplicate detection","file":"tasks/T024-family-import-preview.md","status":"BACKLOG","depends_on":["T023"]},
-    {"id":"T025","title":"Transactional family import","file":"tasks/T025-family-import-transaction.md","status":"BACKLOG","depends_on":["T024","T022"]},
-    {"id":"T026","title":"Person claim & profile change requests","file":"tasks/T026-person-claim-profile-change.md","status":"BACKLOG","depends_on":["T021","T022"]},
-    {"id":"T027","title":"Password reset requests, CAPTCHA & forced password change","file":"tasks/T027-password-reset-requests.md","status":"BACKLOG","depends_on":["T021","T022"]},
-    {"id":"T028","title":"Kinship relationship engine","file":"tasks/T028-kinship-engine.md","status":"BACKLOG","depends_on":["T020"]},
-    {"id":"T029","title":"Lunar calendar & memorial recurrence","file":"tasks/T029-lunar-memorials.md","status":"BACKLOG","depends_on":["T020"]},
-    {"id":"T030","title":"Member dashboard & family calendar","file":"tasks/T030-member-dashboard-calendar.md","status":"BACKLOG","depends_on":["T029"]},
-    {"id":"T031","title":"External albums, documents & family history","file":"tasks/T031-external-family-resources.md","status":"BACKLOG","depends_on":["T021","T022"]},
-    {"id":"T032","title":"Event RSVP & attendance","file":"tasks/T032-event-rsvp.md","status":"BACKLOG","depends_on":["T021","T022"]},
-    {"id":"T033","title":"In-app notifications","file":"tasks/T033-inapp-notifications.md","status":"BACKLOG","depends_on":["T021","T022","T032"]},
-    {"id":"T034","title":"Browser push notifications & preferences","file":"tasks/T034-browser-push.md","status":"BACKLOG","depends_on":["T033"]},
-    {"id":"T035","title":"Contribution QR & configuration","file":"tasks/T035-contribution-qr.md","status":"BACKLOG","depends_on":["T021","T022"]},
-    {"id":"T036","title":"Contribution CRUD, search & statistics","file":"tasks/T036-contributions-management.md","status":"BACKLOG","depends_on":["T035"]},
-    {"id":"T037","title":"Contribution Excel import","file":"tasks/T037-contributions-import.md","status":"BACKLOG","depends_on":["T036"]},
-    {"id":"T038","title":"MVP2 E2E, security & performance","file":"tasks/T038-mvp2-e2e-security-performance.md","status":"BACKLOG","depends_on":["T025","T026","T027","T028","T030","T031","T034","T037"]},
-    {"id":"T039","title":"MVP2 production release","file":"tasks/T039-mvp2-release.md","status":"BACKLOG","depends_on":["T038"]}
+    {
+      "id": "T001",
+      "title": "Bootstrap project & quality gates",
+      "file": "tasks/T001-bootstrap.md",
+      "status": "DONE",
+      "depends_on": []
+    },
+    {
+      "id": "T002",
+      "title": "Apply database schema & seed",
+      "file": "tasks/T002-database.md",
+      "status": "DONE",
+      "depends_on": [
+        "T001"
+      ]
+    },
+    {
+      "id": "T003",
+      "title": "Account registration, activation & login",
+      "file": "tasks/T003-auth.md",
+      "status": "DONE",
+      "depends_on": [
+        "T002"
+      ]
+    },
+    {
+      "id": "T004",
+      "title": "Person CRUD + deceased fields",
+      "file": "tasks/T004-persons.md",
+      "status": "DONE",
+      "depends_on": [
+        "T003"
+      ]
+    },
+    {
+      "id": "T005",
+      "title": "Parent-child & spouse relationships",
+      "file": "tasks/T005-relationships.md",
+      "status": "DONE",
+      "depends_on": [
+        "T004"
+      ]
+    },
+    {
+      "id": "T006",
+      "title": "Permission service + branch grants",
+      "file": "tasks/T006-permissions.md",
+      "status": "DONE",
+      "depends_on": [
+        "T005"
+      ]
+    },
+    {
+      "id": "T007",
+      "title": "RLS security policies",
+      "file": "tasks/T007-rls.md",
+      "status": "DONE",
+      "depends_on": [
+        "T006"
+      ]
+    },
+    {
+      "id": "T008",
+      "title": "Family tree visualization",
+      "file": "tasks/T008-tree-ui.md",
+      "status": "DONE",
+      "depends_on": [
+        "T005",
+        "T006"
+      ]
+    },
+    {
+      "id": "T009",
+      "title": "Search & tree focus",
+      "file": "tasks/T009-search.md",
+      "status": "DONE",
+      "depends_on": [
+        "T008"
+      ]
+    },
+    {
+      "id": "T010",
+      "title": "Memorials & deceased members",
+      "file": "tasks/T010-memorials.md",
+      "status": "DONE",
+      "depends_on": [
+        "T004"
+      ]
+    },
+    {
+      "id": "T011",
+      "title": "Family events",
+      "file": "tasks/T011-events.md",
+      "status": "DONE",
+      "depends_on": [
+        "T006"
+      ]
+    },
+    {
+      "id": "T012",
+      "title": "Admin account management",
+      "file": "tasks/T012-admin-accounts.md",
+      "status": "DONE",
+      "depends_on": [
+        "T003"
+      ]
+    },
+    {
+      "id": "T013",
+      "title": "Admin permission management",
+      "file": "tasks/T013-admin-permissions.md",
+      "status": "DONE",
+      "depends_on": [
+        "T006",
+        "T008"
+      ]
+    },
+    {
+      "id": "T014",
+      "title": "Audit log & recycle bin",
+      "file": "tasks/T014-audit-trash.md",
+      "status": "DONE",
+      "depends_on": [
+        "T004",
+        "T006"
+      ]
+    },
+    {
+      "id": "T015",
+      "title": "Avatar & basic storage",
+      "file": "tasks/T015-storage.md",
+      "status": "DONE",
+      "depends_on": [
+        "T004",
+        "T007"
+      ]
+    },
+    {
+      "id": "T016",
+      "title": "Admin dashboard & navigation",
+      "file": "tasks/T016-admin-dashboard.md",
+      "status": "DONE",
+      "depends_on": [
+        "T010",
+        "T011",
+        "T012",
+        "T013",
+        "T014"
+      ]
+    },
+    {
+      "id": "T017",
+      "title": "E2E critical journeys",
+      "file": "tasks/T017-e2e.md",
+      "status": "DONE",
+      "depends_on": [
+        "T007",
+        "T009",
+        "T010",
+        "T011",
+        "T013",
+        "T014"
+      ]
+    },
+    {
+      "id": "T018",
+      "title": "Vercel deployment & production checklist",
+      "file": "tasks/T018-deploy.md",
+      "status": "DONE",
+      "depends_on": [
+        "T017"
+      ]
+    },
+    {
+      "id": "T019",
+      "title": "MVP hardening & release",
+      "file": "tasks/T019-release.md",
+      "status": "DONE",
+      "depends_on": [
+        "T018"
+      ]
+    },
+    {
+      "id": "T020",
+      "title": "MVP2 baseline & specification",
+      "file": "tasks/T020-mvp2-baseline.md",
+      "status": "DONE",
+      "depends_on": [
+        "T019"
+      ]
+    },
+    {
+      "id": "T021",
+      "title": "MVP2 database foundations",
+      "file": "tasks/T021-mvp2-database.md",
+      "status": "READY",
+      "depends_on": [
+        "T020"
+      ]
+    },
+    {
+      "id": "T022",
+      "title": "MVP2 RLS, audit & privacy",
+      "file": "tasks/T022-mvp2-rls-audit.md",
+      "status": "BACKLOG",
+      "depends_on": [
+        "T021"
+      ]
+    },
+    {
+      "id": "T023",
+      "title": "Family Excel import template & parser",
+      "file": "tasks/T023-family-import-parser.md",
+      "status": "BACKLOG",
+      "depends_on": [
+        "T021"
+      ]
+    },
+    {
+      "id": "T024",
+      "title": "Family import preview & duplicate detection",
+      "file": "tasks/T024-family-import-preview.md",
+      "status": "BACKLOG",
+      "depends_on": [
+        "T023"
+      ]
+    },
+    {
+      "id": "T025",
+      "title": "Transactional family import",
+      "file": "tasks/T025-family-import-transaction.md",
+      "status": "BACKLOG",
+      "depends_on": [
+        "T024",
+        "T022"
+      ]
+    },
+    {
+      "id": "T026",
+      "title": "Person claim & profile change requests",
+      "file": "tasks/T026-person-claim-profile-change.md",
+      "status": "BACKLOG",
+      "depends_on": [
+        "T021",
+        "T022"
+      ]
+    },
+    {
+      "id": "T027",
+      "title": "Password reset requests, CAPTCHA & forced password change",
+      "file": "tasks/T027-password-reset-requests.md",
+      "status": "BACKLOG",
+      "depends_on": [
+        "T021",
+        "T022"
+      ]
+    },
+    {
+      "id": "T028",
+      "title": "Kinship relationship engine",
+      "file": "tasks/T028-kinship-engine.md",
+      "status": "READY",
+      "depends_on": [
+        "T020"
+      ]
+    },
+    {
+      "id": "T029",
+      "title": "Lunar calendar & memorial recurrence",
+      "file": "tasks/T029-lunar-memorials.md",
+      "status": "READY",
+      "depends_on": [
+        "T020"
+      ]
+    },
+    {
+      "id": "T030",
+      "title": "Member dashboard & family calendar",
+      "file": "tasks/T030-member-dashboard-calendar.md",
+      "status": "BACKLOG",
+      "depends_on": [
+        "T029"
+      ]
+    },
+    {
+      "id": "T031",
+      "title": "External albums, documents & family history",
+      "file": "tasks/T031-external-family-resources.md",
+      "status": "BACKLOG",
+      "depends_on": [
+        "T021",
+        "T022"
+      ]
+    },
+    {
+      "id": "T032",
+      "title": "Event RSVP & attendance",
+      "file": "tasks/T032-event-rsvp.md",
+      "status": "BACKLOG",
+      "depends_on": [
+        "T021",
+        "T022"
+      ]
+    },
+    {
+      "id": "T033",
+      "title": "In-app notifications",
+      "file": "tasks/T033-inapp-notifications.md",
+      "status": "BACKLOG",
+      "depends_on": [
+        "T021",
+        "T022",
+        "T032"
+      ]
+    },
+    {
+      "id": "T034",
+      "title": "Browser push notifications & preferences",
+      "file": "tasks/T034-browser-push.md",
+      "status": "BACKLOG",
+      "depends_on": [
+        "T033"
+      ]
+    },
+    {
+      "id": "T035",
+      "title": "Contribution QR & configuration",
+      "file": "tasks/T035-contribution-qr.md",
+      "status": "BACKLOG",
+      "depends_on": [
+        "T021",
+        "T022"
+      ]
+    },
+    {
+      "id": "T036",
+      "title": "Contribution CRUD, search & statistics",
+      "file": "tasks/T036-contributions-management.md",
+      "status": "BACKLOG",
+      "depends_on": [
+        "T035"
+      ]
+    },
+    {
+      "id": "T037",
+      "title": "Contribution Excel import",
+      "file": "tasks/T037-contributions-import.md",
+      "status": "BACKLOG",
+      "depends_on": [
+        "T036"
+      ]
+    },
+    {
+      "id": "T038",
+      "title": "MVP2 E2E, security & performance",
+      "file": "tasks/T038-mvp2-e2e-security-performance.md",
+      "status": "BACKLOG",
+      "depends_on": [
+        "T025",
+        "T026",
+        "T027",
+        "T028",
+        "T030",
+        "T031",
+        "T034",
+        "T037"
+      ]
+    },
+    {
+      "id": "T039",
+      "title": "MVP2 production release",
+      "file": "tasks/T039-mvp2-release.md",
+      "status": "BACKLOG",
+      "depends_on": [
+        "T038"
+      ]
+    }
   ]
 }
