@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useCallback, useMemo } from "react";
+import React, { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import {
   ReactFlow,
   Controls,
@@ -25,7 +25,7 @@ import { getTreeGraphData } from "@/features/tree/actions";
 import { getAncestorPath } from "@/features/tree/search-actions";
 import { getCurrentUser } from "@/features/auth/actions";
 import { Profile } from "@/types/domain";
-import { Users, Filter, PlusCircle } from "lucide-react";
+import { Users, Filter, PlusCircle, ChevronsDown, ChevronsUp, RotateCw } from "lucide-react";
 import Link from "next/link";
 
 const nodeTypes = {
@@ -47,61 +47,200 @@ function FamilyTreeContent({ initialRootId, onSelectPerson }: FamilyTreeViewProp
   const [currentUser, setCurrentUser] = useState<Profile | null>(null);
   const [selectedPersonId, setSelectedPersonId] = useState<string | null>(null);
   const [selectedIsEditable, setSelectedIsEditable] = useState(false);
-  const { setCenter, getNode } = useReactFlow();
+  
+  // Lưu trữ full data ban đầu từ server để toggle expand/collapse
+  const rawGraphDataRef = useRef<{
+    nodes: Array<{ id: string; data: TreePersonNodeData }>;
+    edges: Array<{ id: string; source: string; target: string }>;
+  }>({ nodes: [], edges: [] });
+
+  // Set các ID person đang bị collapse (ẩn cây con)
+  const [collapsedIds, setCollapsedIds] = useState<Set<string>>(new Set());
+  const [anchorId, setAnchorId] = useState<string | null>(null);
+
+  // State giữ viewport tự do, chỉ fitView ở lần tải đầu tiên
+  const isInitialLoadRef = useRef(true);
+  const { setCenter, getNode, getViewport, setViewport, fitView } = useReactFlow();
 
   useEffect(() => {
     getCurrentUser().then(setCurrentUser).catch(() => {});
   }, []);
 
+  // Hàm tính toán tập hợp các node và edge hiển thị dựa trên collapsedIds
+  const applyCollapseAndLayout = useCallback(
+    async (
+      allNodes: Array<{ id: string; data: TreePersonNodeData }>,
+      allEdges: Array<{ id: string; source: string; target: string }>,
+      collapsed: Set<string>,
+      anchorPersonId?: string
+    ) => {
+      // Lưu lại tọa độ của node anchor trước khi relayout (nếu có)
+      let anchorPrevPos: { x: number; y: number } | null = null;
+      if (anchorPersonId) {
+        const prevNode = getNode(anchorPersonId);
+        if (prevNode) {
+          anchorPrevPos = { x: prevNode.position.x, y: prevNode.position.y };
+        }
+      }
+
+      const currentViewport = getViewport();
+
+      // Xây dựng bản đồ quan hệ cha -> con
+      const childrenMap = new Map<string, string[]>();
+      for (const e of allEdges) {
+        if (!childrenMap.has(e.source)) childrenMap.set(e.source, []);
+        childrenMap.get(e.source)!.push(e.target);
+      }
+
+      // Tìm tất cả các hậu duệ cần ẩn (DFS / BFS)
+      const hiddenNodeIds = new Set<string>();
+      const queue: string[] = [];
+
+      collapsed.forEach((collapsedParentId) => {
+        const directChildren = childrenMap.get(collapsedParentId) || [];
+        directChildren.forEach((childId) => {
+          if (!hiddenNodeIds.has(childId)) {
+            hiddenNodeIds.add(childId);
+            queue.push(childId);
+          }
+        });
+      });
+
+      while (queue.length > 0) {
+        const currentId = queue.shift()!;
+        const descendants = childrenMap.get(currentId) || [];
+        for (const descId of descendants) {
+          if (!hiddenNodeIds.has(descId)) {
+            hiddenNodeIds.add(descId);
+            queue.push(descId);
+          }
+        }
+      }
+
+      // Lọc các node không bị ẩn
+      const visibleNodes = allNodes
+        .filter((n) => !hiddenNodeIds.has(n.id))
+        .map((n) => ({
+          ...n,
+          data: {
+            ...n.data,
+            isExpanded: !collapsed.has(n.id),
+          },
+        }));
+
+      const visibleNodeIdSet = new Set(visibleNodes.map((n) => n.id));
+      const visibleEdges = allEdges.filter(
+        (e) => visibleNodeIdSet.has(e.source) && visibleNodeIdSet.has(e.target)
+      );
+
+      const layouted = await computeTreeLayout(visibleNodes, visibleEdges, {
+        direction: "DOWN",
+      });
+
+      // Gắn callback toggle và click spouse vào data từng node
+      const nodesWithHandlers = layouted.nodes.map((node) => ({
+        ...node,
+        data: {
+          ...node.data,
+          onSpouseClick: (spouseId: string) => {
+            setSelectedPersonId(spouseId);
+            setSelectedIsEditable((node.data as any)?.isEditable ?? false);
+          },
+          onToggleExpand: (personId: string) => {
+            setAnchorId(personId);
+            setCollapsedIds((prev) => {
+              const next = new Set(prev);
+              if (next.has(personId)) {
+                next.delete(personId);
+              } else {
+                next.add(personId);
+              }
+              return next;
+            });
+          },
+        },
+      }));
+
+      setNodes(nodesWithHandlers as unknown as Node[]);
+      setEdges(layouted.edges as Edge[]);
+
+      // Sau khi layout xong, bù trừ viewport để nút đang bấm toggle đứng yên trên màn hình
+      if (anchorPersonId && anchorPrevPos) {
+        const newAnchorNode = layouted.nodes.find((n) => n.id === anchorPersonId);
+        if (newAnchorNode) {
+          const deltaX = (newAnchorNode.position.x - anchorPrevPos.x) * currentViewport.zoom;
+          const deltaY = (newAnchorNode.position.y - anchorPrevPos.y) * currentViewport.zoom;
+          setViewport(
+            {
+              x: currentViewport.x - deltaX,
+              y: currentViewport.y - deltaY,
+              zoom: currentViewport.zoom,
+            },
+            { duration: 0 }
+          );
+        }
+      } else if (isInitialLoadRef.current) {
+        isInitialLoadRef.current = false;
+        setTimeout(() => {
+          fitView({ padding: 0.2, duration: 400 });
+        }, 50);
+      }
+    },
+    [getNode, getViewport, setViewport, setNodes, setEdges, fitView]
+  );
 
   const loadTree = useCallback(async () => {
     setIsLoading(true);
     try {
-      const cleanRootId = initialRootId && initialRootId !== "$undefined" && initialRootId !== "undefined" ? initialRootId : undefined;
+      const cleanRootId =
+        initialRootId && initialRootId !== "$undefined" && initialRootId !== "undefined"
+          ? initialRootId
+          : undefined;
       const data = await getTreeGraphData({
         rootPersonId: cleanRootId,
         myBranchOnly,
       });
 
+      rawGraphDataRef.current = {
+        nodes: data.nodes,
+        edges: data.edges,
+      };
       setManagedRoots(data.userManagedRootIds);
 
-      const layouted = await computeTreeLayout(data.nodes, data.edges, {
-        direction: "DOWN",
-      });
-
-      setNodes(layouted.nodes as unknown as Node[]);
-      setEdges(layouted.edges as Edge[]);
+      await applyCollapseAndLayout(data.nodes, data.edges, collapsedIds);
     } catch (err) {
       console.error("Failed to load tree:", err);
     } finally {
       setIsLoading(false);
     }
-  }, [initialRootId, myBranchOnly, setNodes, setEdges]);
+  }, [initialRootId, myBranchOnly, collapsedIds, applyCollapseAndLayout]);
 
   useEffect(() => {
     let ignore = false;
     async function fetchTree() {
       setIsLoading(true);
       try {
-        const cleanRootId = initialRootId && initialRootId !== "$undefined" && initialRootId !== "undefined" ? initialRootId : undefined;
+        const cleanRootId =
+          initialRootId && initialRootId !== "$undefined" && initialRootId !== "undefined"
+            ? initialRootId
+            : undefined;
         const data = await getTreeGraphData({
           rootPersonId: cleanRootId,
           myBranchOnly,
         });
 
         if (!ignore) {
+          rawGraphDataRef.current = {
+            nodes: data.nodes,
+            edges: data.edges,
+          };
           setManagedRoots(data.userManagedRootIds);
-          const layouted = await computeTreeLayout(data.nodes, data.edges, {
-            direction: "DOWN",
-          });
-          setNodes(layouted.nodes as unknown as Node[]);
-          setEdges(layouted.edges as Edge[]);
+          await applyCollapseAndLayout(data.nodes, data.edges, collapsedIds);
         }
       } catch (err: any) {
         if (!ignore) {
           console.error("Failed to load tree:", err);
           if (err?.message === "UNAUTHORIZED" || err?.message?.includes("UNAUTHORIZED")) {
-            // Need auth login
             setShowAuthModal(true);
           }
         }
@@ -110,13 +249,39 @@ function FamilyTreeContent({ initialRootId, onSelectPerson }: FamilyTreeViewProp
       }
     }
 
-
     fetchTree();
 
     return () => {
       ignore = true;
     };
-  }, [initialRootId, myBranchOnly, setNodes, setEdges]);
+  }, [initialRootId, myBranchOnly, applyCollapseAndLayout]);
+
+  // Cập nhật lại layout khi collapsedIds thay đổi
+  useEffect(() => {
+    if (rawGraphDataRef.current.nodes.length > 0) {
+      applyCollapseAndLayout(
+        rawGraphDataRef.current.nodes,
+        rawGraphDataRef.current.edges,
+        collapsedIds,
+        anchorId || undefined
+      );
+      setAnchorId(null);
+    }
+  }, [collapsedIds, applyCollapseAndLayout, anchorId]);
+
+  // Đóng toàn bộ các nhánh con (thu gọn về cụ tổ / đời 1)
+  const handleCollapseAll = () => {
+    const allParents = new Set<string>();
+    rawGraphDataRef.current.edges.forEach((e) => {
+      allParents.add(e.source);
+    });
+    setCollapsedIds(allParents);
+  };
+
+  // Mở rộng toàn bộ
+  const handleExpandAll = () => {
+    setCollapsedIds(new Set());
+  };
 
   const onNodeClick = useCallback(
     (_: React.MouseEvent, node: Node) => {
@@ -134,76 +299,93 @@ function FamilyTreeContent({ initialRootId, onSelectPerson }: FamilyTreeViewProp
   const handleFocusPerson = useCallback(
     async (personId: string) => {
       try {
+        // Đảm bảo node không bị collapse nếu đang tìm kiếm
+        const path = await getAncestorPath(personId);
+        if (path.ancestorIds.length > 0) {
+          setCollapsedIds((prev) => {
+            const next = new Set(prev);
+            path.ancestorIds.forEach((id) => next.delete(id));
+            return next;
+          });
+        }
+
         const targetNode = getNode(personId);
         if (targetNode) {
           setCenter(targetNode.position.x + 110, targetNode.position.y + 55, {
             zoom: 1.1,
             duration: 800,
           });
-        } else {
-          // If node not in current loaded view, fetch ancestor path and reload tree with focused branch
-          const path = await getAncestorPath(personId);
-          if (path.ancestorIds.length > 0) {
-            const rootId = path.ancestorIds[path.ancestorIds.length - 1];
-            const data = await getTreeGraphData({ rootPersonId: rootId });
-            const layouted = await computeTreeLayout(data.nodes, data.edges, { direction: "DOWN" });
-            setNodes(layouted.nodes as unknown as Node[]);
-            setEdges(layouted.edges as Edge[]);
-            setTimeout(() => {
-              const loadedNode = layouted.nodes.find((n) => n.id === personId);
-              if (loadedNode) {
-                setCenter(loadedNode.position.x + 110, loadedNode.position.y + 55, {
-                  zoom: 1.1,
-                  duration: 800,
-                });
-              }
-            }, 100);
-          }
         }
       } catch (err) {
         console.error("Focus error:", err);
       }
     },
-    [getNode, setCenter, setNodes, setEdges]
+    [getNode, setCenter]
   );
 
   const hasManagedBranches = useMemo(() => managedRoots.length > 0, [managedRoots]);
+  const isAnyCollapsed = collapsedIds.size > 0;
 
   return (
     <div className="relative h-full w-full bg-slate-50 dark:bg-slate-950 overflow-hidden">
       {/* Top Controls Toolbar */}
-      <div className="absolute top-3 left-3 z-10 flex max-w-[calc(100vw-120px)] sm:max-w-none flex-wrap items-center gap-1.5 rounded-lg bg-white/95 p-1 sm:p-1.5 shadow-md backdrop-blur dark:bg-slate-900/95 border border-slate-200 dark:border-slate-800">
+      <div className="absolute top-3 left-3 z-10 flex max-w-[calc(100vw-120px)] sm:max-w-none flex-wrap items-center gap-1.5 rounded-xl bg-white/95 p-1.5 shadow-md backdrop-blur dark:bg-slate-900/95 border border-slate-200 dark:border-slate-800">
         <button
           onClick={() => setMyBranchOnly(false)}
-          className={`flex items-center gap-1 sm:gap-1.5 rounded-md px-2 sm:px-3 py-1 sm:py-1.5 text-[11px] sm:text-xs font-medium transition-colors ${
+          className={`flex items-center gap-1 sm:gap-1.5 rounded-lg px-2.5 sm:px-3 py-1.5 text-xs font-semibold transition-all ${
             !myBranchOnly
-              ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900"
+              ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-sm"
               : "text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
           }`}
         >
-          <Users className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
-          <span>Toàn bộ gia phả</span>
+          <Users className="h-3.5 w-3.5" />
+          <span>Toàn bộ</span>
         </button>
 
         {hasManagedBranches && (
           <button
             onClick={() => setMyBranchOnly(true)}
-            className={`flex items-center gap-1 sm:gap-1.5 rounded-md px-2 sm:px-3 py-1 sm:py-1.5 text-[11px] sm:text-xs font-medium transition-colors ${
+            className={`flex items-center gap-1 sm:gap-1.5 rounded-lg px-2.5 sm:px-3 py-1.5 text-xs font-semibold transition-all ${
               myBranchOnly
-                ? "bg-emerald-600 text-white"
+                ? "bg-emerald-600 text-white shadow-sm"
                 : "text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
             }`}
           >
-            <Filter className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
-            <span>Nhánh tôi quản lý</span>
+            <Filter className="h-3.5 w-3.5" />
+            <span>Nhánh quản lý</span>
+          </button>
+        )}
+
+        <div className="h-4 w-px bg-slate-200 dark:bg-slate-700 mx-0.5" />
+
+        {/* Nút Đóng / Mở toàn bộ */}
+        {isAnyCollapsed ? (
+          <button
+            onClick={handleExpandAll}
+            title="Mở rộng toàn bộ các nhánh"
+            className="flex items-center gap-1 rounded-lg bg-indigo-50 text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-950 dark:text-indigo-300 px-2 sm:px-2.5 py-1.5 text-xs font-medium transition-colors"
+          >
+            <ChevronsDown className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">Mở toàn bộ</span>
+          </button>
+        ) : (
+          <button
+            onClick={handleCollapseAll}
+            title="Thu gọn tất cả các nhánh con"
+            className="flex items-center gap-1 rounded-lg border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 px-2 sm:px-2.5 py-1.5 text-xs font-medium transition-colors"
+          >
+            <ChevronsUp className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">Đóng toàn bộ</span>
           </button>
         )}
 
         <button
           onClick={loadTree}
-          className="rounded-md px-1.5 sm:px-2 py-1 text-[11px] sm:text-xs text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
+          title="Tải lại cây gia phả"
+          className="flex items-center gap-1 rounded-lg px-2 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800 transition-colors"
         >
-          Làm mới
+          <RotateCw className="h-3.5 w-3.5" />
+          <span className="hidden sm:inline">Làm mới</span>
         </button>
       </div>
 
@@ -258,7 +440,6 @@ function FamilyTreeContent({ initialRootId, onSelectPerson }: FamilyTreeViewProp
           onEdgesChange={onEdgesChange}
           onNodeClick={onNodeClick}
           nodeTypes={nodeTypes}
-          fitView
           minZoom={0.2}
           maxZoom={1.5}
         >
@@ -290,7 +471,6 @@ function FamilyTreeContent({ initialRootId, onSelectPerson }: FamilyTreeViewProp
   );
 }
 
-
 export function FamilyTreeView(props: FamilyTreeViewProps) {
   return (
     <ReactFlowProvider>
@@ -298,3 +478,4 @@ export function FamilyTreeView(props: FamilyTreeViewProps) {
     </ReactFlowProvider>
   );
 }
+

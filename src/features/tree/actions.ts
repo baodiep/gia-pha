@@ -72,7 +72,7 @@ export async function getTreeGraphData(options?: {
   const [{ data: persons }, { data: relations }, { data: unions }, { data: branchGrants }] = await Promise.all([
     personsQuery,
     supabase.from("parent_child").select("*").eq("is_lineage_relation", true),
-    supabase.from("unions").select("*, partner1:partner1_id(id, full_name, life_status), partner2:partner2_id(id, full_name, life_status)"),
+    supabase.from("unions").select("*, partner1:partner1_id(id, full_name, gender, life_status, avatar_url), partner2:partner2_id(id, full_name, gender, life_status, avatar_url)"),
     supabase.from("branch_grants").select("root_person_id, user_id, user_profile:user_id(id, login_name, phone_normalized, person:person_id(full_name))").is("revoked_at", null),
   ]);
 
@@ -99,7 +99,9 @@ export async function getTreeGraphData(options?: {
   }
 
   // Map unions by partner ID
-  const spouseMap = new Map<string, Array<{ id: string; fullName: string; lifeStatus: "LIVING" | "DECEASED" | "UNKNOWN"; status: string }>>();
+  const spouseMap = new Map<string, Array<{ id: string; fullName: string; gender?: any; lifeStatus: "LIVING" | "DECEASED" | "UNKNOWN"; avatarUrl?: string | null; status: string }>>();
+  const spouseIdSet = new Set<string>();
+
   for (const u of unionsList) {
     // Partner 1's spouse is Partner 2
     if (u.partner2) {
@@ -107,7 +109,9 @@ export async function getTreeGraphData(options?: {
       spouseMap.get(u.partner1_id)!.push({
         id: u.partner2.id,
         fullName: u.partner2.full_name,
+        gender: u.partner2.gender,
         lifeStatus: u.partner2.life_status,
+        avatarUrl: u.partner2.avatar_url,
         status: u.status,
       });
     }
@@ -117,17 +121,39 @@ export async function getTreeGraphData(options?: {
       spouseMap.get(u.partner2_id)!.push({
         id: u.partner1.id,
         fullName: u.partner1.full_name,
+        gender: u.partner1.gender,
         lifeStatus: u.partner1.life_status,
+        avatarUrl: u.partner1.avatar_url,
         status: u.status,
       });
     }
   }
 
+  // Xác định người thuộc trực hệ (lineage): là con trong quan hệ is_lineage_relation hoặc là cụ đời 1
+  const lineageChildIdSet = new Set(relationsList.map((r) => r.child_id));
+  const lineageParentIdSet = new Set(relationsList.map((r) => r.parent_id));
+
+  // Tập hợp những người là dâu/rể (kết hôn với người trực hệ nhưng không phải là con trực hệ của đời trước)
+  const isSpouseOfLineage = (personId: string, generationNo: number | null) => {
+    // Nếu là đời 1 (Cụ bà) hoặc đời sau mà không có parent_child lineage thì là Dâu/Rể
+    if (lineageChildIdSet.has(personId)) return false;
+    // Nếu là partner2 trong unions thì thường là dâu/rể
+    for (const u of unionsList) {
+      if (u.partner2_id === personId && (lineageChildIdSet.has(u.partner1_id) || lineageParentIdSet.has(u.partner1_id))) {
+        return true;
+      }
+    }
+    return false;
+  };
+
   // Check which persons have children
   const parentWithChildrenSet = new Set(relationsList.map((r) => r.parent_id));
 
+  // Lọc chỉ lấy những người là Trực hệ làm Nút chính của cây (người phối ngẫu sẽ được gắn ngang hàng bên cạnh nút chính)
+  const mainLineagePersons = personsList.filter((p) => !isSpouseOfLineage(p.id, p.generation_no));
+
   // Build nodes
-  const nodes = personsList.map((p) => {
+  const nodes = mainLineagePersons.map((p) => {
     const isEditable = profile.is_admin || editableSet.has(p.id) || editableSet.has("*");
     return {
       id: p.id,
@@ -140,6 +166,7 @@ export async function getTreeGraphData(options?: {
         branchCode: p.branch_code,
         avatarUrl: p.avatar_url,
         isEditable,
+        isSpouse: false,
         hasChildren: parentWithChildrenSet.has(p.id),
         isExpanded: true,
         managers: managerMap.get(p.id) || [],

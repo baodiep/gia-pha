@@ -12,6 +12,7 @@ export type TreePersonNodeData = {
   branchCode: string | null;
   avatarUrl: string | null;
   isEditable: boolean;
+  isSpouse?: boolean;
   hasChildren: boolean;
   isExpanded: boolean;
   managers?: Array<{
@@ -23,7 +24,9 @@ export type TreePersonNodeData = {
   spouses?: Array<{
     id: string;
     fullName: string;
+    gender?: "MALE" | "FEMALE" | "OTHER" | "UNKNOWN";
     lifeStatus: "LIVING" | "DECEASED" | "UNKNOWN";
+    avatarUrl?: string | null;
     status: string;
   }>;
 };
@@ -42,21 +45,22 @@ export async function computeTreeLayout(
   edges: Array<{ id: string; source: string; target: string }>,
   options: LayoutOptions = {}
 ) {
-  const nodeWidth = options.nodeWidth || 220;
-  const nodeHeight = options.nodeHeight || 110;
+  // Nếu có vợ/chồng đi kèm ngang hàng, tăng chiều rộng của node layout
+  const nodeWidth = options.nodeWidth || 380;
+  const nodeHeight = options.nodeHeight || 135;
 
   const elkGraph: ElkNode = {
     id: "root",
     layoutOptions: {
       "elk.algorithm": "layered",
       "elk.direction": options.direction === "RIGHT" ? "RIGHT" : "DOWN",
-      "elk.spacing.nodeNode": "40",
-      "elk.layered.spacing.nodeNodeBetweenLayers": "60",
+      "elk.spacing.nodeNode": "50",
+      "elk.layered.spacing.nodeNodeBetweenLayers": "80",
       "elk.layered.nodePlacement.strategy": "NETWORK_SIMPLEX",
     },
     children: nodes.map((node) => ({
       id: node.id,
-      width: nodeWidth,
+      width: node.data.spouses && node.data.spouses.length > 0 ? 380 : 200,
       height: nodeHeight,
     })),
     edges: edges.map((edge) => ({
