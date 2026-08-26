@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useTransition } from "react";
 import { getPersonById, updatePerson, softDeletePerson } from "@/features/persons/actions";
+import { updateParentChildOrder } from "@/features/relationships/actions";
 import { Person, Gender, LifeStatus } from "@/types/domain";
 import { AvatarUploadControl } from "@/components/storage/AvatarUploadControl";
 import {
@@ -53,6 +54,7 @@ export function PersonDetailModal({
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [generationNo, setGenerationNo] = useState<number | undefined>();
   const [branchCode, setBranchCode] = useState("");
+  const [displayOrder, setDisplayOrder] = useState<number>(1);
 
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -118,7 +120,10 @@ export function PersonDetailModal({
         branchCode: branchCode.trim() || undefined,
       };
 
-      const res = await updatePerson(personId, payload);
+      const [res] = await Promise.all([
+        updatePerson(personId, payload),
+        updateParentChildOrder(personId, displayOrder),
+      ]);
       if (res.success) {
         setMessage({ type: "success", text: res.message || "Cập nhật thành viên thành công!" });
         setIsEditing(false);
@@ -243,8 +248,8 @@ export function PersonDetailModal({
                 </div>
               </div>
 
-              {/* Đời & Chi */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {/* Đời & Chi & Thứ tự con cái */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
                     Thuộc đời thứ
@@ -261,14 +266,29 @@ export function PersonDetailModal({
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                    Thuộc Chi / Phân ngành
+                    Thuộc Chi / Nhánh
                   </label>
                   <input
                     type="text"
                     value={branchCode}
                     onChange={(e) => setBranchCode(e.target.value)}
-                    placeholder="Ví dụ: Chi Trưởng, Chi 2, Nhánh Giáp..."
+                    placeholder="Ví dụ: Chi Trưởng, Chi 2..."
                     className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm font-semibold focus:border-indigo-600 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Thứ tự con (trái → phải)
+                  </label>
+                  <input
+                    type="number"
+                    min={1}
+                    max={50}
+                    value={displayOrder}
+                    onChange={(e) => setDisplayOrder(parseInt(e.target.value) || 1)}
+                    placeholder="1, 2, 3..."
+                    className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm font-semibold focus:border-indigo-600 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                    title="Số nhỏ hơn sẽ xếp bên trái, số lớn hơn xếp bên phải"
                   />
                 </div>
               </div>
