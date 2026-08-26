@@ -1,7 +1,7 @@
 {
   "project": "gia-pha-vercel",
   "schema_version": 1,
-  "current_task": "T032",
+  "current_task": "T033",
   "statuses": [
     "BACKLOG",
     "READY",
@@ -308,7 +308,7 @@
       "id": "T032",
       "title": "Event RSVP & attendance",
       "file": "tasks/T032-event-rsvp.md",
-      "status": "READY",
+      "status": "DONE",
       "depends_on": [
         "T021",
         "T022"
@@ -318,7 +318,7 @@
       "id": "T033",
       "title": "In-app notifications",
       "file": "tasks/T033-inapp-notifications.md",
-      "status": "BACKLOG",
+      "status": "READY",
       "depends_on": [
         "T021",
         "T022",
