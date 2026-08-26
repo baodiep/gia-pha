@@ -4,8 +4,8 @@
 
 ## CURRENT TASK
 
-**T021 — MVP2 database foundations**  
-File: `tasks/T021-mvp2-database.md`  
+**T022 — MVP2 RLS, audit & privacy**  
+File: `tasks/T022-mvp2-rls-audit.md`  
 Status: **READY**
 
 ## Quy tắc chọn task tiếp theo
@@ -39,9 +39,9 @@ Status: **READY**
 | T018 | DONE | Vercel deployment & production checklist | T017 | `tasks/T018-deploy.md` |
 | T019 | DONE | MVP hardening & release | T018 | `tasks/T019-release.md` |
 | T020 | DONE | MVP2 baseline & specification | T019 | `tasks/T020-mvp2-baseline.md` |
-| T021 | READY | MVP2 database foundations | T020 | `tasks/T021-mvp2-database.md` |
-| T022 | BACKLOG | MVP2 RLS, audit & privacy | T021 | `tasks/T022-mvp2-rls-audit.md` |
-| T023 | BACKLOG | Family Excel import template & parser | T021 | `tasks/T023-family-import-parser.md` |
+| T021 | DONE | MVP2 database foundations | T020 | `tasks/T021-mvp2-database.md` |
+| T022 | READY | MVP2 RLS, audit & privacy | T021 | `tasks/T022-mvp2-rls-audit.md` |
+| T023 | READY | Family Excel import template & parser | T021 | `tasks/T023-family-import-parser.md` |
 | T024 | BACKLOG | Family import preview & duplicate detection | T023 | `tasks/T024-family-import-preview.md` |
 | T025 | BACKLOG | Transactional family import | T024, T022 | `tasks/T025-family-import-transaction.md` |
 | T026 | BACKLOG | Person claim & profile change requests | T021, T022 | `tasks/T026-person-claim-profile-change.md` |

@@ -1,7 +1,7 @@
 {
   "project": "gia-pha-vercel",
   "schema_version": 1,
-  "current_task": "T021",
+  "current_task": "T022",
   "statuses": [
     "BACKLOG",
     "READY",
@@ -205,7 +205,7 @@
       "id": "T021",
       "title": "MVP2 database foundations",
       "file": "tasks/T021-mvp2-database.md",
-      "status": "READY",
+      "status": "DONE",
       "depends_on": [
         "T020"
       ]
@@ -214,7 +214,7 @@
       "id": "T022",
       "title": "MVP2 RLS, audit & privacy",
       "file": "tasks/T022-mvp2-rls-audit.md",
-      "status": "BACKLOG",
+      "status": "READY",
       "depends_on": [
         "T021"
       ]
@@ -223,7 +223,7 @@
       "id": "T023",
       "title": "Family Excel import template & parser",
       "file": "tasks/T023-family-import-parser.md",
-      "status": "BACKLOG",
+      "status": "READY",
       "depends_on": [
         "T021"
       ]
