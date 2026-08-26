@@ -1,7 +1,7 @@
 {
   "project": "gia-pha-vercel",
   "schema_version": 1,
-  "current_task": "T026",
+  "current_task": "T027",
   "statuses": [
     "BACKLOG",
     "READY",
@@ -251,7 +251,7 @@
       "id": "T026",
       "title": "Person claim & profile change requests",
       "file": "tasks/T026-person-claim-profile-change.md",
-      "status": "READY",
+      "status": "DONE",
       "depends_on": [
         "T021",
         "T022"
