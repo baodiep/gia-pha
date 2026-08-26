@@ -4,8 +4,8 @@
 
 ## CURRENT TASK
 
-**T022 — MVP2 RLS, audit & privacy**  
-File: `tasks/T022-mvp2-rls-audit.md`  
+**T023 — Family Excel import template & parser**  
+File: `tasks/T023-family-import-parser.md`  
 Status: **READY**
 
 ## Quy tắc chọn task tiếp theo
@@ -40,20 +40,20 @@ Status: **READY**
 | T019 | DONE | MVP hardening & release | T018 | `tasks/T019-release.md` |
 | T020 | DONE | MVP2 baseline & specification | T019 | `tasks/T020-mvp2-baseline.md` |
 | T021 | DONE | MVP2 database foundations | T020 | `tasks/T021-mvp2-database.md` |
-| T022 | READY | MVP2 RLS, audit & privacy | T021 | `tasks/T022-mvp2-rls-audit.md` |
+| T022 | DONE | MVP2 RLS, audit & privacy | T021 | `tasks/T022-mvp2-rls-audit.md` |
 | T023 | READY | Family Excel import template & parser | T021 | `tasks/T023-family-import-parser.md` |
 | T024 | BACKLOG | Family import preview & duplicate detection | T023 | `tasks/T024-family-import-preview.md` |
 | T025 | BACKLOG | Transactional family import | T024, T022 | `tasks/T025-family-import-transaction.md` |
-| T026 | BACKLOG | Person claim & profile change requests | T021, T022 | `tasks/T026-person-claim-profile-change.md` |
-| T027 | BACKLOG | Password reset requests, CAPTCHA & forced password change | T021, T022 | `tasks/T027-password-reset-requests.md` |
+| T026 | READY | Person claim & profile change requests | T021, T022 | `tasks/T026-person-claim-profile-change.md` |
+| T027 | READY | Password reset requests, CAPTCHA & forced password change | T021, T022 | `tasks/T027-password-reset-requests.md` |
 | T028 | READY | Kinship relationship engine | T020 | `tasks/T028-kinship-engine.md` |
 | T029 | READY | Lunar calendar & memorial recurrence | T020 | `tasks/T029-lunar-memorials.md` |
 | T030 | BACKLOG | Member dashboard & family calendar | T029 | `tasks/T030-member-dashboard-calendar.md` |
-| T031 | BACKLOG | External albums, documents & family history | T021, T022 | `tasks/T031-external-family-resources.md` |
-| T032 | BACKLOG | Event RSVP & attendance | T021, T022 | `tasks/T032-event-rsvp.md` |
+| T031 | READY | External albums, documents & family history | T021, T022 | `tasks/T031-external-family-resources.md` |
+| T032 | READY | Event RSVP & attendance | T021, T022 | `tasks/T032-event-rsvp.md` |
 | T033 | BACKLOG | In-app notifications | T021, T022, T032 | `tasks/T033-inapp-notifications.md` |
 | T034 | BACKLOG | Browser push notifications & preferences | T033 | `tasks/T034-browser-push.md` |
-| T035 | BACKLOG | Contribution QR & configuration | T021, T022 | `tasks/T035-contribution-qr.md` |
+| T035 | READY | Contribution QR & configuration | T021, T022 | `tasks/T035-contribution-qr.md` |
 | T036 | BACKLOG | Contribution CRUD, search & statistics | T035 | `tasks/T036-contributions-management.md` |
 | T037 | BACKLOG | Contribution Excel import | T036 | `tasks/T037-contributions-import.md` |
 | T038 | BACKLOG | MVP2 E2E, security & performance | T025, T026, T027, T028, T030, T031, T034, T037 | `tasks/T038-mvp2-e2e-security-performance.md` |

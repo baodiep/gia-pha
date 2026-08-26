@@ -1,7 +1,7 @@
 {
   "project": "gia-pha-vercel",
   "schema_version": 1,
-  "current_task": "T022",
+  "current_task": "T023",
   "statuses": [
     "BACKLOG",
     "READY",
@@ -214,7 +214,7 @@
       "id": "T022",
       "title": "MVP2 RLS, audit & privacy",
       "file": "tasks/T022-mvp2-rls-audit.md",
-      "status": "READY",
+      "status": "DONE",
       "depends_on": [
         "T021"
       ]
@@ -251,7 +251,7 @@
       "id": "T026",
       "title": "Person claim & profile change requests",
       "file": "tasks/T026-person-claim-profile-change.md",
-      "status": "BACKLOG",
+      "status": "READY",
       "depends_on": [
         "T021",
         "T022"
@@ -261,7 +261,7 @@
       "id": "T027",
       "title": "Password reset requests, CAPTCHA & forced password change",
       "file": "tasks/T027-password-reset-requests.md",
-      "status": "BACKLOG",
+      "status": "READY",
       "depends_on": [
         "T021",
         "T022"
@@ -298,7 +298,7 @@
       "id": "T031",
       "title": "External albums, documents & family history",
       "file": "tasks/T031-external-family-resources.md",
-      "status": "BACKLOG",
+      "status": "READY",
       "depends_on": [
         "T021",
         "T022"
@@ -308,7 +308,7 @@
       "id": "T032",
       "title": "Event RSVP & attendance",
       "file": "tasks/T032-event-rsvp.md",
-      "status": "BACKLOG",
+      "status": "READY",
       "depends_on": [
         "T021",
         "T022"
@@ -338,7 +338,7 @@
       "id": "T035",
       "title": "Contribution QR & configuration",
       "file": "tasks/T035-contribution-qr.md",
-      "status": "BACKLOG",
+      "status": "READY",
       "depends_on": [
         "T021",
         "T022"
