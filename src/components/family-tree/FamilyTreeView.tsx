@@ -481,12 +481,12 @@ function FamilyTreeContent({ initialRootId, onSelectPerson }: FamilyTreeViewProp
           nodeTypes={nodeTypes}
           minZoom={0.2}
           maxZoom={1.5}
-          className="relative"
+          className="relative h-full w-full"
           style={
             treeBackgroundUrl
               ? {
                   backgroundImage: `url(${treeBackgroundUrl})`,
-                  backgroundSize: "cover",
+                  backgroundSize: "contain",
                   backgroundPosition: "center",
                   backgroundRepeat: "no-repeat",
                 }
@@ -494,7 +494,7 @@ function FamilyTreeContent({ initialRootId, onSelectPerson }: FamilyTreeViewProp
           }
         >
           {treeBackgroundUrl ? (
-            <div className="absolute inset-0 bg-white/40 dark:bg-slate-950/60 backdrop-blur-[1px] pointer-events-none z-0" />
+            <div className="absolute inset-0 bg-white/30 dark:bg-slate-950/50 backdrop-blur-[0.5px] pointer-events-none z-0" />
           ) : (
             <Background variant={BackgroundVariant.Dots} gap={16} size={1} />
           )}
