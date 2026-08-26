@@ -1,7 +1,7 @@
 {
   "project": "gia-pha-vercel",
   "schema_version": 1,
-  "current_task": "T028",
+  "current_task": "T029",
   "statuses": [
     "BACKLOG",
     "READY",
@@ -271,7 +271,7 @@
       "id": "T028",
       "title": "Kinship relationship engine",
       "file": "tasks/T028-kinship-engine.md",
-      "status": "READY",
+      "status": "DONE",
       "depends_on": [
         "T020"
       ]
