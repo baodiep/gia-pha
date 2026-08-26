@@ -16,6 +16,68 @@ export type StorageActionResult<T = unknown> = {
 };
 
 /**
+ * Upload ảnh chung cho hệ thống (Logo, Background, Banner) - Dung lượng tối đa 5MB
+ */
+export async function uploadSystemAsset(
+  assetType: "logo" | "tree-background" | "general",
+  formData: FormData
+): Promise<StorageActionResult<{ url: string }>> {
+  try {
+    const { profile } = await requireActiveUser();
+    if (!profile.is_admin) {
+      return { success: false, error: "Chỉ Quản trị viên (Admin) mới có quyền tải tài nguyên hệ thống" };
+    }
+
+    const file = formData.get("file") as File | null;
+    if (!file) {
+      return { success: false, error: "Vui lòng chọn tệp ảnh" };
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      return { success: false, error: "Dung lượng ảnh vượt quá 5MB. Vui lòng chọn ảnh nhỏ hơn." };
+    }
+
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/gif", "image/svg+xml"];
+    if (!allowedTypes.includes(file.type)) {
+      return { success: false, error: "Định dạng không hỗ trợ. Vui lòng chọn PNG, JPG, WEBP, GIF hoặc SVG" };
+    }
+
+    const admin = createAdminClient();
+    const fileExt = file.name.split(".").pop() || "jpg";
+    const fileName = `system/${assetType}/${Date.now()}.${fileExt}`;
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    // Upload to Supabase Storage bucket 'avatars' (hoặc assets)
+    const { error: uploadError } = await admin.storage
+      .from("avatars")
+      .upload(fileName, buffer, {
+        contentType: file.type,
+        upsert: true,
+      });
+
+    if (uploadError) {
+      return { success: false, error: `Lỗi tải ảnh lên Storage: ${uploadError.message}` };
+    }
+
+    const { data: publicUrlData } = admin.storage
+      .from("avatars")
+      .getPublicUrl(fileName);
+
+    return {
+      success: true,
+      data: { url: publicUrlData.publicUrl },
+      message: "Tải ảnh lên thành công",
+    };
+  } catch (err: unknown) {
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : "Đã xảy ra lỗi khi tải ảnh",
+    };
+  }
+}
+
+/**
  * Upload hoặc thay thế ảnh đại diện của Person
  */
 export async function uploadPersonAvatar(

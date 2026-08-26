@@ -165,6 +165,8 @@ export function AdminSettingsView() {
                 />
                 <LogoUploadControl
                   currentLogoUrl={treeBackgroundUrl}
+                  label="Tải ảnh nền mới"
+                  assetType="tree-background"
                   onUploadSuccess={(url: string) => setTreeBackgroundUrl(url)}
                 />
               </div>
