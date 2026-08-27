@@ -71,6 +71,74 @@ function FamilyTreeContent({ initialRootId, onSelectPerson }: FamilyTreeViewProp
   const isInitialLoadRef = useRef(true);
   const { setCenter, getNode, getViewport, setViewport, fitView } = useReactFlow();
 
+  // Custom pointer drag để kéo nền canvas mượt mà ngay cả khi bấm giữ trên thẻ thành viên (node)
+  const isDraggingRef = useRef(false);
+  const hasMovedRef = useRef(false);
+  const dragStartRef = useRef<{ x: number; y: number; vpX: number; vpY: number; vpZoom: number }>({
+    x: 0,
+    y: 0,
+    vpX: 0,
+    vpY: 0,
+    vpZoom: 1,
+  });
+
+  const handlePointerDown = useCallback(
+    (e: React.PointerEvent) => {
+      const target = e.target as HTMLElement;
+      // Không can thiệp nếu bấm vào các nút điều khiển / input
+      if (target.closest("button") || target.closest("input") || target.closest("a")) {
+        return;
+      }
+      if (e.button !== 0 && e.button !== 1 && e.button !== 2) return;
+
+      const vp = getViewport();
+      isDraggingRef.current = true;
+      hasMovedRef.current = false;
+      dragStartRef.current = {
+        x: e.clientX,
+        y: e.clientY,
+        vpX: vp.x,
+        vpY: vp.y,
+        vpZoom: vp.zoom,
+      };
+    },
+    [getViewport]
+  );
+
+  const handlePointerMove = useCallback(
+    (e: React.PointerEvent) => {
+      if (!isDraggingRef.current) return;
+
+      const dx = e.clientX - dragStartRef.current.x;
+      const dy = e.clientY - dragStartRef.current.y;
+
+      if (!hasMovedRef.current) {
+        if (Math.hypot(dx, dy) > 4) {
+          hasMovedRef.current = true;
+        }
+      }
+
+      if (hasMovedRef.current) {
+        setViewport(
+          {
+            x: dragStartRef.current.vpX + dx,
+            y: dragStartRef.current.vpY + dy,
+            zoom: dragStartRef.current.vpZoom,
+          },
+          { duration: 0 }
+        );
+      }
+    },
+    [setViewport]
+  );
+
+  const handlePointerUp = useCallback(() => {
+    isDraggingRef.current = false;
+    setTimeout(() => {
+      hasMovedRef.current = false;
+    }, 60);
+  }, []);
+
   useEffect(() => {
     getCurrentUser().then(setCurrentUser).catch(() => {});
     getSystemSettings()
@@ -159,6 +227,7 @@ function FamilyTreeContent({ initialRootId, onSelectPerson }: FamilyTreeViewProp
         data: {
           ...node.data,
           onSpouseClick: (spouseId: string) => {
+            if (hasMovedRef.current) return;
             setSelectedPersonId(spouseId);
             setSelectedIsEditable((node.data as any)?.isEditable ?? false);
           },
@@ -309,6 +378,9 @@ function FamilyTreeContent({ initialRootId, onSelectPerson }: FamilyTreeViewProp
 
   const onNodeClick = useCallback(
     (_: React.MouseEvent, node: Node) => {
+      if (hasMovedRef.current) {
+        return;
+      }
       const isEditable = (node.data as any)?.isEditable ?? false;
       setSelectedPersonId(node.id);
       setSelectedIsEditable(isEditable);
@@ -473,21 +545,36 @@ function FamilyTreeContent({ initialRootId, onSelectPerson }: FamilyTreeViewProp
           )}
         </div>
       ) : (
-        <ReactFlow
-          nodes={nodes}
-          edges={edges}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          onNodeClick={onNodeClick}
-          nodeTypes={nodeTypes}
-          nodesDraggable={false}
-          minZoom={0.2}
-          maxZoom={1.5}
-          className="relative h-full w-full"
+        <div
+          className="h-full w-full select-none cursor-grab active:cursor-grabbing"
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onPointerCancel={handlePointerUp}
         >
-          <Background variant={BackgroundVariant.Dots} gap={16} size={1} />
-          <Controls />
-        </ReactFlow>
+          <ReactFlow
+            nodes={nodes}
+            edges={edges}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            onNodeClick={onNodeClick}
+            nodeTypes={nodeTypes}
+            nodesDraggable={false}
+            nodesConnectable={false}
+            elementsSelectable={false}
+            panOnDrag={[0, 1, 2]}
+            selectionOnDrag={false}
+            zoomOnScroll={true}
+            zoomOnPinch={true}
+            zoomOnDoubleClick={false}
+            minZoom={0.1}
+            maxZoom={2.5}
+            className="relative h-full w-full"
+          >
+            <Background variant={BackgroundVariant.Dots} gap={16} size={1} />
+            <Controls />
+          </ReactFlow>
+        </div>
       )}
 
       {/* 9-Slice Heritage Frame Overlay bao quanh màn hình cây gia phả */}
