@@ -6,9 +6,9 @@ import { FamilyTreeView } from "@/components/family-tree/FamilyTreeView";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { UserProfileModal } from "@/components/auth/UserProfileModal";
 import { logoutAction, getCurrentUserWithPerson } from "@/features/auth/actions";
-import { getSystemSettings, SystemSettings } from "@/features/admin/settings-actions";
+import { getSystemSettings, SystemSettings, MenuVisibility } from "@/features/admin/settings-actions";
 import { Profile } from "@/types/domain";
-import { Network, Calendar, BookOpen, Shield, LogIn, LogOut, User, Globe } from "lucide-react";
+import { Network, Calendar, BookOpen, Settings, LogIn, LogOut, User, Globe } from "lucide-react";
 
 export function HomePageClient() {
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -49,6 +49,8 @@ export function HomePageClient() {
     window.location.reload();
   };
 
+  const menuVisibility = brandSettings?.menu_visibility ?? { tree: true, events: true, memorials: true };
+
   return (
     <div className="flex h-screen w-full flex-col bg-slate-50 dark:bg-slate-950 overflow-hidden">
       {/* Top Navbar - Tên và Logo dòng họ động từ SystemSettings */}
@@ -78,6 +80,7 @@ export function HomePageClient() {
 
         {/* Global Navigation Links - Nút to, chữ rõ, touch target cao */}
         <nav className="flex items-center gap-1.5 sm:gap-2 font-semibold">
+          {menuVisibility.tree && (
           <Link
             href="/"
             aria-label="Cây gia phả"
@@ -86,6 +89,8 @@ export function HomePageClient() {
             <Network className="h-4 w-4 sm:h-5 sm:w-5 text-indigo-600 dark:text-indigo-400" />
             <span className="hidden md:inline">Cây gia phả</span>
           </Link>
+          )}
+          {menuVisibility.events && (
           <Link
             href="/events"
             aria-label="Sự kiện"
@@ -94,6 +99,8 @@ export function HomePageClient() {
             <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-amber-600 dark:text-amber-400" />
             <span className="hidden md:inline">Sự kiện</span>
           </Link>
+          )}
+          {menuVisibility.memorials && (
           <Link
             href="/memorials"
             aria-label="Tưởng niệm"
@@ -102,16 +109,17 @@ export function HomePageClient() {
             <BookOpen className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600 dark:text-purple-400" />
             <span className="hidden md:inline">Tưởng niệm</span>
           </Link>
+          )}
 
-          {/* Chỉ hiển thị Menu Quản trị khi đã đăng nhập và là Admin */}
+          {/* Menu Cấu hình luôn hiển thị khi đã đăng nhập và là Admin */}
           {!loadingUser && currentUser?.is_admin && (
             <Link
               href="/admin"
-              aria-label="Quản trị"
+              aria-label="Cấu hình"
               className="flex items-center gap-1.5 rounded-xl border border-slate-300 px-2.5 sm:px-3 py-2 text-xs sm:text-sm text-slate-800 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
             >
-              <Shield className="h-4 w-4 sm:h-5 sm:w-5 text-indigo-600 dark:text-indigo-400" />
-              <span className="hidden md:inline">Quản trị</span>
+              <Settings className="h-4 w-4 sm:h-5 sm:w-5 text-slate-600 dark:text-slate-400" />
+              <span className="hidden md:inline">Cấu hình</span>
             </Link>
           )}
 

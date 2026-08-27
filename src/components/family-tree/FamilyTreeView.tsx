@@ -480,6 +480,7 @@ function FamilyTreeContent({ initialRootId, onSelectPerson }: FamilyTreeViewProp
           onEdgesChange={onEdgesChange}
           onNodeClick={onNodeClick}
           nodeTypes={nodeTypes}
+          nodesDraggable={false}
           minZoom={0.2}
           maxZoom={1.5}
           className="relative h-full w-full"

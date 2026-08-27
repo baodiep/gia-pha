@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState, useEffect, useTransition } from "react";
-import { getSystemSettings, updateSystemSettingsAction, SystemSettings } from "@/features/admin/settings-actions";
+import { getSystemSettings, updateSystemSettingsAction, SystemSettings, MenuVisibility } from "@/features/admin/settings-actions";
 import { LogoUploadControl } from "@/components/storage/LogoUploadControl";
 import { BackButton } from "@/components/ui/BackButton";
-import { Sparkles, Image as ImageIcon, CheckCircle2, AlertCircle, Save, Globe, Trash2, Frame } from "lucide-react";
+import { Sparkles, Image as ImageIcon, CheckCircle2, AlertCircle, Save, Globe, Trash2, Frame, Eye, EyeOff, Menu } from "lucide-react";
 
 export function AdminSettingsView() {
   const [settings, setSettings] = useState<SystemSettings | null>(null);
@@ -12,6 +12,7 @@ export function AdminSettingsView() {
   const [appSubtitle, setAppSubtitle] = useState("");
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [treeBackgroundUrl, setTreeBackgroundUrl] = useState<string | null>(null);
+  const [menuVisibility, setMenuVisibility] = useState<MenuVisibility>({ tree: true, events: true, memorials: true });
 
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -25,6 +26,7 @@ export function AdminSettingsView() {
         setAppSubtitle(data.app_subtitle);
         setLogoUrl(data.logo_url);
         setTreeBackgroundUrl(data.tree_background_url || null);
+        setMenuVisibility(data.menu_visibility || { tree: true, events: true, memorials: true });
       } catch (err) {
         console.error("Failed to load settings:", err);
       }
@@ -44,6 +46,7 @@ export function AdminSettingsView() {
     if (treeBackgroundUrl) {
       formData.append("treeBackgroundUrl", treeBackgroundUrl);
     }
+    formData.append("menuVisibility", JSON.stringify(menuVisibility));
 
     startTransition(async () => {
       const res = await updateSystemSettingsAction(formData);
@@ -229,6 +232,51 @@ export function AdminSettingsView() {
                 </div>
                 <div className="text-[11px] text-slate-500 font-medium">{appSubtitle || "Sơ đồ cây phả hệ"}</div>
               </div>
+            </div>
+          </div>
+
+          {/* 5. Menu Visibility Toggles */}
+          <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
+            <div className="flex items-center gap-2 mb-1">
+              <Menu className="h-4 w-4 text-slate-600 dark:text-slate-400" />
+              <label className="block text-sm font-bold text-slate-800 dark:text-slate-200">
+                Hiển thị Menu điều hướng
+              </label>
+            </div>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
+              Bật/tắt các mục trên thanh menu chính. Menu <strong>Cấu hình</strong> luôn hiển thị cho Quản trị viên và không thể ẩn.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              {([
+                { key: "tree" as const, label: "Cây gia phả", icon: "🌳" },
+                { key: "events" as const, label: "Sự kiện", icon: "📅" },
+                { key: "memorials" as const, label: "Tưởng niệm", icon: "📖" },
+              ]).map((item) => (
+                <button
+                  key={item.key}
+                  type="button"
+                  onClick={() =>
+                    setMenuVisibility((prev) => ({ ...prev, [item.key]: !prev[item.key] }))
+                  }
+                  className={`flex items-center gap-3 rounded-xl border-2 px-4 py-3 text-sm font-semibold transition-all cursor-pointer ${
+                    menuVisibility[item.key]
+                      ? "border-emerald-400 bg-emerald-50 text-emerald-800 dark:border-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300"
+                      : "border-slate-200 bg-slate-50 text-slate-400 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-500"
+                  }`}
+                >
+                  <span className="text-lg">{item.icon}</span>
+                  <span className="flex-1 text-left">{item.label}</span>
+                  {menuVisibility[item.key] ? (
+                    <Eye className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                  ) : (
+                    <EyeOff className="h-4 w-4 text-slate-400" />
+                  )}
+                </button>
+              ))}
+            </div>
+            <div className="mt-2 flex items-center gap-2 rounded-lg bg-slate-100 dark:bg-slate-800 px-3 py-2">
+              <span className="text-xs font-bold text-slate-500 dark:text-slate-400">⚙️ Cấu hình</span>
+              <span className="text-[11px] text-slate-400 dark:text-slate-500">— luôn hiển thị (không thể ẩn)</span>
             </div>
           </div>
 
