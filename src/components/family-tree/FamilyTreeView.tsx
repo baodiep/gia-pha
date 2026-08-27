@@ -19,6 +19,7 @@ import { PersonNode } from "./PersonNode";
 import { TreeSearchOverlay } from "./TreeSearchOverlay";
 import { PersonDetailModal } from "./PersonDetailModal";
 import { AddPersonModal } from "./AddPersonModal";
+import { HeritageFrameOverlay } from "./HeritageFrameOverlay";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { computeTreeLayout, TreePersonNodeData } from "@/lib/tree/elk-layout";
 
@@ -482,25 +483,17 @@ function FamilyTreeContent({ initialRootId, onSelectPerson }: FamilyTreeViewProp
           minZoom={0.2}
           maxZoom={1.5}
           className="relative h-full w-full"
-          style={
-            treeBackgroundUrl
-              ? {
-                  backgroundImage: `url(${treeBackgroundUrl})`,
-                  backgroundSize: "contain",
-                  backgroundPosition: "center",
-                  backgroundRepeat: "no-repeat",
-                }
-              : undefined
-          }
         >
-          {treeBackgroundUrl ? (
-            <div className="absolute inset-0 bg-white/30 dark:bg-slate-950/50 backdrop-blur-[0.5px] pointer-events-none z-0" />
-          ) : (
-            <Background variant={BackgroundVariant.Dots} gap={16} size={1} />
-          )}
+          <Background variant={BackgroundVariant.Dots} gap={16} size={1} />
           <Controls />
         </ReactFlow>
       )}
+
+      {/* 9-Slice Heritage Frame Overlay bao quanh màn hình cây gia phả */}
+      <HeritageFrameOverlay
+        watermarkUrl={treeBackgroundUrl}
+        showCenterWatermark={true}
+      />
 
       {/* Auth Modal when unauthorized */}
       <AuthModal

@@ -4,7 +4,7 @@ import React, { useState, useEffect, useTransition } from "react";
 import { getSystemSettings, updateSystemSettingsAction, SystemSettings } from "@/features/admin/settings-actions";
 import { LogoUploadControl } from "@/components/storage/LogoUploadControl";
 import { BackButton } from "@/components/ui/BackButton";
-import { Sparkles, Image as ImageIcon, CheckCircle2, AlertCircle, Save, Globe, Trash2, LayoutTemplate } from "lucide-react";
+import { Sparkles, Image as ImageIcon, CheckCircle2, AlertCircle, Save, Globe, Trash2, Frame } from "lucide-react";
 
 export function AdminSettingsView() {
   const [settings, setSettings] = useState<SystemSettings | null>(null);
@@ -68,11 +68,11 @@ export function AdminSettingsView() {
             <div className="flex items-center gap-2">
               <Sparkles className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
               <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-                Cài đặt Logo, Tên & Hình nền Cây Gia Phả
+                Cài đặt Logo, Tên & Mỹ thuật Cây Gia Phả
               </h1>
             </div>
             <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-              Tùy chỉnh thương hiệu gia tộc, huy hiệu và ảnh nền phong cách hoài cổ cho sơ đồ phả hệ
+              Tùy chỉnh thương hiệu gia tộc, biểu tượng huy hiệu và họa tiết chìm trung tâm sơ đồ
             </p>
           </div>
         </div>
@@ -99,6 +99,8 @@ export function AdminSettingsView() {
               <div className="flex-1 space-y-2">
                 <LogoUploadControl
                   currentLogoUrl={logoUrl}
+                  assetType="logo"
+                  label="Tải logo mới"
                   onUploadSuccess={(url: string) => setLogoUrl(url)}
                 />
                 {logoUrl && (
@@ -117,24 +119,27 @@ export function AdminSettingsView() {
             </div>
           </div>
 
-          {/* 2. Background image for Family Tree */}
+          {/* 2. Custom Watermark / Background for Family Tree */}
           <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
-            <label className="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-1">
-              Ảnh nền (Background) sơ đồ Cây Gia Phả
-            </label>
+            <div className="flex items-center gap-2 mb-1">
+              <Frame className="h-4 w-4 text-[#8c6239] dark:text-[#cca055]" />
+              <label className="block text-sm font-bold text-slate-800 dark:text-slate-200">
+                Khung viền 9-Slice & Họa tiết chìm Cây Gia Phả
+              </label>
+            </div>
             <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
-              Ảnh nền hoài cổ, rồng phượng, cuốn thư hoặc khung tranh phong thủy hiển thị chìm dưới cây gia phả.
+              Cây gia phả được áp dụng khung viền mỹ thuật 9-Slice tự động co giãn theo mọi tỷ lệ màn hình PC & Mobile. Bạn có thể tải thêm ảnh biểu trưng / rồng phượng / logo dòng họ để hiển thị chìm mờ ở trung tâm.
             </p>
 
             <div className="space-y-3">
               {/* Preview */}
               {treeBackgroundUrl ? (
-                <div className="relative rounded-2xl border border-slate-300 overflow-hidden h-40 bg-slate-100 dark:bg-slate-800">
+                <div className="relative rounded-2xl border border-slate-300 overflow-hidden h-40 bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={treeBackgroundUrl}
-                    alt="Background cây gia phả"
-                    className="w-full h-full object-cover opacity-80"
+                    alt="Biểu trưng chìm"
+                    className="max-h-full max-w-full object-contain opacity-70 p-2"
                   />
                   <button
                     type="button"
@@ -142,15 +147,17 @@ export function AdminSettingsView() {
                     className="absolute top-2 right-2 rounded-lg bg-rose-600/90 hover:bg-rose-700 text-white px-2.5 py-1 text-xs font-bold flex items-center gap-1 shadow-md cursor-pointer"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
-                    <span>Xóa ảnh nền</span>
+                    <span>Dùng trống đồng mặc định</span>
                   </button>
                 </div>
               ) : (
-                <div className="rounded-2xl border-2 border-dashed border-slate-200 p-6 text-center bg-slate-50/50 dark:border-slate-800 dark:bg-slate-800/40">
-                  <ImageIcon className="h-8 w-8 mx-auto text-slate-400 mb-1" />
-                  <span className="text-xs font-semibold text-slate-500">
-                    Chưa cài đặt ảnh nền tùy chỉnh (Cây gia phả đang dùng nền lưới tiêu chuẩn)
-                  </span>
+                <div className="rounded-2xl border-2 border-dashed border-slate-200 p-5 text-center bg-slate-50/50 dark:border-slate-800 dark:bg-slate-800/40">
+                  <div className="text-xs font-semibold text-slate-600 dark:text-slate-300">
+                    Đang sử dụng biểu trưng Trống đồng Đông Sơn cổ truyền chìm mờ ở trung tâm canvas.
+                  </div>
+                  <div className="text-[11px] text-slate-400 mt-1">
+                    (Bạn có thể tải ảnh riêng bên dưới nếu muốn thay thế họa tiết chìm trung tâm)
+                  </div>
                 </div>
               )}
 
@@ -160,12 +167,12 @@ export function AdminSettingsView() {
                   type="url"
                   value={treeBackgroundUrl || ""}
                   onChange={(e) => setTreeBackgroundUrl(e.target.value.trim() || null)}
-                  placeholder="Nhập đường dẫn URL ảnh nền (https://...)"
+                  placeholder="Nhập đường dẫn URL ảnh biểu trưng chìm (https://...)"
                   className="flex-1 rounded-xl border border-slate-300 px-3.5 py-2 text-xs sm:text-sm font-medium focus:border-indigo-600 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
                 />
                 <LogoUploadControl
                   currentLogoUrl={treeBackgroundUrl}
-                  label="Tải ảnh nền mới"
+                  label="Tải ảnh biểu trưng mới"
                   assetType="tree-background"
                   onUploadSuccess={(url: string) => setTreeBackgroundUrl(url)}
                 />
