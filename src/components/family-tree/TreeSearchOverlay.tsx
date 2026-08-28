@@ -96,7 +96,7 @@ export function TreeSearchOverlay({ onFocusPerson }: TreeSearchOverlayProps) {
                     <div>
                       <div className="flex items-center gap-1 text-xs font-medium text-slate-900 dark:text-white">
                         <span>{p.fullName}</span>
-                        {p.lifeStatus === "DECEASED" && <span className="text-[10px] text-slate-400">✝</span>}
+                        {p.lifeStatus === "DECEASED" && <span className="text-[10px] text-slate-400 font-medium">(Đã mất)</span>}
                       </div>
                       <div className="text-[10px] text-slate-400">
                         {p.generationNo && <span>Đời {p.generationNo} • </span>}

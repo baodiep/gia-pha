@@ -202,56 +202,58 @@ export function PersonDetailModal({
 
   return (
     <>
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 overflow-y-auto">
-        <div className="w-full max-w-xl rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-slate-800 dark:bg-slate-900 my-8 max-h-[90vh] flex flex-col">
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-3 sm:p-4 overflow-y-auto">
+        <div className="w-full max-w-xl rounded-2xl border border-slate-200 bg-white p-4 sm:p-6 shadow-2xl dark:border-slate-800 dark:bg-slate-900 my-auto max-h-[92vh] flex flex-col">
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-slate-100 pb-4 dark:border-slate-800 shrink-0">
-            <div className="flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600 dark:bg-indigo-950 dark:text-indigo-400 font-bold">
-                <User className="h-6 w-6" />
+          <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-3 sm:pb-4 dark:border-slate-800 shrink-0">
+            <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
+              <div className="flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600 dark:bg-indigo-950 dark:text-indigo-400 font-bold">
+                <User className="h-5 w-5 sm:h-6 sm:w-6" />
               </div>
-              <div>
-                <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">
+              <div className="min-w-0 flex-1">
+                <h2 className="truncate text-base sm:text-xl font-bold text-slate-900 dark:text-white" title={person?.full_name}>
                   {isLoading ? "Đang tải thông tin..." : person?.full_name}
                 </h2>
-                <div className="flex items-center gap-2 text-xs text-slate-500 font-medium">
+                <div className="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs text-slate-500 font-medium truncate">
                   {generationNo && <span>Đời thứ {generationNo}</span>}
                   {branchCode && <span>• {branchCode}</span>}
                   {lifeStatus === "DECEASED" && (
-                    <span className="rounded bg-slate-100 px-1.5 py-0.2 text-[10px] font-bold text-slate-600 dark:bg-slate-800 dark:text-slate-300">
-                      Đã khuất ✝
+                    <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-bold text-slate-600 dark:bg-slate-800 dark:text-slate-300 shrink-0">
+                      Đã khuất
                     </span>
                   )}
                 </div>
               </div>
             </div>
 
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
               {isEditable && !isEditing && !isLoading && (
                 <>
                   <button
                     type="button"
                     onClick={handleOpenMoveModal}
                     title="Chuyển sang làm con của người khác"
-                    className="flex items-center gap-1 rounded-xl bg-amber-50 border border-amber-300 px-2.5 sm:px-3 py-1.5 text-xs font-bold text-amber-800 hover:bg-amber-100 dark:bg-amber-950 dark:border-amber-800 dark:text-amber-200 cursor-pointer"
+                    className="flex items-center gap-1 rounded-xl bg-amber-50 border border-amber-300 p-2 sm:px-3 sm:py-1.5 text-xs font-bold text-amber-800 hover:bg-amber-100 dark:bg-amber-950 dark:border-amber-800 dark:text-amber-200 cursor-pointer shrink-0"
                   >
-                    <ArrowRightLeft className="h-3.5 w-3.5 text-amber-700 dark:text-amber-300" />
-                    <span>Chuyển cha/mẹ</span>
+                    <ArrowRightLeft className="h-4 w-4 sm:h-3.5 sm:w-3.5 text-amber-700 dark:text-amber-300" />
+                    <span className="hidden md:inline">Chuyển cha/mẹ</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => setIsEditing(true)}
-                    className="flex items-center gap-1 rounded-xl bg-indigo-50 border border-indigo-200 px-3 py-1.5 text-xs font-bold text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-950 dark:border-indigo-800 dark:text-indigo-300 cursor-pointer"
+                    title="Chỉnh sửa thông tin thành viên"
+                    className="flex items-center gap-1 rounded-xl bg-indigo-50 border border-indigo-200 p-2 sm:px-3 sm:py-1.5 text-xs font-bold text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-950 dark:border-indigo-800 dark:text-indigo-300 cursor-pointer shrink-0"
                   >
                     <Edit3 className="h-4 w-4" />
-                    <span>Chỉnh sửa</span>
+                    <span className="hidden sm:inline">Chỉnh sửa</span>
                   </button>
                 </>
               )}
               <button
                 onClick={onClose}
-                className="flex h-9 w-9 items-center justify-center rounded-xl text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800 font-bold cursor-pointer"
+                title="Đóng"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800 font-bold cursor-pointer"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -539,7 +541,7 @@ export function PersonDetailModal({
                   </div>
                   <div>
                     <span className="text-slate-400 block text-[11px]">Tình trạng:</span>
-                    <span className="font-bold">{lifeStatus === "LIVING" ? "Còn sống" : "Đã qua đời ✝"}</span>
+                    <span className="font-bold">{lifeStatus === "LIVING" ? "Còn sống" : "Đã qua đời"}</span>
                   </div>
                   <div>
                     <span className="text-slate-400 block text-[11px]">Năm / Ngày sinh:</span>

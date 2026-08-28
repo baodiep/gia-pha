@@ -74,11 +74,6 @@ export const PersonNode = memo((props: NodeProps) => {
             ) : (
               <User className="h-4 w-4" />
             )}
-            {isDeceased && (
-              <span className="absolute -bottom-1 -right-1 rounded-full bg-slate-700 px-1 py-0.2 text-[8px] text-white">
-                ✝
-              </span>
-            )}
           </div>
 
           {/* Info */}
@@ -197,11 +192,6 @@ export const PersonNode = memo((props: NodeProps) => {
                       />
                     ) : (
                       <User className="h-4 w-4" />
-                    )}
-                    {spIsDeceased && (
-                      <span className="absolute -bottom-1 -right-1 rounded-full bg-slate-700 px-1 py-0.2 text-[8px] text-white">
-                        ✝
-                      </span>
                     )}
                   </div>
 

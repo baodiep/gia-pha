@@ -134,9 +134,6 @@ export function MemorialListView() {
                     ) : (
                       <User className="h-6 w-6" />
                     )}
-                    <span className="absolute -bottom-1 -right-1 rounded-full bg-slate-800 px-1 py-0.2 text-[10px] text-white">
-                      ✝
-                    </span>
                   </div>
 
                   <div className="flex-1 min-w-0">

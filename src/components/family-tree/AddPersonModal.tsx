@@ -142,23 +142,23 @@ export function AddPersonModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 overflow-y-auto">
-      <div className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden my-8">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-3 sm:p-4 overflow-y-auto">
+      <div className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden my-auto">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-emerald-50/70">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-700 text-white shadow-sm">
-              <UserPlus className="h-5 w-5" />
+        <div className="flex items-center justify-between gap-2 px-4 sm:px-6 py-3.5 sm:py-4 border-b border-slate-100 bg-emerald-50/70 shrink-0">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
+            <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-700 text-white shadow-sm">
+              <UserPlus className="h-4 w-4 sm:h-5 sm:w-5" />
             </div>
-            <div>
-              <h3 className="text-lg font-bold text-slate-900">{getRelationLabel()}</h3>
-              <p className="text-xs text-slate-500">Nhập đầy đủ thông tin thành viên dòng họ</p>
+            <div className="min-w-0 flex-1">
+              <h3 className="truncate text-base sm:text-lg font-bold text-slate-900">{getRelationLabel()}</h3>
+              <p className="truncate text-[11px] sm:text-xs text-slate-500">Nhập đầy đủ thông tin thành viên dòng họ</p>
             </div>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full p-2 text-slate-400 hover:bg-slate-200/60 hover:text-slate-600 transition-colors"
+            className="rounded-full p-2 text-slate-400 hover:bg-slate-200/60 hover:text-slate-600 transition-colors shrink-0"
           >
             <X className="h-5 w-5" />
           </button>
@@ -223,7 +223,7 @@ export function AddPersonModal({
                 className="w-full px-4 py-3 text-base border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none min-h-[48px]"
               >
                 <option value="LIVING">Còn sống</option>
-                <option value="DECEASED">Đã qua đời ✝</option>
+                <option value="DECEASED">Đã qua đời</option>
                 <option value="UNKNOWN">Chưa rõ</option>
               </select>
             </div>
