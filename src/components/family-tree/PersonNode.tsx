@@ -19,6 +19,8 @@ export interface PersonNodeData {
   isExpanded: boolean;
   onToggleExpand?: (personId: string, e: React.MouseEvent) => void;
   onSpouseClick?: (spouseId: string, e: React.MouseEvent) => void;
+  motherName?: string | null;
+  motherOrderLabel?: string | null;
   managers?: Array<{
     userId: string;
     loginName: string;
@@ -32,6 +34,7 @@ export interface PersonNodeData {
     lifeStatus: "LIVING" | "DECEASED" | "UNKNOWN";
     avatarUrl?: string | null;
     status: string;
+    orderIndex?: number;
   }>;
 }
 
@@ -86,6 +89,19 @@ export const PersonNode = memo((props: NodeProps) => {
               {data.generationNo && <span>Đời {data.generationNo}</span>}
               {data.branchCode && <span>• {data.branchCode}</span>}
             </div>
+
+            {/* Mother badge (Nguồn gốc mẹ) */}
+            {data.motherName && (
+              <div className="mt-1">
+                <span
+                  className="inline-flex items-center gap-0.5 rounded bg-rose-50 border border-rose-200 px-1 py-0.2 text-[8px] font-bold text-rose-700 dark:bg-rose-950/60 dark:border-rose-900/60 dark:text-rose-300 truncate max-w-full"
+                  title={`Mẹ: ${data.motherName}${data.motherOrderLabel ? ` (${data.motherOrderLabel})` : ""}`}
+                >
+                  <Heart className="h-2 w-2 text-rose-500 fill-rose-500 shrink-0" />
+                  <span className="truncate">Mẹ: {data.motherName}</span>
+                </span>
+              </div>
+            )}
 
             {/* Editable badge */}
             <div className="mt-1 flex items-center gap-1 flex-wrap">
@@ -199,10 +215,15 @@ export const PersonNode = memo((props: NodeProps) => {
                     <h4 className="truncate text-xs font-bold text-amber-950 dark:text-amber-200" title={sp.fullName}>
                       {sp.fullName}
                     </h4>
-                    <div className="mt-1">
+                    <div className="mt-1 flex items-center gap-1">
                       <span className="inline-flex items-center gap-0.5 rounded bg-amber-100 border border-amber-300 px-1 py-0.2 text-[8px] font-bold text-amber-800 dark:bg-amber-900/60 dark:border-amber-800 dark:text-amber-200">
                         {spIsMale ? "Rể" : "Dâu"}
                       </span>
+                      {typeof sp.orderIndex === "number" && (
+                        <span className="inline-flex items-center rounded bg-rose-100 border border-rose-300 px-1 py-0.2 text-[8px] font-bold text-rose-800 dark:bg-rose-950 dark:border-rose-800 dark:text-rose-300">
+                          {spIsMale ? `Chồng ${sp.orderIndex}` : `Vợ ${sp.orderIndex}`}
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>

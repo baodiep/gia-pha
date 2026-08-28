@@ -555,6 +555,19 @@ export function PersonDetailModal({
                   </div>
                 </div>
 
+                {/* Danh sách các cuộc hôn nhân (Vợ / Chồng) nếu có */}
+                {candidateParents.length === 0 && (
+                  <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-3.5 dark:border-slate-800 dark:bg-slate-800/40 text-xs sm:text-sm">
+                    <div className="font-bold text-slate-800 dark:text-slate-200 mb-1 flex items-center gap-1.5">
+                      <Heart className="h-4 w-4 text-rose-500 fill-rose-500" />
+                      <span>Thông tin gia đình & Hôn phối:</span>
+                    </div>
+                    <p className="text-slate-500 dark:text-slate-400 text-xs">
+                      Hệ thống tự động liên kết con cái theo từng người mẹ tương ứng trên sơ đồ phả hệ.
+                    </p>
+                  </div>
+                )}
+
                 {lifeStatus === "DECEASED" && (deathLunarDay || deathLunarMonth || deathDate) && (
                   <div className="rounded-xl border border-amber-200 bg-amber-50/70 p-4 dark:border-amber-900/50 dark:bg-amber-950/30 text-xs sm:text-sm space-y-1.5">
                     <div className="font-bold text-amber-900 dark:text-amber-300 flex items-center gap-1.5">

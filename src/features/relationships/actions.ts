@@ -59,6 +59,7 @@ export async function addParentChild(input: ParentChildInput): Promise<Relations
         relationship_type: validated.relationshipType,
         is_lineage_relation: validated.isLineageRelation,
         display_order: validated.displayOrder,
+        union_id: validated.unionId || null,
       })
       .select("*")
       .single();
@@ -321,27 +322,43 @@ export async function updateParentChildOrder(childId: string, displayOrder: numb
 }
 
 /**
- * Remove union
+ * Get unions for a specific person (both as partner1 or partner2)
  */
-export async function removeUnion(unionId: string): Promise<RelationshipActionResult> {
+export async function getPersonUnions(personId: string) {
   try {
     await requireActiveUser();
     const supabase = await createClient();
 
-    const { error } = await supabase.from("unions").delete().eq("id", unionId);
+    const { data, error } = await supabase
+      .from("unions")
+      .select("*, partner1:partner1_id(id, full_name, gender, life_status, avatar_url), partner2:partner2_id(id, full_name, gender, life_status, avatar_url)")
+      .or(`partner1_id.eq.${personId},partner2_id.eq.${personId}`)
+      .order("created_at", { ascending: true });
 
     if (error) {
-      return { success: false, error: error.message };
+      return { success: false, error: error.message, data: [] };
     }
 
     return {
       success: true,
-      message: "Đã xóa quan hệ hôn phối",
+      data: (data || []).map((u) => {
+        const isPartner1 = u.partner1_id === personId;
+        const spouse = isPartner1 ? u.partner2 : u.partner1;
+        return {
+          unionId: u.id,
+          spouseId: spouse ? spouse.id : (isPartner1 ? u.partner2_id : u.partner1_id),
+          spouseName: spouse ? spouse.full_name : "Chưa rõ tên",
+          spouseGender: spouse ? spouse.gender : "UNKNOWN",
+          status: u.status,
+          isCurrentPersonPartner1: isPartner1,
+        };
+      }),
     };
   } catch (err: unknown) {
     return {
       success: false,
-      error: err instanceof Error ? err.message : "Đã xảy ra lỗi khi xóa hôn phối",
+      error: err instanceof Error ? err.message : "Đã xảy ra lỗi khi lấy danh sách hôn phối",
+      data: [],
     };
   }
 }

@@ -6,6 +6,7 @@ export const parentChildInputSchema = z.object({
   relationshipType: z.enum(["BIOLOGICAL", "ADOPTED", "STEP"]).default("BIOLOGICAL"),
   isLineageRelation: z.boolean().default(true),
   displayOrder: z.number().int().default(0),
+  unionId: z.string().uuid("Union ID không hợp lệ").nullable().optional(),
 }).refine((data) => data.parentId !== data.childId, {
   message: "Không thể tạo quan hệ cha/mẹ-con với chính bản thân (self relation)",
   path: ["childId"],

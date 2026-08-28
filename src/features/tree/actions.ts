@@ -98,34 +98,47 @@ export async function getTreeGraphData(options?: {
     }
   }
 
-  // Map unions by partner ID
-  const spouseMap = new Map<string, Array<{ id: string; fullName: string; gender?: any; lifeStatus: "LIVING" | "DECEASED" | "UNKNOWN"; avatarUrl?: string | null; status: string }>>();
-  const spouseIdSet = new Set<string>();
+  // Map unions by partner ID with spouse details and order
+  const spouseMap = new Map<string, Array<{ id: string; fullName: string; gender?: any; lifeStatus: "LIVING" | "DECEASED" | "UNKNOWN"; avatarUrl?: string | null; status: string; orderIndex?: number }>>();
+  const unionMotherMap = new Map<string, { motherName: string; motherId: string }>();
 
   for (const u of unionsList) {
     // Partner 1's spouse is Partner 2
     if (u.partner2) {
       if (!spouseMap.has(u.partner1_id)) spouseMap.set(u.partner1_id, []);
-      spouseMap.get(u.partner1_id)!.push({
+      const currentList = spouseMap.get(u.partner1_id)!;
+      currentList.push({
         id: u.partner2.id,
         fullName: u.partner2.full_name,
         gender: u.partner2.gender,
         lifeStatus: u.partner2.life_status,
         avatarUrl: u.partner2.avatar_url,
         status: u.status,
+        orderIndex: currentList.length + 1,
       });
+
+      // If partner2 is female or partner1 is male, record partner2 as mother for union
+      if (u.partner2.gender === "FEMALE" || u.partner1?.gender === "MALE") {
+        unionMotherMap.set(u.id, { motherName: u.partner2.full_name, motherId: u.partner2.id });
+      }
     }
     // Partner 2's spouse is Partner 1
     if (u.partner1) {
       if (!spouseMap.has(u.partner2_id)) spouseMap.set(u.partner2_id, []);
-      spouseMap.get(u.partner2_id)!.push({
+      const currentList = spouseMap.get(u.partner2_id)!;
+      currentList.push({
         id: u.partner1.id,
         fullName: u.partner1.full_name,
         gender: u.partner1.gender,
         lifeStatus: u.partner1.life_status,
         avatarUrl: u.partner1.avatar_url,
         status: u.status,
+        orderIndex: currentList.length + 1,
       });
+
+      if (u.partner1.gender === "FEMALE" || u.partner2?.gender === "MALE") {
+        unionMotherMap.set(u.id, { motherName: u.partner1.full_name, motherId: u.partner1.id });
+      }
     }
   }
 
@@ -133,13 +146,33 @@ export async function getTreeGraphData(options?: {
   const lineageChildIdSet = new Set(relationsList.map((r) => r.child_id));
   const lineageParentIdSet = new Set(relationsList.map((r) => r.parent_id));
 
+  // Map mother info for children
+  const childMotherInfoMap = new Map<string, { motherName: string; orderLabel?: string }>();
+  for (const r of relationsList) {
+    if (r.union_id && unionMotherMap.has(r.union_id)) {
+      const mother = unionMotherMap.get(r.union_id)!;
+      // Tìm xem người mẹ này là vợ thứ mấy của người cha
+      const fatherSpouses = spouseMap.get(r.parent_id) || [];
+      const spouseIndex = fatherSpouses.findIndex((sp) => sp.id === mother.motherId);
+      const orderLabel = spouseIndex >= 0 ? `Vợ ${spouseIndex + 1}` : undefined;
+      childMotherInfoMap.set(r.child_id, {
+        motherName: mother.motherName,
+        orderLabel,
+      });
+    }
+  }
+
   // Tập hợp những người là dâu/rể (kết hôn với người trực hệ nhưng không phải là con trực hệ của đời trước)
   const isSpouseOfLineage = (personId: string, generationNo: number | null) => {
-    // Nếu là đời 1 (Cụ bà) hoặc đời sau mà không có parent_child lineage thì là Dâu/Rể
+    // Nếu là con trong quan hệ trực hệ thì chắc chắn không phải là dâu/rể
     if (lineageChildIdSet.has(personId)) return false;
-    // Nếu là partner2 trong unions thì thường là dâu/rể
+
+    // Kiểm tra cả 2 chiều trong unions: nếu kết hôn với người trực hệ (partner1 hoặc partner2) thì là dâu/rể
     for (const u of unionsList) {
-      if (u.partner2_id === personId && (lineageChildIdSet.has(u.partner1_id) || lineageParentIdSet.has(u.partner1_id))) {
+      if (
+        (u.partner2_id === personId && (lineageChildIdSet.has(u.partner1_id) || lineageParentIdSet.has(u.partner1_id))) ||
+        (u.partner1_id === personId && (lineageChildIdSet.has(u.partner2_id) || lineageParentIdSet.has(u.partner2_id)))
+      ) {
         return true;
       }
     }
@@ -161,6 +194,8 @@ export async function getTreeGraphData(options?: {
   // Build nodes
   const nodes = mainLineagePersons.map((p) => {
     const isEditable = profile.is_admin || editableSet.has(p.id) || editableSet.has("*");
+    const motherInfo = childMotherInfoMap.get(p.id);
+
     return {
       id: p.id,
       data: {
@@ -176,6 +211,8 @@ export async function getTreeGraphData(options?: {
         hasChildren: parentWithChildrenSet.has(p.id),
         isExpanded: true,
         displayOrder: childOrderMap.get(p.id) ?? 0,
+        motherName: motherInfo?.motherName || null,
+        motherOrderLabel: motherInfo?.orderLabel || null,
         managers: managerMap.get(p.id) || [],
         spouses: spouseMap.get(p.id) || [],
       },
