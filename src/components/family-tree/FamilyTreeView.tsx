@@ -425,30 +425,20 @@ function FamilyTreeContent({ initialRootId, onSelectPerson }: FamilyTreeViewProp
   return (
     <div className="relative h-full w-full bg-slate-50 dark:bg-slate-950 overflow-hidden">
       {/* Top Controls Toolbar */}
-      <div className="absolute top-3 left-3 z-10 flex max-w-[calc(100vw-120px)] sm:max-w-none flex-wrap items-center gap-1.5 rounded-xl bg-white/95 p-1.5 shadow-md backdrop-blur dark:bg-slate-900/95 border border-slate-200 dark:border-slate-800">
-        <button
-          onClick={() => setMyBranchOnly(false)}
-          className={`flex items-center gap-1 sm:gap-1.5 rounded-lg px-2.5 sm:px-3 py-1.5 text-xs font-semibold transition-all ${
-            !myBranchOnly
-              ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-sm"
-              : "text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
-          }`}
-        >
-          <Users className="h-3.5 w-3.5" />
-          <span>Toàn bộ</span>
-        </button>
-
+      <div className="absolute top-3 left-3 z-10 flex max-w-[calc(100vw-110px)] sm:max-w-none flex-wrap items-center gap-1.5 rounded-xl bg-white/95 p-1.5 shadow-md backdrop-blur dark:bg-slate-900/95 border border-slate-200 dark:border-slate-800">
+        {/* Nút lọc nhánh quản lý (chỉ hiện khi người dùng có phân quyền quản lý nhánh) */}
         {hasManagedBranches && (
           <button
-            onClick={() => setMyBranchOnly(true)}
-            className={`flex items-center gap-1 sm:gap-1.5 rounded-lg px-2.5 sm:px-3 py-1.5 text-xs font-semibold transition-all ${
+            onClick={() => setMyBranchOnly((prev) => !prev)}
+            title={myBranchOnly ? "Xem toàn bộ cây gia phả" : "Chỉ xem các nhánh tôi quản lý"}
+            className={`flex items-center gap-1 sm:gap-1.5 rounded-lg px-2.5 sm:px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer ${
               myBranchOnly
                 ? "bg-emerald-600 text-white shadow-sm"
-                : "text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+                : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200"
             }`}
           >
             <Filter className="h-3.5 w-3.5" />
-            <span>Nhánh quản lý</span>
+            <span className="hidden sm:inline">{myBranchOnly ? "Đang lọc nhánh" : "Nhánh quản lý"}</span>
           </button>
         )}
 
@@ -468,14 +458,12 @@ function FamilyTreeContent({ initialRootId, onSelectPerson }: FamilyTreeViewProp
           </button>
         )}
 
-        <div className="h-4 w-px bg-slate-200 dark:bg-slate-700 mx-0.5" />
-
         {/* Nút Đóng / Mở toàn bộ */}
         {isAnyCollapsed ? (
           <button
             onClick={handleExpandAll}
             title="Mở rộng toàn bộ các nhánh"
-            className="flex items-center gap-1 rounded-lg bg-indigo-50 text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-950 dark:text-indigo-300 px-2 sm:px-2.5 py-1.5 text-xs font-medium transition-colors"
+            className="flex items-center gap-1 rounded-lg bg-indigo-50 text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-950 dark:text-indigo-300 px-2 sm:px-2.5 py-1.5 text-xs font-medium transition-colors cursor-pointer"
           >
             <ChevronsDown className="h-3.5 w-3.5" />
             <span className="hidden sm:inline">Mở toàn bộ</span>
@@ -484,7 +472,7 @@ function FamilyTreeContent({ initialRootId, onSelectPerson }: FamilyTreeViewProp
           <button
             onClick={handleCollapseAll}
             title="Thu gọn tất cả các nhánh con"
-            className="flex items-center gap-1 rounded-lg border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 px-2 sm:px-2.5 py-1.5 text-xs font-medium transition-colors"
+            className="flex items-center gap-1 rounded-lg border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 px-2 sm:px-2.5 py-1.5 text-xs font-medium transition-colors cursor-pointer"
           >
             <ChevronsUp className="h-3.5 w-3.5" />
             <span className="hidden sm:inline">Đóng toàn bộ</span>
@@ -494,7 +482,7 @@ function FamilyTreeContent({ initialRootId, onSelectPerson }: FamilyTreeViewProp
         <button
           onClick={loadTree}
           title="Tải lại cây gia phả"
-          className="flex items-center gap-1 rounded-lg px-2 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800 transition-colors"
+          className="flex items-center gap-1 rounded-lg px-2 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800 transition-colors cursor-pointer"
         >
           <RotateCw className="h-3.5 w-3.5" />
           <span className="hidden sm:inline">Làm mới</span>
