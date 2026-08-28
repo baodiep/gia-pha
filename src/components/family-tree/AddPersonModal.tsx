@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useTransition } from "react";
+import React, { useState, useEffect, useTransition } from "react";
 import { createPerson } from "@/features/persons/actions";
-import { addParentChild, addUnion } from "@/features/relationships/actions";
+import { addParentChild, addUnion, getPersonUnions } from "@/features/relationships/actions";
 import { Gender, LifeStatus, Person } from "@/types/domain";
 import {
   UserPlus,
@@ -56,8 +56,49 @@ export function AddPersonModal({
   );
   const [branchCode, setBranchCode] = useState(relatedPerson?.branch_code || "Chi 1");
 
+  // Multi-spouse context state
+  const [unionsList, setUnionsList] = useState<Array<{
+    unionId: string;
+    spouseId: string;
+    spouseName: string;
+    spouseGender: string;
+    status?: string;
+  }>>([]);
+  const [selectedUnionId, setSelectedUnionId] = useState<string>("");
+  const [actualParentId, setActualParentId] = useState<string>("");
+
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const [isPending, startTransition] = useTransition();
+
+  useEffect(() => {
+    if (!isOpen || !relatedPerson) {
+      setUnionsList([]);
+      setSelectedUnionId("");
+      setActualParentId("");
+      return;
+    }
+
+    if (relationType === "CHILD") {
+      getPersonUnions(relatedPerson.id).then((res) => {
+        if (res.success && res.data && res.data.length > 0) {
+          setUnionsList(res.data);
+          // Nếu relatedPerson là Nữ (Vợ/Dâu), người cha trực hệ chính là spouseId trong union!
+          if (relatedPerson.gender === "FEMALE") {
+            const firstUnion = res.data[0];
+            setActualParentId(firstUnion.spouseId); // Cha là chồng
+            setSelectedUnionId(firstUnion.unionId);
+          } else {
+            // relatedPerson là Nam (Cha), mặc định chọn union đầu tiên hoặc để trống
+            setActualParentId(relatedPerson.id);
+            setSelectedUnionId(res.data[0].unionId);
+          }
+        } else {
+          setActualParentId(relatedPerson.id);
+          setSelectedUnionId("");
+        }
+      });
+    }
+  }, [isOpen, relatedPerson, relationType]);
 
   if (!isOpen) return null;
 
@@ -99,13 +140,16 @@ export function AddPersonModal({
       // 2. Link relationship if relatedPerson exists
       if (relatedPerson) {
         if (relationType === "CHILD") {
-          // relatedPerson is Parent -> newPerson is Child
+          // Parent-child linkage:
+          // If relatedPerson is Female (Wife/Dâu), link child to husband as lineage parent
+          const effectiveParentId = actualParentId || relatedPerson.id;
           await addParentChild({
-            parentId: relatedPerson.id,
+            parentId: effectiveParentId,
             childId: newPerson.id,
             relationshipType: "BIOLOGICAL",
             isLineageRelation: true,
             displayOrder: 1,
+            unionId: selectedUnionId || null,
           });
         } else if (relationType === "PARENT") {
           // newPerson is Parent -> relatedPerson is Child
@@ -198,6 +242,34 @@ export function AddPersonModal({
               className="w-full px-4 py-3 text-base border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none min-h-[48px]"
             />
           </div>
+
+          {/* Chọn mẹ / cuộc hôn nhân nếu thêm con cho người cha có nhiều vợ */}
+          {relationType === "CHILD" && unionsList.length > 0 && (
+            <div className="rounded-2xl border border-rose-200 bg-rose-50/60 p-4">
+              <label className="block text-xs font-bold text-rose-950 mb-1.5 flex items-center gap-1.5">
+                <Heart className="h-4 w-4 text-rose-600 fill-rose-500" />
+                <span>
+                  {relatedPerson?.gender === "FEMALE"
+                    ? `Người mẹ: ${relatedPerson.full_name} (Hôn phối với cha: ${unionsList[0]?.spouseName})`
+                    : "Chọn người mẹ (Cuộc hôn nhân sinh ra con):"}
+                </span>
+              </label>
+              {relatedPerson?.gender !== "FEMALE" && (
+                <select
+                  value={selectedUnionId}
+                  onChange={(e) => setSelectedUnionId(e.target.value)}
+                  className="w-full px-3.5 py-2.5 text-sm font-semibold border border-rose-300 rounded-xl bg-white focus:ring-2 focus:ring-rose-500 focus:outline-none text-slate-800"
+                >
+                  <option value="">-- Chưa xác định / Không rõ người mẹ --</option>
+                  {unionsList.map((u, idx) => (
+                    <option key={u.unionId} value={u.unionId}>
+                      Vợ {idx + 1}: {u.spouseName} ({u.status === "MARRIED" ? "Đang kết hôn" : u.status})
+                    </option>
+                  ))}
+                </select>
+              )}
+            </div>
+          )}
 
           {/* Gender & Life Status */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

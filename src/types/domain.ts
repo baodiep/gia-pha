@@ -53,4 +53,26 @@ export interface BranchGrant {
   revoked_by: string | null;
 }
 
+export interface ParentChild {
+  id: string;
+  parent_id: string;
+  child_id: string;
+  relationship_type: ParentRelationshipType;
+  is_lineage_relation: boolean;
+  display_order: number;
+  union_id?: string | null;
+  created_at: string;
+}
+
+export interface Union {
+  id: string;
+  partner1_id: string;
+  partner2_id: string;
+  status: UnionStatus;
+  marriage_date: string | null;
+  ended_date: string | null;
+  note: string | null;
+  created_at: string;
+}
+
 

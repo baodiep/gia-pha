@@ -16,6 +16,8 @@ export type TreePersonNodeData = {
   hasChildren: boolean;
   isExpanded: boolean;
   displayOrder?: number;
+  motherName?: string | null;
+  motherOrderLabel?: string | null;
   managers?: Array<{
     userId: string;
     loginName: string;
@@ -29,6 +31,7 @@ export type TreePersonNodeData = {
     lifeStatus: "LIVING" | "DECEASED" | "UNKNOWN";
     avatarUrl?: string | null;
     status: string;
+    orderIndex?: number;
   }>;
 };
 
