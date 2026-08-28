@@ -45,16 +45,8 @@ export function AddPersonModal({
   const [birthPlace, setBirthPlace] = useState("");
   const [hometown, setHometown] = useState(relatedPerson?.hometown || "");
   const [bio, setBio] = useState("");
-  const [generationNo, setGenerationNo] = useState<string>(
-    relationType === "CHILD" && relatedPerson?.generation_no
-      ? String(relatedPerson.generation_no + 1)
-      : relationType === "PARENT" && relatedPerson?.generation_no && relatedPerson.generation_no > 1
-      ? String(relatedPerson.generation_no - 1)
-      : relatedPerson?.generation_no
-      ? String(relatedPerson.generation_no)
-      : "1"
-  );
-  const [branchCode, setBranchCode] = useState(relatedPerson?.branch_code || "Chi 1");
+  const [generationNo, setGenerationNo] = useState<string>("");
+  const [branchCode, setBranchCode] = useState<string>("");
 
   // Multi-spouse context state
   const [unionsList, setUnionsList] = useState<Array<{
@@ -71,7 +63,48 @@ export function AddPersonModal({
   const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
-    if (!isOpen || !relatedPerson) {
+    if (!isOpen) return;
+
+    // Reset form fields when modal opens
+    setFullName("");
+    setGender(relationType === "SPOUSE" && relatedPerson?.gender === "MALE" ? "FEMALE" : "MALE");
+    setLifeStatus("LIVING");
+    setBirthDate("");
+    setDeathDate("");
+    setDeathLunarDay("");
+    setDeathLunarMonth("");
+    setDeathLunarIsLeapMonth(false);
+    setDeathAnniversaryNote("");
+    setBirthPlace("");
+    setHometown(relatedPerson?.hometown || "");
+    setBio("");
+    setMessage(null);
+
+    // Tính toán tự động đời và chi mặc định dựa theo quan hệ
+    if (relatedPerson) {
+      if (relationType === "CHILD") {
+        setGenerationNo(relatedPerson.generation_no ? String(relatedPerson.generation_no + 1) : "1");
+        setBranchCode(relatedPerson.branch_code || "Chi 1");
+      } else if (relationType === "PARENT") {
+        setGenerationNo(
+          relatedPerson.generation_no && relatedPerson.generation_no > 1
+            ? String(relatedPerson.generation_no - 1)
+            : "1"
+        );
+        setBranchCode(relatedPerson.branch_code || "Chi 1");
+      } else if (relationType === "SPOUSE") {
+        setGenerationNo(relatedPerson.generation_no ? String(relatedPerson.generation_no) : "1");
+        setBranchCode(relatedPerson.branch_code || "Chi 1");
+      } else {
+        setGenerationNo(relatedPerson.generation_no ? String(relatedPerson.generation_no) : "1");
+        setBranchCode(relatedPerson.branch_code || "Chi 1");
+      }
+    } else {
+      setGenerationNo("1");
+      setBranchCode("Chi 1");
+    }
+
+    if (!relatedPerson) {
       setUnionsList([]);
       setSelectedUnionId("");
       setActualParentId("");

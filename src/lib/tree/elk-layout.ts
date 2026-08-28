@@ -11,6 +11,8 @@ export type TreePersonNodeData = {
   generationNo: number | null;
   branchCode: string | null;
   avatarUrl: string | null;
+  birthDate?: string | null;
+  deathDate?: string | null;
   isEditable: boolean;
   isSpouse?: boolean;
   hasChildren: boolean;
@@ -30,6 +32,8 @@ export type TreePersonNodeData = {
     gender?: "MALE" | "FEMALE" | "OTHER" | "UNKNOWN";
     lifeStatus: "LIVING" | "DECEASED" | "UNKNOWN";
     avatarUrl?: string | null;
+    birthDate?: string | null;
+    deathDate?: string | null;
     status: string;
     orderIndex?: number;
   }>;
