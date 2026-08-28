@@ -72,7 +72,7 @@ export async function getTreeGraphData(options?: {
   const [{ data: persons }, { data: relations }, { data: unions }, { data: branchGrants }] = await Promise.all([
     personsQuery,
     supabase.from("parent_child").select("*").eq("is_lineage_relation", true),
-    supabase.from("unions").select("*, partner1:partner1_id(id, full_name, gender, life_status, avatar_url), partner2:partner2_id(id, full_name, gender, life_status, avatar_url)"),
+    supabase.from("unions").select("*, partner1:partner1_id(id, full_name, gender, life_status, avatar_url, birth_date, death_date), partner2:partner2_id(id, full_name, gender, life_status, avatar_url, birth_date, death_date)"),
     supabase.from("branch_grants").select("root_person_id, user_id, user_profile:user_id(id, login_name, phone_normalized, person:person_id(full_name))").is("revoked_at", null),
   ]);
 
@@ -99,7 +99,7 @@ export async function getTreeGraphData(options?: {
   }
 
   // Map unions by partner ID with spouse details and order
-  const spouseMap = new Map<string, Array<{ id: string; fullName: string; gender?: any; lifeStatus: "LIVING" | "DECEASED" | "UNKNOWN"; avatarUrl?: string | null; status: string; orderIndex?: number }>>();
+  const spouseMap = new Map<string, Array<{ id: string; fullName: string; gender?: any; lifeStatus: "LIVING" | "DECEASED" | "UNKNOWN"; avatarUrl?: string | null; birthDate?: string | null; deathDate?: string | null; status: string; orderIndex?: number }>>();
   const unionMotherMap = new Map<string, { motherName: string; motherId: string }>();
 
   for (const u of unionsList) {
@@ -113,6 +113,8 @@ export async function getTreeGraphData(options?: {
         gender: u.partner2.gender,
         lifeStatus: u.partner2.life_status,
         avatarUrl: u.partner2.avatar_url,
+        birthDate: u.partner2.birth_date,
+        deathDate: u.partner2.death_date,
         status: u.status,
         orderIndex: currentList.length + 1,
       });
@@ -132,6 +134,8 @@ export async function getTreeGraphData(options?: {
         gender: u.partner1.gender,
         lifeStatus: u.partner1.life_status,
         avatarUrl: u.partner1.avatar_url,
+        birthDate: u.partner1.birth_date,
+        deathDate: u.partner1.death_date,
         status: u.status,
         orderIndex: currentList.length + 1,
       });
@@ -146,13 +150,18 @@ export async function getTreeGraphData(options?: {
   const lineageChildIdSet = new Set(relationsList.map((r) => r.child_id));
   const lineageParentIdSet = new Set(relationsList.map((r) => r.parent_id));
 
-  // Map mother info for children
+  // Map mother info for children: CHỈ hiển thị tên mẹ khi người cha có từ 2 vợ trở lên
   const childMotherInfoMap = new Map<string, { motherName: string; orderLabel?: string }>();
   for (const r of relationsList) {
     if (r.union_id && unionMotherMap.has(r.union_id)) {
+      const fatherSpouses = spouseMap.get(r.parent_id) || [];
+      // Nếu người cha chỉ có 1 vợ (hoặc <= 1), không cần hiển thị badge mẹ
+      if (fatherSpouses.length <= 1) {
+        continue;
+      }
+
       const mother = unionMotherMap.get(r.union_id)!;
       // Tìm xem người mẹ này là vợ thứ mấy của người cha
-      const fatherSpouses = spouseMap.get(r.parent_id) || [];
       const spouseIndex = fatherSpouses.findIndex((sp) => sp.id === mother.motherId);
       const orderLabel = spouseIndex >= 0 ? `Vợ ${spouseIndex + 1}` : undefined;
       childMotherInfoMap.set(r.child_id, {
@@ -206,6 +215,8 @@ export async function getTreeGraphData(options?: {
         generationNo: p.generation_no,
         branchCode: p.branch_code,
         avatarUrl: p.avatar_url,
+        birthDate: p.birth_date,
+        deathDate: p.death_date,
         isEditable,
         isSpouse: false,
         hasChildren: parentWithChildrenSet.has(p.id),

@@ -3,6 +3,7 @@
 import React, { memo } from "react";
 import { Handle, Position, NodeProps } from "@xyflow/react";
 import { ShieldCheck, ShieldAlert, Heart, ChevronDown, ChevronRight, User, Shield, KeyRound } from "lucide-react";
+import { calculateAge } from "@/lib/utils/age";
 
 export interface PersonNodeData {
   [key: string]: unknown;
@@ -13,6 +14,8 @@ export interface PersonNodeData {
   generationNo: number | null;
   branchCode: string | null;
   avatarUrl: string | null;
+  birthDate?: string | null;
+  deathDate?: string | null;
   isEditable: boolean;
   isSpouse?: boolean;
   hasChildren: boolean;
@@ -33,6 +36,8 @@ export interface PersonNodeData {
     gender?: "MALE" | "FEMALE" | "OTHER" | "UNKNOWN";
     lifeStatus: "LIVING" | "DECEASED" | "UNKNOWN";
     avatarUrl?: string | null;
+    birthDate?: string | null;
+    deathDate?: string | null;
     status: string;
     orderIndex?: number;
   }>;
@@ -43,6 +48,7 @@ export const PersonNode = memo((props: NodeProps) => {
   const isDeceased = data.lifeStatus === "DECEASED";
   const isMale = data.gender === "MALE";
   const hasSpouses = data.spouses && data.spouses.length > 0;
+  const mainAgeInfo = calculateAge(data.birthDate, data.deathDate, data.lifeStatus);
 
   return (
     <div className="relative flex items-center gap-2">
@@ -85,9 +91,14 @@ export const PersonNode = memo((props: NodeProps) => {
               {data.fullName}
             </h4>
 
-            <div className="flex items-center gap-1 mt-0.5 text-[10px] text-slate-500 dark:text-slate-400">
+            <div className="flex items-center gap-1 mt-0.5 text-[10px] text-slate-500 dark:text-slate-400 flex-wrap">
               {data.generationNo && <span>Đời {data.generationNo}</span>}
               {data.branchCode && <span>• {data.branchCode}</span>}
+              {mainAgeInfo.label && (
+                <span className="font-semibold text-amber-700 dark:text-amber-400">
+                  • {mainAgeInfo.label}
+                </span>
+              )}
             </div>
 
             {/* Mother badge (Nguồn gốc mẹ) */}
@@ -176,6 +187,7 @@ export const PersonNode = memo((props: NodeProps) => {
           {data.spouses!.map((sp) => {
             const spIsDeceased = sp.lifeStatus === "DECEASED";
             const spIsMale = sp.gender === "MALE";
+            const spAgeInfo = calculateAge(sp.birthDate, sp.deathDate, sp.lifeStatus);
 
             return (
               <div
@@ -215,13 +227,18 @@ export const PersonNode = memo((props: NodeProps) => {
                     <h4 className="truncate text-xs font-bold text-amber-950 dark:text-amber-200" title={sp.fullName}>
                       {sp.fullName}
                     </h4>
-                    <div className="mt-1 flex items-center gap-1">
+                    <div className="mt-1 flex items-center gap-1 flex-wrap">
                       <span className="inline-flex items-center gap-0.5 rounded bg-amber-100 border border-amber-300 px-1 py-0.2 text-[8px] font-bold text-amber-800 dark:bg-amber-900/60 dark:border-amber-800 dark:text-amber-200">
                         {spIsMale ? "Rể" : "Dâu"}
                       </span>
                       {typeof sp.orderIndex === "number" && (
                         <span className="inline-flex items-center rounded bg-rose-100 border border-rose-300 px-1 py-0.2 text-[8px] font-bold text-rose-800 dark:bg-rose-950 dark:border-rose-800 dark:text-rose-300">
                           {spIsMale ? `Chồng ${sp.orderIndex}` : `Vợ ${sp.orderIndex}`}
+                        </span>
+                      )}
+                      {spAgeInfo.label && (
+                        <span className="text-[8px] font-semibold text-amber-800 dark:text-amber-300">
+                          {spAgeInfo.label}
                         </span>
                       )}
                     </div>
@@ -237,5 +254,7 @@ export const PersonNode = memo((props: NodeProps) => {
     </div>
   );
 });
+
+PersonNode.displayName = "PersonNode";
 
 PersonNode.displayName = "PersonNode";
